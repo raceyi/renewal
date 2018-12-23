@@ -231,57 +231,10 @@ $latest-H : calc((180/667)*100vh);
     }
 
     ion-row{
-        margin-left:calc((20/376)*100vw);
-        margin-right:calc((20/376)*100vw);
+        margin-left:20 px;
+        margin-right:20 px;
     }
 }
 
-.profile-smile{
-    width:calc((150/376)*100vw);
-}   
-
-.cash-only{
-    background-color:$default-color;
-    color:white;
-    margin-top:calc((10/667)*100vh);
-    margin-bottom:calc((10/667)*100vh);
-    margin-left: calc((62/376)*100vw);
-    margin-right: calc((62/376)*100vw);
-    border-radius: 5px;
-    
-    .cash-label{                            ///////////////        
-        padding-top: calc((24/667)*100vh);
-        height:calc((53/667)*100vh);
-        border-radius: 5px;
-    }
-    .cash-value{
-        padding-top:calc((7/667)*100vh);     ////////////////////////
-        padding-bottom:calc((17/667)*100vh); ///////////////////////
-    }
-    .cash-value-row{
-        padding-bottom:calc((7/667)*100vh); ///////////////////////                     
-        height:calc((29/667)*100vh);            
-    }
-    .next-step{
-            button{
-            height:calc((35/667)*100vh);
-            }
-            border-top: solid 0.5px #ffffff;
-            ion-col{
-                button{
-                        color:white;
-                        padding-bottom:calc((7/667)*100vh); // Please check it on the phone
-                        span{
-                            font-size:4vw;
-                        }
-                        border-top: solid 0.5px #ffffff;
-                }
-            }
-
-            .left-button{
-                border-right: solid 0.5px #ffffff;
-            }
-    }
-}
 
 }

@@ -4,6 +4,7 @@ import {TimeUtil} from '../../classes/TimeUtil';
 import {StorageProvider} from '../../providers/storage/storage';
 import {ServerProvider} from '../../providers/server/server';
 import {CashConfirmPage} from '../cash-confirm/cash-confirm';
+import {CashTutorialPage} from '../cash-tutorial/cash-tutorial';
 
 import * as moment from 'moment';
 
@@ -211,5 +212,9 @@ export class CashListPage {
 
   back(){
     this.navCtrl.pop();
+  }
+
+  cashTutorial(){
+    this.app.getRootNav().push(CashTutorialPage);
   }
 }

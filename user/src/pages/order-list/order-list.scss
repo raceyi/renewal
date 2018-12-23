@@ -33,13 +33,13 @@ page-order-list {
 //////////////////////////////////
     
     .selection-area{
-            height: calc((27/667)*100vh);
-            margin-left:calc((21/376)*100vw);
-            margin-right:calc((21/376)*100vw);
-            margin-top:calc((10/667)*100vh);
-            margin-bottom:calc((10/667)*100vh);
+            height: 27px;
+            margin-left:21px;
+            margin-right:21px;
+            margin-top:10px;
+            margin-bottom:10px;
             button{
-                height: calc((27/667)*100vh);
+                height: 27px;
                 span{
                     font-size:4vw;
                     //color:#bdbdbd;
@@ -54,8 +54,8 @@ page-order-list {
       .search-area{
       color: #bdbdbd;
 
-      margin-left:calc((20/376)*100vw);
-      margin-right:calc((20/376)*100vw);
+      margin-left:20px;
+      margin-right:20px;
       padding:5px;
       ion-col{
         border: solid 1px #bdbdbd;    
@@ -68,7 +68,7 @@ page-order-list {
       .right-col{
         border-left-width:0px;
         button{
-            height:calc((20/667)*100vh);
+            height:20px;
             color: #bdbdbd;
         }
       }
@@ -77,7 +77,7 @@ page-order-list {
           border:none;
       }
       .show-period-button{
-          height:calc((20/667)*100vh);
+          height:20px;
           color: #bdbdbd;
       }
 
@@ -111,23 +111,23 @@ page-order-list {
             color: #bdbdbd;
             background-color: #ffffff;
 	        border: solid 1px #bdbdbd;
-            width: calc((100/376)*100vw);
+            width: 100px;
             .datetime-text{
-                padding-top:calc((5/667)*100vh);
-                padding-bottom:calc((5/667)*100vh);
+                padding-top:5px;
+                padding-bottom:5px;
             }
         }
         ion-row{
-            padding-left:calc((21/376)*100vw);
+            padding-left:21px;
             .center{
-                padding-left:calc((21/376)*100vw);
-                padding-top:calc((10/667)*100vh);
+                padding-left:21px;
+                padding-top:10px;
                 color: #bdbdbd;
             }
         }
         .close-button{
-            height: calc((23/667)*100vh);
-            padding-right: calc((10/376)*100vw);
+            height: 23px;
+            padding-right: 10px;
             color: #bdbdbd;
             font-size:4vw;
         }
@@ -137,26 +137,26 @@ page-order-list {
             color: #bdbdbd;
             border: solid 1px #bdbdbd;
             border-radius:0px;
-            height: calc((29/667)*100vh);
-            width: calc((50/376)*100vw);
+            height: 29px;
+            width: 50px;
         }
 
         .up-button{
-            height: calc((29/667)*100vh); 
+            height: 29px; 
             color: #bdbdbd;           
         }
     }
 
     .history{
-        height:calc((83/667)*100vh);
+        height:83px;
         .order-first-line{
             font-size:4vw;
-            padding-right:calc((20/376)*100vw);            
+            padding-right:20px;            
         }
 
         .order-second-line{
             font-size:3.4vw;
-             padding-right:calc((20/376)*100vw);
+             padding-right:20px;
         }
 
         .order-third-line{
@@ -167,29 +167,29 @@ page-order-list {
                 span{
                     font-size:3.4vw;
                 }
-                height:calc((20/667)*100vh);
+                height:20px;
                 border: solid 0.5px #bdbdbd;
-                width:calc((55/376)*100vw);
+                width:55px;
             }
         }
         background-color:white;
         border-top: solid 1px #bdbdbd;
-        padding-left:calc((20/376)*100vw);
+        padding-left:20px;
        
     }
 
     .empty{
         .header{
-                height:calc((50/667)*100vh);
+                height:50px;
                 font-size:4.8vw;
                 background-color: white;
                 color: $default-color;
-                padding-top: calc((15/667)*100vh);
+                padding-top: 15px;
             }
         
         .empty-img{
-            padding-top:calc((64/667)*100vh);
-            padding-bottom:calc((32/667)*100vh);
+            padding-top:64px;
+            padding-bottom:32px;
         }
 
         .empty-text{
