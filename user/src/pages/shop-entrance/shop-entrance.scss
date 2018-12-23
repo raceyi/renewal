@@ -1,0 +1,293 @@
+page-shop-entrance {
+
+    .branch{
+        margin-left:19px;
+        font-family: TTOmniGothicB;
+        font-size: 15px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #000000;      
+    }
+
+    .shop-info{
+        margin-left:19px;
+        margin-top: 3px;
+        margin-bottom:10px;
+        text-align:left;
+        span{
+            font-family: AppleSDGothicNeo;
+            font-size: 12px;
+            font-weight: 600;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            color: #ff7f39;
+        }
+    }
+
+    .dot{
+        width: 2px;
+        height: 2px;
+        background-color: #ff7f39;
+        margin-top: 4px;
+        margin-left: 2px;
+        margin-right: 2px;
+    }
+
+    .segment-md .segment-button {
+        color: black;
+    }
+    ///////////////////////////////////////////
+    .toolbar-background-ios {
+        background: white;
+    }
+
+    .header-ios .toolbar-background-ios, .footer-ios .toolbar-background-ios {
+        border-style: hidden;
+    }
+
+    ion-title{
+        font-size:4.8vw;
+    }
+
+    .toolbar-title-ios {
+        color: $default-color;
+    }
+    .scroll-content{
+        overflow-y: unset;
+    }
+    .shop-text-info{
+        font-size:3.4vw;
+        color: #4a4a4a;
+        margin-top:calc((4/667)*100vh);
+        margin-bottom:calc((4/667)*100vh);
+       .label{
+           margin-left: calc((20/376)*100vw);
+           width: calc((60/376)*100vw);
+           display: inline-block
+       }  
+       .noti{
+           margin-left: calc((20/376)*100vw);           
+       } 
+    }
+
+    .stamp{
+        margin-left: calc((20/376)*100vw);           
+        margin-right: calc((20/376)*100vw);           
+    }
+
+    .shop-img{
+        width: 54vw;
+        height: calc((136/667)*100vh);
+        background-size: 54vw calc((136/667)*100vh); 
+
+        margin-left:23vw;//calc((35/376)*100vw);
+        margin-right:23vw;//calc((35/376)*100vw);
+        span{
+            font-size:3.4vw;
+        	border-radius: 13px;
+	        background-color: #ffffff;
+	        border: solid 1px  $default-color;
+            color:$default-color;
+        }
+    }
+
+    .scroll-categories{
+        width: 100%;
+        height: 100%;
+        padding-bottom: 5%;
+        margin : 0px;
+    }
+
+    .col-categories{
+        .list-ios {
+            margin: 0px;
+        }
+        .item-ios {
+            padding-left: 0px;
+        }
+        .item-inner{
+            height: calc((30/667)*100vh); //Does it work?
+            background-color:white; 
+            border-bottom:0px;
+            padding:0px !important;
+            .label-ios {
+                 margin: 0px; 
+            }            
+        }
+        .list-ios > .item-block:last-child, .list-ios > .item-wrapper:last-child .item-block {
+            border-bottom: 0px;
+        }
+        .list-ios > .item-block:first-child {
+            border-top: 0px;
+        }
+        .list-ios .item-block .item-inner {
+            border-bottom: 0px;
+        }
+        button{
+            span{
+              justify-content: left;  
+            }
+        }
+        .item-ios .item-button {
+            padding-left: 5px;
+            padding-right:0px; 
+            height: calc((30/667)*100vh);
+        }
+    }
+
+    .no-scroll >.scroll-content{
+            overflow: hidden;
+    }
+
+    .col-menus{
+        height: 100%;
+        padding:0px;
+        ion-scroll{
+            width: 100%;
+            height: 100%;
+            padding-bottom: 5%;
+            margin : 0px;
+            button{
+                border-left: solid;
+                border-bottom: solid;
+                border-width: 0.5px;
+                border-color: #bdbdbd;
+
+                height: calc((175/667)*100vh);
+                h2{
+                    font-size:3.4vw;
+                    color:#4a4a4a;
+                }
+                p{
+                    color:$default-color;
+                }
+                /*
+                img{
+                    margin-left:1.25vw;
+                    width:  calc((120/376)*100vw);
+                    height: calc((120/376)*100vw);
+                }
+                */
+                .img-shop{
+                    //margin-left:1.25vw;
+                    margin-left:8vw;
+                    width:  calc((120/376)*100vw);
+                    height: calc((120/376)*100vw);
+                    background-size: calc((120/376)*100vw) calc((120/376)*100vw);                 
+                    padding-top: calc((40/376)*100vw);
+                    .sold-out{
+                        font-size:6vw;
+                        color: #33b9c6;
+                        padding:calc((10/376)*100vw); 
+                        border: solid 2px #33b9c6;
+                        border-radius: 23.5px;
+                        background-color:white;
+                    }
+                }
+
+                ion-label{
+                    margin: 1.25vw 1.25vw 1.25vw 1.25vw;
+                    h2{
+                        margin-left:10vw;
+                    }
+                    p{
+                        margin-left:10vw;
+                    }
+                }
+                ion-item.left{
+                    .item-inner{
+                        border-left: solid;
+                        border-width: 1px;
+                        border-color: #bdbdbd;
+                    }
+                }
+                 .item-inner{
+                        border-bottom:0px !important;
+                 }
+            }
+        }
+         .item-inner{
+            padding:0px !important;
+        }
+    }
+
+    .row-categories-menus{
+        border-top: solid;
+        border-color: #f2f2f2;
+        border-width: 2vw;
+        height: 100%;
+    }
+
+    .text-border{
+        border-radius: 8px;
+	    border: solid 1px  $default-color;
+        font-size: 2.6vw;
+    }
+    
+    .store-information-button{
+        width:calc((23/376)*100vw); 
+    }
+    
+    ion-select{
+        max-width: 100%;
+        width: 100%;
+        background-color:white;
+        color:$default-color;
+        .select-icon{
+            color:$default-color;
+        }
+    }
+    //////////////////////////////////
+    .item-radio.item-ios ion-label { // It doesn't work.
+        margin-left: 0;
+        text-align: center !important;
+    }
+    
+     .popover-content {
+        width: 100%;
+     }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // category선택을 popover로 변경한다. 
+    // components/popover/popover.ios.scss을 직접 수정한다. 폰에서도 적용되는지 확인이 필요하다. 다른곳에서 popover를 사용하지는 않는지 확인이 필요하다 ㅜㅜ
+    .popover-ios .popover-arrow {
+        width: 0px; 
+        height: 0px; 
+    }
+    .popover-ios .popover-content {
+        border-radius: 10px;
+        width:90vw !important;
+    }
+
+    .store-button{
+        width:calc((165/375)*100vw); 
+        height:calc((160/375)*100vw);
+    }
+
+    .store-img{
+        width:calc((140/375)*100vw); 
+        height:calc((100/375)*100vw);        
+    }
+
+    .store-name{
+        position:absolute;
+        top: calc((137/375)*100vw); 
+    }
+
+    .soldout{
+        position:absolute;
+        top: calc((40/375)*100vw);
+        left: calc((30/375)*100vw);
+        font-size:6vw;
+        color: #33b9c6;
+        padding:calc((10/376)*100vw); 
+        border: solid 2px #33b9c6;
+        border-radius: 23.5px;
+        background-color:white;
+    }
+}

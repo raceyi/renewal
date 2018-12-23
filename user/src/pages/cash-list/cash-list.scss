@@ -1,0 +1,287 @@
+page-cash-list {
+    .toolbar-background-ios {
+        background: $default-color;
+        color:white;
+    }
+
+    .header-ios .toolbar-background-ios, .footer-ios .toolbar-background-ios {
+        border-style: hidden;
+    }
+
+    ion-title{
+        font-size:4.8vw;
+    }
+
+    .toolbar-title-ios {
+        color: white;
+    }
+
+//////////////////////////////////
+
+$scroll-H:  calc((180/667)*100vh);
+$latest-H : calc((180/667)*100vh);
+
+.scroll-latest {
+    height: $scroll-H;
+    .scroll-content{
+        padding: 0;
+    }
+}
+
+.scroll-div{
+    .scroll-row-latest{
+        flex-wrap : inherit;
+        height: $latest-H;
+        margin-left: calc((62/376)*100vw);
+        margin-right: calc((62/376)*100vw);
+        ion-row{
+            width : calc((227/376)*100vw);   
+        }
+
+        .cash-select-border{
+            //height: calc((171/667)*100vh) !important; // increase height, width
+            border-style:solid !important;
+            border-color: #33b9c6 !important;
+            border-radius: 8px;
+            border-left: calc((6/376)*100vw);
+            border-right:calc((6/376)*100vw);
+            border-top:calc((6/667)*100vh);
+            border-bottom:calc((6/667)*100vh);
+        }
+
+        .card-select-border{
+            border-style:solid !important;
+            border-color: #33b9c6 !important;
+            border-radius: 8px;
+            border-left: calc((6/376)*100vw);
+            border-right:calc((6/376)*100vw);
+            border-top:calc((6/667)*100vh);
+            border-bottom:calc((6/667)*100vh);
+        }
+
+        .card-unselect-border{
+            border-radius: 8px;
+             box-shadow: 0 0 7px 0 rgba(70, 70, 70, 0.5);
+        }
+
+        .card-button{
+            width : calc((227/376)*100vw);
+            height: calc((60/667)*100vh);
+            color:white;
+        }
+
+        .cash-card{
+            background-color:$default-color;
+            color:white;
+            padding-top:calc((10/667)*100vh);
+            .cash-label{                            ///////////////
+                padding-top: calc((24/667)*100vh);
+                height:calc((47/667)*100vh);
+            }
+             .cash-value{
+                padding-top:calc((7/667)*100vh);     ////////////////////////
+                padding-bottom:calc((17/667)*100vh); ///////////////////////
+             }
+             .cash-value-row{
+                padding-bottom:calc((7/667)*100vh); ///////////////////////                     
+             } 
+             ion-row{
+                 button{
+                    height:calc((25/667)*100vh);
+                 }
+                 border-top: solid 0.5px #ffffff;
+                 ion-col{
+                    button{
+                            color:white;
+                            padding-bottom:calc((7/667)*100vh); // Please check it on the phone
+                            span{
+                                font-size:4vw;
+                            }
+                    }
+                 }
+
+                 .left-button{
+                     border-right: solid 0.5px #ffffff;
+                 }
+             }
+        }
+
+        .card-add{
+            background-color: #e8e8e8;
+            color:#4a4a4a;;
+            border-radius: 8px;
+             box-shadow: 0 0 7px 0 rgba(70, 70, 70, 0.5);
+            .card-add-label{
+                justify-content: center;
+                padding-top: calc((15/667)*100vh);
+            }
+        }
+
+        .card-card{
+            color:white;
+            .card-remove{
+                height:calc((25/667)*100vh);
+            }
+            button{
+                height:calc((30/667)*100vh);
+            }
+        }
+
+        .scroll-col-latest {
+            overflow: inherit; 
+            margin-left: calc((12/376)*100vw);
+            margin-right:calc((12/376)*100vw);
+            margin-top:calc((25/667)*100vh);
+            margin-bottom:calc((25/667)*100vh);
+            height:calc((121/667)*100vh);
+        }      
+
+        .select-scroll-col-latest {
+            overflow: inherit; 
+            margin-top:calc((19/667)*100vh);
+            height:calc((133/667)*100vh);
+        }            
+              
+    }    
+} 
+
+  .period-section{
+    font-size:4vw;
+    background-color: #f2f2f2;
+    ion-datetime{
+        color: #bdbdbd;
+        background-color: #ffffff;
+        border: solid 1px #bdbdbd;
+        width: calc((125/376)*100vw);
+        .datetime-text{
+            padding-top:calc((5/667)*100vh);
+            padding-bottom:calc((5/667)*100vh);
+        }
+    }
+    ion-row{
+        padding-left:calc((21/376)*100vw);
+        .center{
+            padding-left:calc((21/376)*100vw);
+            padding-top:calc((10/667)*100vh);
+            color: #bdbdbd;
+        }
+    }
+    .close-button{
+        height: calc((23/667)*100vh);
+        padding-right: calc((10/376)*100vw);
+        color: #bdbdbd;
+        font-size:4vw;
+    }
+
+    .search-button{
+        background-color: #f2f2f2;
+        color: #bdbdbd;
+        border: solid 1px #bdbdbd;
+        border-radius:0px;
+       // margin-left: calc((5/376)*100vw);
+       // margin-right: calc((19/376)*100vw);
+       // margin-bottom: calc((10/376)*100vw);
+       height: calc((29/667)*100vh);
+       width: calc((50/376)*100vw);
+    }
+}
+
+.transaction{
+    border-bottom: solid 1px #bdbdbd;
+    .extra-info{
+        color: #bdbdbd;
+        font-size:3.5vw;
+        ion-col{
+            padding-top:0px;
+        }
+    }
+
+    .refund{
+        font-size:4vw;
+        color: #4a4a4a;
+    }
+
+    .cancel{
+        font-size:4vw;
+        color: $default-color;            
+    }
+
+    .payment{
+        font-size:4vw;
+        color: #4a4a4a;
+    }
+
+    .charge-done{
+        font-size:4vw;
+        color: $default-color;
+    }
+
+    .charge-waiting{
+        font-size:4vw;
+        color: #33b9c6;
+        .button-inner{
+            justify-content: left;
+        }
+        button{
+            span{
+                font-size: 4vw;
+                color: #33b9c6;
+            }
+        }
+    }
+
+    ion-row{
+        margin-left:calc((20/376)*100vw);
+        margin-right:calc((20/376)*100vw);
+    }
+}
+
+.profile-smile{
+    width:calc((150/376)*100vw);
+}   
+
+.cash-only{
+    background-color:$default-color;
+    color:white;
+    margin-top:calc((10/667)*100vh);
+    margin-bottom:calc((10/667)*100vh);
+    margin-left: calc((62/376)*100vw);
+    margin-right: calc((62/376)*100vw);
+    border-radius: 5px;
+    
+    .cash-label{                            ///////////////        
+        padding-top: calc((24/667)*100vh);
+        height:calc((53/667)*100vh);
+        border-radius: 5px;
+    }
+    .cash-value{
+        padding-top:calc((7/667)*100vh);     ////////////////////////
+        padding-bottom:calc((17/667)*100vh); ///////////////////////
+    }
+    .cash-value-row{
+        padding-bottom:calc((7/667)*100vh); ///////////////////////                     
+        height:calc((29/667)*100vh);            
+    }
+    .next-step{
+            button{
+            height:calc((35/667)*100vh);
+            }
+            border-top: solid 0.5px #ffffff;
+            ion-col{
+                button{
+                        color:white;
+                        padding-bottom:calc((7/667)*100vh); // Please check it on the phone
+                        span{
+                            font-size:4vw;
+                        }
+                        border-top: solid 0.5px #ffffff;
+                }
+            }
+
+            .left-button{
+                border-right: solid 0.5px #ffffff;
+            }
+    }
+}
+
+}

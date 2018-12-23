@@ -1,0 +1,78 @@
+<ion-header style="background-color:white;">        
+<div style="display:flex;">
+        <img  class="logo-img" src="assets/imgs/home/logo.png">               
+        <button ion-button no-margin no-padding class="search-icon" clear (click)="search()"> <ion-icon name="ios-search-outline"></ion-icon></button>
+        <button ion-button no-margin no-padding class="cart-icon" clear (click)="openCart()"> <ion-icon name="ios-cart-outline"></ion-icon></button>
+</div>
+</ion-header>
+
+<ion-content style="background-color:#f7f7f9;" > <!-- rgb(228, 228, 228);-->
+<ion-slides class="slides" pager="true">
+        <ion-slide>
+            <button class="each-img" clear no-margin no-padding ion-button (click)="enterShop('세종대@더큰도시락')"><img src="assets/imgs/home/thebigger.jpeg"></button>
+        </ion-slide>
+        <ion-slide>
+                <img src="assets/imgs/home/realfry.jpeg">
+        </ion-slide>
+        <ion-slide>
+            <img src="assets/imgs/home/handel.jpeg">
+        </ion-slide>
+</ion-slides>
+
+<div style="padding-top:17px;">
+<span *ngIf="storageProvider.shopList!=null && storageProvider.shopList!=undefined && storageProvider.shopList.length!=0"  class="section-title">즐겨찾는 메뉴</span>
+</div>
+<div style="margin-top: 20px;" *ngIf="storageProvider.shopList.length!=0 && menus.length!=0">
+    <div class="favorite-menu" style="display:flex;" *ngFor="let menu of menus" >
+        <img class="menu-img" [src]="menu.fullImagePath">
+        <div class="menu-desc" style="display:flex;flex-direction:column;">
+            <p class="shop-name" no-margin no-padding>
+                    {{menu.name_sub}} {{menu.name_main}}
+            </p>
+            <p class="menu-name" no-margin no-padding>
+                    {{menu.menuName}}
+            </p>
+            <p class="menu-price" no-margin no-padding>
+                    <amount-display [amount]="menu.price"></amount-display>원
+            </p>
+            
+        </div>
+        <button ion-button clear no-padding no-margin (click)="selectMenu(menu)"><img src="assets/imgs/home/order.png"></button>
+    </div>
+</div>
+<div class="more" text-right>
+        <button clear ion-button>더 보기</button> 
+</div>
+
+<div style="padding-top:17px;">
+        <span *ngIf="storageProvider.shopList!=null && storageProvider.shopList!=undefined && storageProvider.shopList.length!=0"  class="section-title">최근 주문 매장</span>
+</div>
+<div text-center style="margin-top:15px;">
+        <button *ngFor="let shop of storageProvider.shopList" class="shop" style="height:110px;width:355px;" (click)="enterShop(shop.takitId)" no-padding no-margin ion-button>
+            <div style="display:flex">
+                <div text-left >
+                        <img style="width: 155px;height:100px;" [src]="correctImagePath(shop.imagePath)">                        
+                </div>
+                <div style="width: 186px;">
+                        <ion-row>
+                            <ion-col class="shop-brand"> {{shop.name_main}}</ion-col> 
+                                <ion-col text-right class="like"> <ion-icon name="heart" style="color:red;"></ion-icon> 31</ion-col>
+                        </ion-row>
+                        <hr class="hr" align="left">
+                        <div class="shop-info" style="display:flex;">
+                            <span  *ngIf="shop.deliveryArea!=undefined && shop.deliveryArea!=null">배달</span>    
+                            <div *ngIf="shop.deliveryArea!=undefined && shop.deliveryArea!=null" class="dot"> </div>                                                               
+                            <span  *ngIf="shop.paymethod.cash!=undefined">캐시</span><span *ngIf="shop.paymethod.cash!=undefined && shop.paymethod.cash!='0%'">{{shop.paymethod.cash}}</span>
+                            <div *ngIf="shop.paymethod.card!=undefined" class="dot"> </div> 
+                            <span  *ngIf="shop.paymethod.card!=undefined">카드</span><span *ngIf="shop.paymethod.card!=undefined && shop.paymethod.card!='0%'">{{shop.paymethod.card}}</span>
+                        </div>
+                        <div class="shop-location"><ion-icon ios="ios-pin-outline" md="md-pin"></ion-icon>&nbsp;{{shop.name_sub}}</div>                        
+                    </div>    
+            </div>
+        </button>          
+</div>
+<div class="more" text-right>
+<button clear ion-button>더 보기</button> 
+</div>
+
+</ion-content>

@@ -1,0 +1,263 @@
+<!--
+  Generated template for the ShopPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header  #shophomeHeader>
+        <ion-navbar hideBackButton>                
+        <ion-buttons start>
+          <button style="background-color:white;color:black;" (click)="back()" ><ion-icon style="font-size:4.8vw;" name="ios-arrow-back"></ion-icon></button>
+        </ion-buttons>
+        <ion-title>  {{shopName}} &nbsp;
+                    <a *ngIf="storageProvider.shopResponse.shopInfo.contactPhone" [href]="shopPhoneHref"><ion-icon color="black" name="call"></ion-icon></a>
+        </ion-title>
+        <ion-buttons end>
+              <button ion-button (click)="search()" style="background-color:white;color:#000000;">
+                   <ion-icon  class="store-information-button"name="ios-search-outline"></ion-icon>
+              </button>
+              <button ion-button (click)="openCart()" style="background-color:white;color:#000000;">
+                   <b><ion-icon  class="store-information-button" name="ios-cart-outline"></ion-icon></b>
+              </button>
+        </ion-buttons>
+        </ion-navbar>
+       
+        <div style="display:flex;justify-content:center;">
+                <div class="branch">
+                    <ion-icon ios="ios-pin-outline" md="md-pin"></ion-icon>
+                    {{branch}}    
+                </div>
+                <div class="shop-info" style="display:flex;">
+                    <span  *ngIf="shop.shopInfo.deliveryArea!=undefined && shop.shopInfo.deliveryArea!=null">배달</span>    
+                    <div *ngIf="shop.shopInfo.deliveryArea!=undefined && shop.shopInfo.deliveryArea!=null" class="dot"> </div>                                                               
+                    <span  *ngIf="shop.shopInfo.paymethod.cash!=undefined">캐시</span><span *ngIf="shop.shopInfo.paymethod.cash!=undefined && shop.shopInfo.paymethod.cash!='0%'">{{shop.shopInfo.paymethod.cash}}</span>
+                    <div *ngIf="shop.shopInfo.paymethod.card!=undefined" class="dot"> </div> 
+                    <span  *ngIf="shop.shopInfo.paymethod.card!=undefined">카드</span><span *ngIf="shop.shopInfo.paymethod.card!=undefined && shop.shopInfo.paymethod.card!='0%'">{{shop.shopInfo.paymethod.card}}</span>
+                </div>
+        </div>
+                <ion-segment mode="md" [(ngModel)]="section" color="primary">
+                    <ion-segment-button value="menu">
+                      메뉴
+                    </ion-segment-button>
+                    <ion-segment-button *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp" value="stamp">
+                            스탬프
+                    </ion-segment-button>        
+                    <ion-segment-button value="review">
+                      리뷰
+                    </ion-segment-button>  
+                    <ion-segment-button value="info">
+                      정보
+                    </ion-segment-button>
+                  </ion-segment>  
+                  <div *ngIf="section=='menu' && shop.shopInfo.categoryLevel!='1'">
+                        <ion-row>
+                            <ion-col text-center>
+                            <ion-select text-center [(ngModel)]="categorySelected" multiple="false" interface="popover" (ionChange)="change()">
+                                <ion-option class="category-name"  style="width:100vw;" text-center [value]="i" *ngFor="let category of categories;let i=index;">
+                                    <ion-label text-center style="width:100vw;text-align:center;"><div text-center>{{category.categoryName}}</div></ion-label>
+                                </ion-option>
+                            </ion-select>
+                            </ion-col>
+                        </ion-row>  
+                  </div>      
+                  <div class="classification" *ngIf="section=='info'">
+                    {{shop.shopInfo.classification}}
+                  </div>                  
+                  <div *ngIf="section=='review'">
+                        <ion-row  style="padding-top: 10px;">
+                            <ion-col text-right>
+                                <img style="width:30px;height:30px;" src="assets/imgs/review-input/iconmonstr-smiley-thin-240.png">
+                            </ion-col>
+                            <ion-col text-left style="font-size:20px;" align-self-center>
+                                10
+                            </ion-col>
+                            <ion-col text-right>
+                                <img style="width:30px;height:30px;" src="assets/imgs/review-input/iconmonstr-frown-thin-240.png">                                
+                            </ion-col>
+                            <ion-col text-left style="font-size:20px;" align-self-center>
+                                20
+                            </ion-col>
+                        </ion-row>
+                  </div>
+
+                  <div *ngIf="section=='stamp'">
+                  <div text-center style="font-size: 3.4vw;color: #4a4a4a;margin-top:15px;margin-bottom:15px;" *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp && shop.shopInfo.stampFreeMenu!=null">
+                        <label class="label">스탬프</label> <span class="value">{{shop.shopInfo.stampUsageCount}}개에 {{freeMenu}} 1개 (자동 적용) </span>
+                  </div>
+                        
+                  <div text-center style="font-size: 3.4vw;color: #4a4a4a;margin-top:15px;margin-bottom:15px;" *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp && shop.shopInfo.stampFreeAmount!=null">
+                        <label class="label">스탬프</label> <span class="value">{{shop.shopInfo.stampUsageCount}}개에 {{shop.shopInfo.stampFreeAmount}}원 차감</span>
+                  </div>
+                  </div>
+
+    </ion-header>
+      
+      <ion-content #shophomeContent>
+      
+      <div *ngIf="section=='menu' && shop.shopInfo.categoryLevel=='1'">
+          <ion-row>
+              <ion-col text-center style="background-color:#ff7f39;">
+                    <img src="assets/imgs/shop/haksik.png">                    
+              </ion-col>
+          </ion-row>
+          <ion-row>
+              <ion-col col-12 text-center *ngFor="let category of categories;let i=index;">
+                <button ion-button clear (click)="moveSubShop(i)" >{{category.categoryName}}</button> 
+                <!--
+                  <button class="store-button" style="background-color:white;color:black;" (click)="enterStore(store)" no-padding no-margin ion-button>
+                    <div class="store-img" text-center [ngStyle]="store.ngStyle">
+                        <span class="soldout" *ngIf="allSoldOutStore(i)">판매종료</span>
+                    </div>
+                    <div text-center class="store-name">
+                      {{store.name}}
+                    </div>
+                  </button>
+                -->
+              </ion-col>
+            </ion-row>
+      </div>
+      <div *ngIf="section=='menu' && shop.shopInfo.categoryLevel!='1'">
+                          <ion-row *ngFor="let menu of menus" no-padding no-margin>
+                              <ion-col class="col-menus" no-padding text-center>
+                              <button color="white" (click)="selectMenu(menu[0])"ion-button full no-padding no-margin>
+                                  <ion-item  no-padding>
+                                       <div text-center class="img-shop" [ngStyle]="menu[0].ngStyle">
+                                        <label *ngIf="menu[0].soldout==1" class="sold-out"> <b>판매종료</b></label>
+                                        <label *ngIf="menu[0].soldout==0"> &nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                       </div>
+                                      <h2>{{menu[0].menuName}}</h2> 
+                                      <p><amount-display [amount]="menu[0].price"></amount-display>원 <span class="text-border" *ngIf="menu[0].takeout>0 && shop.shopInfo.deliveryArea==null" >&nbsp;&nbsp;포장&nbsp;&nbsp;</span> 
+                                                           <span class="text-border" *ngIf="menu[0].takeout>0 && shop.shopInfo.deliveryArea!=null" >&nbsp;&nbsp;포장/배달&nbsp;&nbsp;</span></p>
+                                  </ion-item>
+                              </button>
+                              </ion-col>
+                              <ion-col class="col-menus" no-padding text-center>
+                              <button class="left" *ngIf="menu[1]" (click)="selectMenu(menu[1])" color="white" ion-button full no-padding no-margin>
+                                  <ion-item no-padding>
+                                       <div text-center class="img-shop" [ngStyle]="menu[1].ngStyle">
+                                        <label *ngIf="menu[1].soldout==1" class="sold-out"> <b>판매종료</b></label>
+                                        <label *ngIf="menu[1].soldout==0"> &nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                       </div>   
+                                       <h2>{{menu[1].menuName}}</h2>
+                                      <p><amount-display [amount]="menu[1].price"></amount-display>원 <span class="text-border" *ngIf="menu[1].takeout>0 && shop.shopInfo.deliveryArea==null" >&nbsp;&nbsp;포장&nbsp;&nbsp;</span> 
+                                                             <span class="text-border" *ngIf="menu[1].takeout>0 && shop.shopInfo.deliveryArea!=null" >&nbsp;&nbsp;포장/배달&nbsp;&nbsp;</span></p> 
+                                  </ion-item>
+                              </button>
+                              <button class="left" *ngIf="!menu[1]" color="white" ion-button full no-padding no-margin>
+                                  <ion-item no-padding>
+                                  </ion-item>
+                              </button>
+                              </ion-col>
+                          </ion-row>
+                          <ion-row class="dummy" style="height:50vh;">  <!-- 보정이 될까? col의 크기를 가져와 맞추는것이 맞다 ㅜㅜ -->
+                          </ion-row>   
+      </div>    
+      <div *ngIf="section=='stamp'">
+            <div style="display:flex;flex-wrap: wrap;margin-left: 10px;" *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp && storageProvider.stampCount.length>0">
+                <div no-padding no-margin style="width:48px;height:48px;margin:10px;border:solid 1px #FF5F3A;border-radius:50%;"  *ngFor="let stamp of storageProvider.stampCount" text-center>
+                <ion-icon name="md-star" style="color:#FF5F3A;font-size:13vw;"  ></ion-icon>
+                </div>
+            </div>
+      </div>
+      <div *ngIf="section=='review'">
+                        <!-- Review -begin -->
+                        <div style="border-bottom:solid 1px lightgray;padding: 15px;">
+                                <ion-row>
+                                   <ion-col text-left align-self-center>
+                                        **주
+                                   </ion-col>
+                                   <ion-col text-right align-self-center>
+                                        18.11.11
+                                   </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col text-left>
+                                            하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다. 하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다.
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col col-1>
+        
+                                    </ion-col>
+                                        <ion-col style="background-color:#d8d8d8;" text-left>
+                                            사장님 답글<br><br>
+                                                하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다. 하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다.
+                                        </ion-col>
+                                </ion-row>
+                                </div>
+                                <div style="border-bottom:solid 1px lightgray;padding: 15px;">
+                                        <ion-row>
+                                           <ion-col text-left align-self-center>
+                                                **주
+                                           </ion-col>
+                                           <ion-col text-right align-self-center>
+                                                18.11.11
+                                           </ion-col>
+                                        </ion-row>
+                                        <ion-row>
+                                            <ion-col text-left>
+                                                    하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다. 하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다.
+                                            </ion-col>
+                                        </ion-row>
+                                        <ion-row>
+                                            <ion-col col-1>
+                
+                                            </ion-col>
+                                                <ion-col style="background-color:#d8d8d8;" text-left>
+                                                    사장님 답글<br><br>
+                                                        하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다. 하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다.
+                                                </ion-col>
+                                        </ion-row>
+                                </div>
+                                <!-- Review -end -->            
+      </div>
+      <div *ngIf="section=='info'" style="background-color:#f7f7f9;">
+            <ion-slides class="slides" pager="true">
+                    <ion-slide>
+                        <button class="each-img" clear no-margin no-padding ion-button (click)="enterShop('세종대@더큰도시락')"><img src="assets/imgs/home/thebigger.jpeg"></button>
+                    </ion-slide>
+                    <ion-slide>
+                            <img src="assets/imgs/home/realfry.jpeg">
+                    </ion-slide>
+                    <ion-slide>
+                        <img src="assets/imgs/home/handel.jpeg">
+                    </ion-slide>
+            </ion-slides>
+            <ion-row>
+                    <ion-col no-padding class="shop-text-info">
+                    <label class="label">주문시간</label>  <span class="value">{{storageProvider.shopResponse.shopInfo.TodayBusinessTime}}</span>
+                    </ion-col>
+                    <ion-col no-padding  class="shop-text-info" *ngIf="storageProvider.shopResponse.shopInfo.breakTime!=null">
+                    <label class="label">브레이크</label>  <span class="value"> {{storageProvider.shopResponse.shopInfo.breakTime}} </span>
+                    </ion-col>
+                    </ion-row>
+                    <ion-row>
+                    <ion-col no-padding div class="shop-text-info" *ngIf="storageProvider.shopResponse.shopInfo.shopPhone!=null && storageProvider.shopResponse.shopInfo.shopPhone!=undefined">
+                    <label class="label">전화번호</label>  <span class="value">{{shopPhone}} </span>
+                    </ion-col>
+                    <ion-col no-padding  class="shop-text-info" *ngIf="regularOff!=undefined && regularOff.length>0">
+                    <label class="label">휴무요일</label>  <span class="value"> {{regularOff}} </span>
+                    </ion-col>
+                    </ion-row>
+                    <div class="shop-text-info">
+                    <label class="label">주소</label>  <span class="value">{{shop.shopInfo.address}}</span>
+                    
+                    </div>
+                    <div class="shop-text-info" *ngIf="shop.shopInfo.deliveryArea!=null">
+                    <label class="label">배달</label> {{shop.shopInfo.deliveryArea}} <span class="value"><amount-display [amount]="shop.shopInfo.freeDelivery"></amount-display>원이상 무료 배송</span>
+                    </div>
+                    <div class="shop-text-info" *ngIf="shop.shopInfo.foodOrigin!=null">
+                    <label class="label">원산지</label>  <span class="value">{{shop.shopInfo.foodOrigin}}</span>
+                    </div>
+                    
+                    <div class="shop-text-info" *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp && shop.shopInfo.stampFreeMenu!=null">
+                    <label class="label">스탬프</label>  스탬프 <span class="value">{{shop.shopInfo.stampUsageCount}}개에 {{freeMenu}} 1개 (자동 적용) </span>
+                    </div>
+                    
+                    <div class="shop-text-info" *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp && shop.shopInfo.stampFreeAmount!=null">
+                    <label class="label">스탬프</label> <span class="value">{{shop.shopInfo.stampUsageCount}}개에 {{shop.shopInfo.stampFreeAmount}}원 차감</span>
+                    </div>
+            
+      </div>
+
+

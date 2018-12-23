@@ -1,0 +1,116 @@
+<!--
+  Generated template for the CartPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar hideBackButton>
+  <ion-buttons start>
+    <button style="background-color:#FF5F3A;color:white;" (click)="back()" ><ion-icon style="font-size:4.8vw;" name="ios-arrow-back"></ion-icon></button>
+  </ion-buttons>
+  <ion-title style="color:white;"> 장바구니
+  </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+<div *ngIf="carts.length>0">
+<ion-row text-right> 
+    <ion-col><button ion-button clear *ngIf="carts.length>0" (click)="removeAll()">전체삭제</button></ion-col>
+</ion-row>
+<div *ngFor="let cart of carts">
+<div class="shop-info">
+    <ion-row>
+    <ion-col no-padding no-margin col-10 text-left>
+        <button ion-button full>
+            <b>{{cart.shopName}}</b>
+        </button>    
+    </ion-col>
+    <ion-col no-padding no-margin col-2 text-right>
+        <button ion-button *ngIf="cart.shopHidden" (click)="showShopInfo(cart)" full>
+            <ion-icon  name="ios-arrow-down"></ion-icon>
+        </button>
+        <button ion-button *ngIf="!cart.shopHidden" (click)="hideShopInfo(cart)" full>            
+            <ion-icon name="ios-arrow-up"></ion-icon>
+        </button>
+    </ion-col>
+    </ion-row>
+    <ion-row class="info-label" [hidden]="cart.shopHidden">
+        <span class="label-width"> 결제 수단</span> &nbsp;<span class="pay-border" *ngIf="cart.paymethod.cash!=undefined">캐쉬 <b *ngIf="cart.paymethod.cash!='0%'">{{cart.paymethod.cash}}</b></span>&nbsp;
+                     <span class="pay-border" *ngIf="cart.paymethod.card!=undefined">카드<b *ngIf="cart.paymethod.card!='0%'">{{cart.paymethod.card}}</b></span>
+    </ion-row>
+    <ion-row class="info-label" [hidden]="cart.shopHidden">
+       <span class="label-width"> 주소</span> &nbsp;<span class="address"> {{cart.address}}</span>
+    </ion-row>
+</div>
+
+<div class="menu" *ngFor="let menu of cart.orderList.menus">
+    <ion-row class="left-padding" text-right>
+        <ion-col col-11 no-padding no-margin>
+            &nbsp;
+        </ion-col>        
+        <ion-col col-1 no-padding no-margin>
+            <button class="close-button" ion-button clear full (click)="remove(menu,cart)"><b><ion-icon name="ios-close"></ion-icon></b></button>
+        </ion-col>
+    </ion-row>
+    <ion-row class="left-padding">
+        <ion-col col-6>
+            <span class="menu-name"><b>{{menu.menuName}}</b></span>  
+        </ion-col>
+    <ion-col class="col-border"  no-padding no-margin col-1>
+        <button no-padding ion-button clear (click)="decrease(menu,cart)"><ion-icon name="ios-remove"></ion-icon></button>
+    </ion-col>
+    <ion-col class="number" text-center no-padding no-margin col-1>
+      {{menu.quantity}}
+    </ion-col>
+    <ion-col class="col-border"  no-padding no-margin col-1>
+        <button no-padding ion-button clear (click)="increase(menu)"><ion-icon name="ios-add"></ion-icon></button>
+    </ion-col>
+    <ion-col col-3>
+        &nbsp;
+    </ion-col>
+    </ion-row>
+    <ion-row class="top-padding left-padding gray-color">
+        <ion-col text-left>가격</ion-col>
+        <ion-col text-right><amount-display [amount]="menu.unitPrice"></amount-display>원</ion-col>
+    </ion-row>
+    <ion-row class="top-padding left-padding gray-color" *ngFor="let option of menu.options">
+        <ion-col>{{option.name}}({{option.number}})</ion-col>
+        <ion-col *ngIf="option && option.extendedOption">{{option.extendedOption.name}}</ion-col>
+
+        <ion-col text-center *ngIf="option.select!==undefined">{{option.select}}</ion-col> 
+        <ion-col *ngIf="!option.flagType" text-right>{{option.number}}개</ion-col>
+        <!--  
+        <ion-col text-right>{{option.price}}</ion-col>
+        -->
+    </ion-row>
+    <ion-row class="top-padding left-padding gray-color" *ngIf="menu.memo!=null && menu.memo!=undefined">
+        요청사항
+    </ion-row>
+    <ion-row  class="top-padding left-padding gray-color" *ngIf="menu.memo!=null && menu.memo!=undefined">
+        {{menu.memo}}
+    </ion-row>
+    <ion-row class="left-padding menu-price">
+        <ion-col text-left><b>소계</b></ion-col>
+        <ion-col text-right><b><amount-display [amount]="menu.quantity*menu.unitPrice"></amount-display>원</b></ion-col>
+    </ion-row>
+</div>
+</div>
+<ion-row class="total-price"  [hidden]="totalAmount==0" >
+    <ion-col text-left>
+        <b>총 주문 금액</b> 
+    </ion-col>
+    <ion-col text-right>
+          <b> <amount-display [amount]="totalAmount"></amount-display>원</b>
+    </ion-col>
+</ion-row>
+</div>
+<div *ngIf="carts.length==0" text-center>
+    <img class="empty-cart" src="assets/imgs/empty-cart.png"/> 
+    <p style="font-size:4.5vw;color: #9b9b9b;">카트가 비었습니다</p>
+</div>
+</ion-content>
+<ion-footer *ngIf="carts.length>0" style="background-color:#f2f2f2;font-size:4vw;">
+  <button class="review-button" *ngIf="carts.length>0" no-margin full ion-button (click)="doOrder()"> 주문하기 </button>
+</ion-footer>

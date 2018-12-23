@@ -1,0 +1,72 @@
+page-my-info {
+    .profile-icon{
+        margin-top:20px;
+        //margin-left:160px;
+        width:26px;
+        height:26px;
+        color:#ff5d45;
+    }
+    .title{
+        margin-top:25px;
+        margin-bottom:14px;
+        font-family: OTDayB;
+        font-size: 17px;
+        font-weight: 300;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: 1.2px;      
+        color:#ff5d45;
+    }
+
+    .personal-info-section{
+        margin-left:calc((40/376)*100vw);
+        margin-right:calc((40/376)*100vw);
+        margin-top: calc((21/667)*100vh);
+        //height:calc((124/667)*100vh); 2018.07.04
+        height:calc((50/667)*100vh);
+        .user-name{
+            font-size:5.8vw;
+            color:$default-color;
+        }
+        .user-img{
+            width: calc((66/376)*100vw);   
+        }
+    }
+
+    .group-title{
+        p{
+            font-size:3.8vw;
+            margin-left:calc((19/376)*100vw);
+            margin-top:calc((15/667)*100vh);
+            color:#9b9b9b;
+        }
+        border-top-style: solid;
+        border-width: 1px;
+        border-color: #dfdfdf;  
+    }
+
+    .each-menu{
+        padding-left:calc((19/376)*100vw);
+        font-size:4.5vw;
+        button{
+            height: calc((19/667)*100vh);
+            font-size: 3.8vw;
+        }
+        ion-col{
+            height: calc((35/667)*100vh);
+            padding-top:calc((10/667)*100vh);
+            padding-bottom:0px;
+        }
+        border-top-style: solid;
+        border-width: 1px;
+        border-color: #dfdfdf;          
+    }
+
+    .last{
+       // height: calc((60/667)*100vh);
+        border-top-style: solid;
+        border-width: 1px;
+        border-color: #dfdfdf;  
+    }
+}

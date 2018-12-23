@@ -1,0 +1,106 @@
+// http://ionicframework.com/docs/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+$default-font-size:4vw;
+//$default-font-style: NotoSansCJKkr-Regular;
+$default-color:#FF5F3A;
+
+@mixin calc($property, $expression) { 
+        #{$property}: -webkit-calc(#{$expression}); 
+        #{$property}: -moz-calc(#{$expression});
+        #{$property}: calc(#{$expression}); 
+} 
+
+@font-face{
+    font-family: NotoSansCJKkr-Black;
+    src: url('../assets/fonts/NotoSansCJKkr-Black.otf') format('otf');
+}
+
+@font-face{
+    font-family: NotoSansMonoCJKkr-Bold;
+    src: url('../assets/fonts/NotoSansMonoCJKkr-Bold.otf') format('otf');
+}
+
+@font-face{
+    font-family: NotoSansCJKkr-Bold;
+    src: url('../assets/fonts/NotoSansCJKkr-Bold.otf') format('otf');
+}
+
+@font-face{
+    font-family: NotoSansCJKkr-Medium;
+    src: url('../assets/fonts/NotoSansCJKkr-Medium.otf') format('otf');
+}
+
+@font-face{
+    font-family: NotoSansMonoCJKkr-Regular;
+    src: url('../assets/fonts/NotoSansMonoCJKkr-Regular.otf') format('otf');
+}
+
+@font-face{
+    font-family: NotoSansCJKkr-Regular;
+    src: url('../assets/fonts/NotoSansCJKkr-Regular.otf') format('otf');
+}
+
+@font-face{
+    font-family: NotoSansCJKkr-DemiLight;
+    src: url('../assets/fonts/NotoSansCJKkr-DemiLight.otf') format('otf');
+}
+
+@font-face{
+    font-family: NotoSansCJKkr-Light;
+    src: url('../assets/fonts/NotoSansCJKkr-Light.otf') format('otf');
+}
+
+@font-face{
+    font-family: NotoSansCJKkr-Thin;
+    src: url('../assets/fonts/NotoSansCJKkr-Thin.otf') format('otf');
+}
+
+.tabs-ios .tabbar{
+    background:white;
+   // height: calc((82/667)*100vh); it results in problem under iPhoneX
+}
+
+
+.fab-btn{
+        color: white;
+        background-color: $default-color;// #50e3c2;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+}
+
+.fab ion-icon, .fab custom-icon {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    font-size: 18vw !important;
+}
+
+ion-fab {
+    custom-icon{
+        padding-top:calc((12/667)*100vh);
+    }
+}
+
+.toss-alert-button{
+    span{
+        border:solid #2e4996;
+        color:#2e4996;
+        border-radius:5px;   
+    } 
+}

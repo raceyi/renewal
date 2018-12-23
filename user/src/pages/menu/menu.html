@@ -1,0 +1,182 @@
+<!--
+  Generated template for the MenuPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar hideBackButton>
+  <ion-buttons start>
+    <button style="background-color:#FF5F3A;color:white;" (click)="back()" ><ion-icon style="font-size:4.8vw;" name="ios-arrow-back"></ion-icon></button>
+  </ion-buttons>
+  <ion-title class="menu-name"> {{menu.menuName}}
+  </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+<div class="menu-img" text-center>
+  <img [src]="storageProvider.awsS3+menu.imagePath">
+</div>
+  <p *ngIf="menu.explanation!=undefined && menu.explanation!=null" text-wrap text-center style="color:#FF5F3A;font-size:4vw;">
+  {{menu.explanation}}
+  </p>
+  <p *ngIf="menu.timeConstraint" text-wrap text-center style="color:#FF5F3A;font-size:4vw;">
+    {{timeConstraintString}}
+  </p>
+<div *ngIf="menu.ingrediant!=undefined && menu.ingrediant!=null">  
+<button [hidden]="ingredientShown" class="expand-button" (click)="expand()" full no-padding no-margin ion-button><span text-left style="width:80vw;">상세보기</span> <span text-right><ion-icon name="ios-arrow-down"></ion-icon></span> </button>
+<button [hidden]="!ingredientShown" class="expand-button inside-ingredients" (click)="collapse()" full no-padding no-margin ion-button><span text-left style="width:80vw;">&nbsp;</span> <span text-right><ion-icon name="ios-arrow-up"></ion-icon></span> </button>
+<pre [hidden]="!ingredientShown" class="ingredients" style="font-size:3.4vw;">{{menu.ingrediant}}
+</pre>
+</div>
+
+<ion-row *ngIf="menu.menuDiscount && menu.menuDiscount!=null && menu.menuDiscount>0">
+  <ion-col class="menu-text-info" text-center>
+   {{menu.menuDiscount}}%할인
+  </ion-col>
+</ion-row>
+<ion-row *ngIf="menu.menuDiscount && menu.menuDiscount!=null && menu.menuDiscount>0">
+  <ion-col no-padding no-margin text-center>
+  <span style="font-size:3.5vw;" *ngFor="let option of menu.discountOptions;let i=index;" >
+    <b *ngIf="i>0">또는</b>
+    {{option}}&nbsp;
+  </span><span style="font-size:3.5vw;"> 선택시</span> 
+  </ion-col>
+</ion-row>
+                             
+<ion-row>
+  <ion-col class="menu-text-info" text-left>
+   가격
+  </ion-col>
+  <ion-col class="menu-text-info" text-right>
+  <amount-display [amount]="menu.price"></amount-display>원
+  </ion-col>
+</ion-row>
+<ion-row *ngIf="menu.stampCount!=null && menu.stampCount>0">
+  <ion-col col-1>
+  </ion-col>
+  <ion-col class="option-name"  text-left>
+   스탬프 제공수
+  </ion-col>
+  <ion-col class="option-price" text-right>
+  {{menu.stampCount}}
+  </ion-col>
+  <ion-col col-1>
+  </ion-col>  
+</ion-row>
+
+<div class="option-section" *ngIf="options.length>0" >
+  <ion-row>
+    <ion-col class="menu-text-info" text-left>
+      추가 옵션 
+    </ion-col>
+  </ion-row>
+
+  <div class="options" no-padding no-margin *ngFor="let option of options;let i=index;">
+  <ion-row no-padding no-margin>
+    <ion-col no-padding no-margin col-5 class="option-name" text-left>
+        {{option.name}}
+    </ion-col>
+    <ion-col class="option-price" no-padding no-margin col-3 text-right>
+        +<amount-display [amount]="option.price"></amount-display>원
+    </ion-col>
+    <ion-col class="number" style="border:none;" text-right col-3 *ngIf="option.flagType"> <!-- 숫자가 아닌 선택옵션임 -->
+       <ion-checkbox [(ngModel)]="option.flagOn" mode="md" (ionChange)="updateFlag(option)" style="border:0;" ></ion-checkbox>
+    </ion-col>
+    <ion-col class="col-border" *ngIf="option.price>0 && (!option.flagType)" no-padding no-margin col-1>
+        <button no-padding ion-button clear (click)="decrease(option)"><ion-icon name="ios-remove"></ion-icon></button>
+    </ion-col>
+    <ion-col class="number"  *ngIf="option.price>0 && (!option.flagType)" text-center no-padding no-margin col-1>
+      {{option.number}}
+    </ion-col>
+    <ion-col class="col-border"   *ngIf="option.price>0 && (!option.flagType)" no-padding no-margin col-1>
+        <button no-padding ion-button clear (click)="increase(option)"><ion-icon name="ios-add"></ion-icon></button>
+    </ion-col>
+    <ion-col  *ngIf="option.price>0" no-padding no-margin col-1>
+      &nbsp; 
+    </ion-col>
+    <ion-col  *ngIf="option.price==0 && (!option.flagType)" no-padding no-margin col-4>
+      &nbsp; 
+    </ion-col>
+  </ion-row>
+
+  <ion-row class="choice" *ngIf="option.choice && option.choice.length==1">
+    <ion-col text-right col-10>
+       <ion-label style="font-size:4vw;color:#4a4a4a;">{{option.choice[0]}}</ion-label>
+    </ion-col>
+    <ion-col text-right col-2>
+          <ion-item class="bg-sub1" no-lines>
+             <ion-checkbox [(ngModel)]="option.choiceFlag" mode="md" (ionChange)="selectChoice(option)" style="border:0;" ></ion-checkbox>
+          </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row radio-group class="choice" [(ngModel)]="option.select" *ngIf="option.choice && option.choice.length>1">
+                      <ion-col  col-6 *ngFor="let choice of option.choice">
+                          <ion-item class="bg-sub1" no-lines>
+                              <ion-label text-wrap style="font-size:4vw;color:#4a4a4a;">{{choice}}</ion-label>
+                              <ion-radio style="border-style:solid;border-width:1px;border-color:#bdbdbd;" color="subColor2" [value]="choice"></ion-radio>
+                          </ion-item>
+                      </ion-col>
+  </ion-row>
+  <ion-row *ngIf="option.flagType && option.flagOn && option.extendedOptionExist">
+    <ion-col no-padding no-margin col-3 class="option-name" text-left>
+       {{option.extendedOption.name}}
+    </ion-col>
+    <ion-col class="option-price" *ngIf="!option.extendedOption.ignoreUnitPrice" no-padding no-margin col-5 text-right>
+        +<amount-display [amount]="option.extendedOption.price"></amount-display>원
+    </ion-col>
+    <ion-col class="option-price" *ngIf="option.extendedOption.ignoreUnitPrice" no-padding no-margin col-5 text-right>
+        <amount-display [amount]="option.extendedOption.price"></amount-display>원
+    </ion-col>
+    <ion-col class="number" style="border:none;" text-right col-3 *ngIf="option.extendedOption.flagType"> <!-- 숫자가 아닌 선택옵션임 -->
+       <ion-checkbox [(ngModel)]="option.extendedOption.flagOn" (click)="updateFlag(option)"  mode="md" style="border:0;" ></ion-checkbox>
+    </ion-col>
+        
+  </ion-row>
+  </div>
+</div>
+
+<div class="quantity">
+      <ion-row [hidden]="quantityInput(true)">
+        <ion-col col-11>
+        <ion-item  class="orderSelect">
+          <ion-label class="orderQuantity">총 수량</ion-label>
+            <ion-select interface='action-sheet' #actionSheet class="orderSelect0" [(ngModel)]="menu.quantity"  (ionChange)="getQuantity(menu.quantity)">
+              <ion-option value=1>1</ion-option>
+              <ion-option value=2>2</ion-option>
+              <ion-option value=3>3</ion-option>
+              <ion-option value=4>4</ion-option>
+              <ion-option value=5>5</ion-option>
+              <ion-option value=6>직접입력</ion-option>
+            </ion-select>
+        </ion-item>
+        </ion-col>
+        <ion-col class="unit" col-1>
+            개
+        </ion-col>
+      </ion-row>
+       <ion-row [hidden]="quantityInput(false)">
+         <ion-col col-8 class="input-label">총 수량</ion-col>
+         <ion-col col-3><ion-input #quantityNum (ionBlur)="onBlur($event)" type="number"  min="1" [(ngModel)]= "menu.quantity"></ion-input></ion-col>
+         <ion-col class="unit" col-1>개</ion-col>
+       </ion-row>
+</div>
+<div class="price">
+<ion-row>
+  <ion-col class="left-col" text-left>결제금액</ion-col>
+  <ion-col class="right-col" text-right> <amount-display [amount]="amount" ></amount-display>원</ion-col>
+</ion-row>
+</div>
+<div class="request">
+  요청사항 
+<ion-textarea [(ngModel)]="memo" placeholder="특수문자를 제외한 한글,영문,숫자만 전달됩니다." ></ion-textarea>
+</div>
+</ion-content>
+<ion-footer>
+<ion-row>
+<ion-col no-padding no-margin><button no-margin ion-button full class="cart" (click)="command('cart')" color="white">장바구니</button></ion-col>
+<ion-col no-padding no-margin><button no-margin ion-button full color="primary" (click)="command('order')">바로주문</button></ion-col>
+</ion-row>
+</ion-footer>

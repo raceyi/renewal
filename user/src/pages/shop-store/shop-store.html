@@ -1,0 +1,87 @@
+<!--
+  Generated template for the ShopStorePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar hideBackButton>
+  <ion-buttons start>
+    <button style="background-color:white;color:black;" (click)="back()" ><ion-icon style="font-size:4.8vw;" name="ios-arrow-back"></ion-icon></button>
+  </ion-buttons>
+  <ion-title>  {{store.name}} &nbsp;
+  </ion-title>
+  <ion-buttons end>
+        <button ion-button style="background-color:white;color:black;">
+             리뷰
+        </button>
+        <button  ion-button  style="background-color:white;color:black;">
+             검색
+        </button>
+  </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content #shophomeContent>
+
+<ion-row>
+    <ion-col text-center>
+    <ion-select text-center [(ngModel)]="categorySelected" multiple="false" interface="popover" (ionChange)="change()">
+        <ion-option class="category-name"  style="width:100vw;" text-center [value]="i" *ngFor="let category of store.categories;let i=index;">
+            <ion-label text-center style="width:100vw;text-align:center;"><div text-center>{{category.categoryName}}</div></ion-label>
+        </ion-option>
+    </ion-select>
+    </ion-col>
+</ion-row>
+
+<ion-row class="row-categories-menus">
+            <ion-col class="col-menus">
+                <ion-scroll scrollY="true">
+                <ion-row no-padding no-margin>
+                    <ion-col  col-6 *ngFor="let menu of menus" no-padding text-center>
+                    <button color="white" (click)="selectMenu(menu)"ion-button full no-padding no-margin>
+                        <ion-item class="left" no-padding>
+
+                             <div text-center class="img-shop" [ngStyle]="menu.ngStyle">
+                              <label *ngIf="menu.soldout==1" class="sold-out"> <b>판매종료</b></label>
+                              <label *ngIf="menu.soldout==0"> &nbsp;&nbsp;&nbsp;&nbsp;</label>
+                             </div>
+                            <h2>{{menu.menuName}}</h2> 
+                            <p><amount-display [amount]="menu.price"></amount-display>원 <span class="text-border" *ngIf="menu.takeout>0 && shop.shopInfo.deliveryArea==null" >&nbsp;&nbsp;포장&nbsp;&nbsp;</span> 
+                                                 <span class="text-border" *ngIf="menu.takeout>0 && shop.shopInfo.deliveryArea!=null" >&nbsp;&nbsp;포장/배달&nbsp;&nbsp;</span></p>
+                        </ion-item>
+                    </button>
+                    </ion-col>
+                    <ion-col no-padding text-center>
+                    <button *ngIf="menu" (click)="selectMenu(menu)" color="white" ion-button full no-padding no-margin>
+                        <ion-item no-padding>
+                             <div text-center class="img-shop" [ngStyle]="menu.ngStyle">
+                              <label *ngIf="menu.soldout==1" class="sold-out"> <b>판매종료</b></label>
+                              <label *ngIf="menu.soldout==0"> &nbsp;&nbsp;&nbsp;&nbsp;</label>
+                             </div>   
+                             <h2>{{menu.menuName}}</h2>
+                            <p><amount-display [amount]="menu.price"></amount-display>원 <span class="text-border" *ngIf="menu.takeout>0 && shop.shopInfo.deliveryArea==null" >&nbsp;&nbsp;포장&nbsp;&nbsp;</span> 
+                                                   <span class="text-border" *ngIf="menu.takeout>0 && shop.shopInfo.deliveryArea!=null" >&nbsp;&nbsp;포장/배달&nbsp;&nbsp;</span></p> 
+                        </ion-item>
+                    </button>
+                    <button *ngIf="!menu" color="white" ion-button full no-padding no-margin>
+                        <ion-item no-padding>
+                        </ion-item>
+                    </button>
+                    </ion-col>
+                </ion-row>
+                <!--
+                <ion-row class="dummy" style="height:50vh;">  보정이 될까? col의 크기를 가져와 맞추는것이 맞다 ㅜㅜ 
+                </ion-row> 
+                -->  
+                </ion-scroll>
+            </ion-col>
+</ion-row>
+
+<ion-fab bottom right>
+    <button class="fab-btn" (click)="openCart()" ion-fab color="white">
+      <custom-icon set="tabs" name="cart"></custom-icon>
+    </button>
+</ion-fab>
+
+</ion-content>

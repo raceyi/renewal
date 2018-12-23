@@ -1,0 +1,158 @@
+page-wallet {
+.search-img{
+    margin-top:20px;
+    margin-left:160px;
+    width:26px;
+    height:26px;
+    color:#ff5d45;
+}
+.title{
+    margin-top:25px;
+    margin-bottom:14px;
+    font-family: OTDayB;
+    font-size: 17px;
+    font-weight: 300;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: 1.2px;      
+    color:#ff5d45;
+}
+
+.id-section{
+    height:58px;
+    padding-left:42px;
+    padding-top:23px;
+    background-color:#f7f7f9;
+    .label{
+        font-family: AppleSDGothicNeo;
+        font-size: 13px;
+        font-weight: 500;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: -0.2px;
+        color: #a0a2b0;      
+    }
+    .value{
+        font-family: AppleSDGothicNeo;
+        font-size: 14px;
+        font-weight: 500;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: -0.3px;
+        color: #6f7078;      
+    }
+}
+
+.cash-section{
+    background-color:white;
+    .label{
+        padding-top:31px;
+        padding-left:44px;
+        font-family: OTDayR;
+        font-size: 15px;
+        font-weight: 300;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: -0.3px;
+        color: #c1c2ca;
+    }
+    .value{
+        padding-top:5px;
+        padding-left:44px;
+        font-family: Barlow;
+        font-size: 44px;
+        font-weight: 200;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: -2.1px;
+        color: #000000;      
+    }
+    .won{
+        font-family: OTDayR;
+        font-size: 17px;
+        font-weight: 300;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: -0.3px;
+        color: #000000;
+        margin-left:6px;
+        margin-top:20px;
+    }
+
+    button{
+        margin-top:20px;
+        margin-left:83px;
+        border-color: red;
+        width: 63px;
+        height: 23px;
+    span{
+        font-family: AppleSDGothicNeo;
+        font-size: 12px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: -0.2px;
+        text-align: center;
+        color: red;
+        }
+    }
+}
+
+.cash-only{
+    background-color:white;
+    .bar{
+        padding-top: 15px;
+        color: #ff5d45;
+    }
+}
+.toss-button{
+    color:#717277;
+    border-color:#717277;
+    width:283px;
+    height:54px;
+    span{
+        font-family: AppleSDGothicNeo;
+        font-size: 12px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: -0.2px;
+        text-align: center;      
+    }
+}
+
+.kakao{
+    background-color: #3e2a2e;
+    color:#ffea00;
+    border-radius: 50%;
+    border-color:#3e2a2e;
+    margin-right:10px;    
+}
+
+.tutorial{
+    font-family: AppleSDGothicNeo;
+    font-size: 15px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: -0.3px;
+    text-align: center;
+    color: #ff7f39;  
+}
+
+.plus{
+    font-size: 5vw !important;
+    padding: 10px;
+    border-radius: 50%;
+}
+
+}

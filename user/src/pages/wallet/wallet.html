@@ -1,0 +1,47 @@
+<ion-header style="background-color:white;">        
+        <div style="display:flex;">
+            <!--
+            <img  class="search-img" src="assets/imgs/wallet/wallet-top.png"> 
+            -->
+            <custom-icon style="font-size:8vw;" set="tabbutton" name="wallet" class="search-img"></custom-icon>&nbsp;  
+            <span class="title">지갑</span>            
+        </div>
+</ion-header>
+<ion-content style="background-color: #f7f7f9;">
+    <div class="id-section">
+            <span class="label">웨이티 아이디 </span><span class="value">{{storageProvider.cashId}}</span>          
+    </div>
+    <div class="cash-section">
+            <div class="label">웨이티 캐시</div>
+            <div style="display:flex;">
+                    <amount-display class="value" [amount]="storageProvider.cashAmount"></amount-display><span class="won">원</span>
+                    <button ion-button outline round (click)="moveCashList()"> 내역보기 </button>
+            </div>
+    </div>
+
+    <div class="cash-only">
+        <div style="display:flex;">
+                <button (click)="chargeCash()" no-padding no-margin full clear ion-button>충전</button>
+                <span class="bar">|</span>
+                <button (click)="refundCash()" no-padding no-margin full clear ion-button>환급</button>
+        </div>        
+    </div>    
+ 
+ <div text-center>
+        <button class="toss-button" style="margin-top:60px;margin-bottom:35px;" outline round ion-button (click)="launchToss()">Toss로 입금</button>        
+ </div>
+ <div text-center>
+        <button class="toss-button" style="margin-bottom:35px;" outline round ion-button  (click)="launchKakaoPlus()"> 
+            <div class="kakao"><custom-icon set="tabs" name="plus" class="plus"></custom-icon></div> 
+            웨이티 카카오톡 플러스친구 문의 
+        </button>        
+</div>    
+<div text-center>
+    <button ion-button clear class="tutorial" (click)="cashTutorial()" >캐시 충전 방법 알아보기 &nbsp;> </button>
+</div>       
+<div text-center>
+        <button ion-button clear class="tutorial" (click)="cashFAQ()" >FAQ &nbsp;> </button>
+</div>  
+
+</ion-content>
+

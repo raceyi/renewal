@@ -1,0 +1,44 @@
+page-login-main {
+    .logo{
+        padding-top: calc((181/667)*100vh);
+        img{
+            width:calc((132/376)*100vw);
+        }
+    }
+
+    .first{
+        padding-top: calc((128/667)*100vh);
+    }
+
+    .second{
+        padding-top: calc((419/667)*100vh);
+    }
+
+    .third{
+        padding-top: calc((484/667)*100vh);
+    }
+
+    .tour{
+        font-size:$default-font-size;
+    }
+
+    .login-button{
+        width:calc((302/376)*100vw);
+        height:calc((50/667)*100vh);
+        border-radius: 8px;
+        border: solid 1px $default-color;
+        font-size:$default-font-size;
+        font-weight: 500;
+        letter-spacing: -0.3px;
+        text-align: left;
+        color: $default-color;
+    }
+
+    .icon{
+        size: 6vw;
+    }
+
+    .button-text{
+        padding-left:calc((48/376)*100vw);        
+    }
+}
