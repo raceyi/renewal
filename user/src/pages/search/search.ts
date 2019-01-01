@@ -4,7 +4,6 @@ import { NativeStorage } from '@ionic-native/native-storage';
 import {ServerProvider} from '../../providers/server/server';
 import {StorageProvider} from '../../providers/storage/storage';
 import { ShopPage} from '../shop/shop';
-import {ShopEntrancePage} from '../shop-entrance/shop-entrance';
 
 /**
  * Generated class for the SearchPage page.

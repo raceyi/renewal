@@ -20,6 +20,7 @@ export class StorageProvider {
     public awsS3OCR:string=this.configProvider.getAwsS3OCR();
     public awsS3:string=this.configProvider.getAwsS3();
 
+    public ReviewsInPage:number = this.configProvider.getReviewsInPage();
     public OrdersInPage:number=this.configProvider.getOrdersInPage(); // The number of orders shown in a page 
     public TransactionsInPage:number=10; // The number of orders shown in a page 
     public userSenderID=this.configProvider.getUserSenderID(); //fcm senderID
@@ -51,8 +52,8 @@ export class StorageProvider {
     public couponList=[];
     public emailLogin:boolean=false;
 
-    public recommendations=[];
-    public wholeStores=[];
+    //public recommendations=[];
+    //public wholeStores=[];
 
     public tabs;
     /////////////////////////////////////
@@ -253,6 +254,7 @@ defaultCardColor ="#33B9C6";
 
         console.log("[userInfoSetFromServer]cashId:"+this.cashId);
         this.tourMode=false;
+        /*
         if(userInfo.hasOwnProperty("recommendShops")){
             this.wholeStores=userInfo.recommendShops;
             this.wholeStores.forEach(element => {
@@ -274,7 +276,7 @@ defaultCardColor ="#33B9C6";
                     this.recommendations.push(shop);
                 }
             })
-        }
+        }*/
         /*
         if(userInfo.hasOwnProperty("taxIssueEmail")){
             this.taxIssueEmail=userInfo.taxIssueEmail;
@@ -314,8 +316,8 @@ defaultCardColor ="#33B9C6";
         }
         console.log("this.shoplist:"+JSON.stringify(this.shopList));
         this.shopList=shops.concat(this.shopList);
-        if(this.shopList.length>5)
-            this.shopList.splice(5,this.shopList.length-5);
+        if(this.shopList.length>10)  //상점 목록의 길이는 10개를 넘을수없다.
+            this.shopList.splice(10,this.shopList.length-10);
         console.log("shoplist:"+JSON.stringify(this.shopList));
 
     };
@@ -353,6 +355,7 @@ defaultCardColor ="#33B9C6";
             this.receiptIssue=false;
             this.receiptType="IncomeDeduction";//default value   
         }
+        /*
         if(recommends){
             this.recommendations=recommends;
             this.recommendations.forEach(element => {
@@ -361,7 +364,7 @@ defaultCardColor ="#33B9C6";
                 element.name_main= strs[1];
                 element.paymethod=JSON.parse(element.paymethod);
             });
-        }
+        }*/
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

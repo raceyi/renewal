@@ -36,6 +36,9 @@ export class ServerProvider {
                 ,private appAvailability: AppAvailability
                 ,private platform:Platform) {
       console.log('Hello ServerProvider Provider');
+      // whole store 정보를 가져온다. 아직 상점이 많지 않음으로...
+      
+
     }
 
     postAnonymous(request,bodyIn){
@@ -261,6 +264,18 @@ saveOrderCart(body){
         return new Promise((resolve,reject)=>{
             console.log("takitId:"+takitId);
             this.post(this.storageProvider.serverAddress+"/cafe/shopHome",{takitId:takitId}).then((res)=>{
+                console.log("getShopInfo-res:"+JSON.stringify(res));
+                resolve(res);
+            },(err)=>{
+                reject("http error");  
+            });
+        });   
+    }
+
+    getShopMetaInfo(takitId){
+        return new Promise((resolve,reject)=>{
+            console.log("takitId:"+takitId);
+            this.post(this.storageProvider.serverAddress+"/cafe/shopInfo",{takitId:takitId}).then((res)=>{
                 console.log("getShopInfo-res:"+JSON.stringify(res));
                 resolve(res);
             },(err)=>{

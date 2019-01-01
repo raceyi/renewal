@@ -188,6 +188,9 @@ $latest-H : calc((180/667)*100vh);
 
 .transaction{
     border-bottom: solid 1px #bdbdbd;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    
     .extra-info{
         color: #bdbdbd;
         font-size:3.5vw;

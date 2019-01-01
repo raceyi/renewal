@@ -35,7 +35,7 @@
                     <span  *ngIf="shop.shopInfo.paymethod.card!=undefined">카드</span><span *ngIf="shop.shopInfo.paymethod.card!=undefined && shop.shopInfo.paymethod.card!='0%'">{{shop.shopInfo.paymethod.card}}</span>
                 </div>
         </div>
-                <ion-segment mode="md" [(ngModel)]="section" color="primary">
+                <ion-segment mode="md" [(ngModel)]="section" (ionChange)="changeSegment()" color="primary">
                     <ion-segment-button value="menu">
                       메뉴
                     </ion-segment-button>
@@ -63,23 +63,29 @@
                   <div class="classification" *ngIf="section=='info'">
                     {{shop.shopInfo.classification}}
                   </div>                  
-                  <div *ngIf="section=='review'">
+                  <div *ngIf="section=='review' && (shop.shopInfo.downVoteCount!='0' || shop.shopInfo.upVoteCount!='0')">
                         <ion-row  style="padding-top: 10px;">
                             <ion-col text-right>
                                 <img style="width:30px;height:30px;" src="assets/imgs/review-input/iconmonstr-smiley-thin-240.png">
                             </ion-col>
                             <ion-col text-left style="font-size:20px;" align-self-center>
-                                10
+                                {{shop.shopInfo.upVoteCount}}
                             </ion-col>
                             <ion-col text-right>
                                 <img style="width:30px;height:30px;" src="assets/imgs/review-input/iconmonstr-frown-thin-240.png">                                
                             </ion-col>
                             <ion-col text-left style="font-size:20px;" align-self-center>
-                                20
+                                {{shop.shopInfo.downVoteCount}}
                             </ion-col>
                         </ion-row>
                   </div>
-
+                  <div *ngIf="section=='review' && shop.shopInfo.downVoteCount=='0' && shop.shopInfo.upVoteCount=='0'">
+                    <ion-row  style="padding-top: 10px;">
+                        <ion-col text-center>
+                            리뷰가 존재하지 않습니다.
+                        </ion-col>
+                    </ion-row>
+                </div>
                   <div *ngIf="section=='stamp'">
                   <div text-center style="font-size: 3.4vw;color: #4a4a4a;margin-top:15px;margin-bottom:15px;" *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp && shop.shopInfo.stampFreeMenu!=null">
                         <label class="label">스탬프</label> <span class="value">{{shop.shopInfo.stampUsageCount}}개에 {{freeMenu}} 1개 (자동 적용) </span>
@@ -102,7 +108,7 @@
           </ion-row>
           <ion-row>
               <ion-col col-12 text-center *ngFor="let category of categories;let i=index;">
-                <button ion-button clear (click)="moveSubShop(i)" >{{category.categoryName}}</button> 
+                <button ion-button clear (click)="moveSubShop(i)" >{{category.categoryName}}<span *ngIf="allSoldOutCategory(i)">(판매종료)</span></button> 
                 <!--
                   <button class="store-button" style="background-color:white;color:black;" (click)="enterStore(store)" no-padding no-margin ion-button>
                     <div class="store-img" text-center [ngStyle]="store.ngStyle">
@@ -161,32 +167,51 @@
       </div>
       <div *ngIf="section=='review'">
                         <!-- Review -begin -->
-                        <div style="border-bottom:solid 1px lightgray;padding: 15px;">
+                        <div style="border-bottom:solid 1px lightgray;padding: 15px;" *ngFor="let review of reviews;let i=index; ">
                                 <ion-row>
-                                   <ion-col text-left align-self-center>
-                                        **주
+                                    <ion-col col-1 text-center *ngIf="review.voteUp=='1'">
+                                            <img style="width:15px;height:15px;" src="assets/imgs/review-input/iconmonstr-smiley-thin-240.png">                                            
+                                    </ion-col>
+                                    <ion-col col-1 text-center *ngIf="review.voteUp!='1'">
+                                            <img style="width:15px;height:15px;" src="assets/imgs/review-input/iconmonstr-frown-thin-240.png">                                            
+                                    </ion-col>
+                                    <ion-col text-left align-self-center>
+                                        {{review.user}}
                                    </ion-col>
                                    <ion-col text-right align-self-center>
-                                        18.11.11
+                                        {{review.date}}
                                    </ion-col>
                                 </ion-row>
                                 <ion-row>
                                     <ion-col text-left>
-                                            하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다. 하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다.
+                                            {{review.review}}
                                     </ion-col>
                                 </ion-row>
-                                <ion-row>
+                                <ion-row *ngIf="review.shopResponse!=null && review.shopResponse!=undefined">
                                     <ion-col col-1>
-        
                                     </ion-col>
                                         <ion-col style="background-color:#d8d8d8;" text-left>
-                                            사장님 답글<br><br>
-                                                하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다. 하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다.
+                                            <ion-row>
+                                                <ion-col no-padding no-margin>
+                                                        사장님 답글
+                                                </ion-col>
+                                                <ion-col no-padding no-margin text-right>
+                                                    {{review.responseDate}}
+                                                </ion-col>
+                                            </ion-row> 
+                                               {{review.shopResponse}} 
                                         </ion-col>
                                 </ion-row>
                                 </div>
+                                <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+                                        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+                                </ion-infinite-scroll>
+<!--                                
                                 <div style="border-bottom:solid 1px lightgray;padding: 15px;">
                                         <ion-row>
+                                                <ion-col col-1 text-center>
+                                                        <img style="width:15px;height:15px;" src="assets/imgs/review-input/iconmonstr-frown-thin-240.png">                                            
+                                                </ion-col>
                                            <ion-col text-left align-self-center>
                                                 **주
                                            </ion-col>
@@ -209,18 +234,13 @@
                                                 </ion-col>
                                         </ion-row>
                                 </div>
+-->                                
                                 <!-- Review -end -->            
       </div>
       <div *ngIf="section=='info'" style="background-color:#f7f7f9;">
-            <ion-slides class="slides" pager="true">
-                    <ion-slide>
-                        <button class="each-img" clear no-margin no-padding ion-button (click)="enterShop('세종대@더큰도시락')"><img src="assets/imgs/home/thebigger.jpeg"></button>
-                    </ion-slide>
-                    <ion-slide>
-                            <img src="assets/imgs/home/realfry.jpeg">
-                    </ion-slide>
-                    <ion-slide>
-                        <img src="assets/imgs/home/handel.jpeg">
+            <ion-slides class="slides" pager="true" *ngIf="shop.shopInfo.promotions!=null">
+                    <ion-slide *ngFor="let promotion of shop.shopInfo.promotions;let i=index;">
+                        <button class="each-img" clear no-margin no-padding ion-button><img [src]="storageProvider.awsS3+promotion"></button>
                     </ion-slide>
             </ion-slides>
             <ion-row>
@@ -257,7 +277,7 @@
                     <div class="shop-text-info" *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp && shop.shopInfo.stampFreeAmount!=null">
                     <label class="label">스탬프</label> <span class="value">{{shop.shopInfo.stampUsageCount}}개에 {{shop.shopInfo.stampFreeAmount}}원 차감</span>
                     </div>
-            
       </div>
 
+</ion-content>
 

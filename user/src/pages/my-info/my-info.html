@@ -4,7 +4,8 @@
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header style="background-color:white;">        
+<ion-header style="background-color:white;"> 
+    <ion-navbar hideBackButton>         
     <div text-center>
         <custom-icon style="font-size:8vw;" set="tabbutton" name="profile" class="profile-icon"></custom-icon>&nbsp;<span class="title">나의 정보</span>            
     </div>
@@ -16,7 +17,7 @@
           {{storageProvider.name}}님
           </p>
       </div>
-    
+    </ion-navbar>
 </ion-header>
 <ion-content>
   <ion-row class="group-title" style="background-color: #f7f7f7">
@@ -99,6 +100,7 @@
   <ion-row class="group-title" style="background-color: #f7f7f7">
   <p>웨이티 알아보기</p>
   </ion-row>
+  <!--
   <ion-row class="each-menu">
   <ion-col col-8 (click)="goToFaq()">
     FAQ
@@ -108,7 +110,8 @@
    <ion-icon  name="ios-arrow-forward-outline"></ion-icon>
     </button>
   </ion-col>  
-  </ion-row>  
+  </ion-row>
+-->  
   <ion-row class="each-menu">
   <ion-col (click)="goToPolicy()" col-8>
     웨이티 정책
@@ -129,12 +132,28 @@
     </button>
   </ion-col>  
   </ion-row>  
+
+  <ion-row class="each-menu">
+      <ion-col col-8 (click)="goToNotice()">
+        알림
+        <!--
+        <div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+        <div>Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div>
+        -->
+      </ion-col>
+      <ion-col col-4>
+        <button full (click)="goToNotice()" style="color:#c7c7cc;" no-padding no-margin clear ion-button>
+       <ion-icon  name="ios-arrow-forward-outline"></ion-icon>
+        </button>
+      </ion-col>  
+      </ion-row>
+
   <ion-row class="last" style="background-color: #f7f7f7">
     <ion-col text-right><button style="font-size:3.5vw;" (click)="logout()" clear ion-button>로그아웃</button></ion-col>
     <ion-col text-left><button style="font-size:3.5vw;" (click)="unregister()" clear ion-button>회원탈퇴</button></ion-col>  
   </ion-row>
 
-<ion-fab bottom left *ngIf="storageProvider.tourMode">
+<ion-fab bottom left *ngIf="storageProvider.tourMode && storageProvider.name=='타킷주식회사'">
     <button class="fab-btn" (click)="exitTourMode()" ion-fab color="white">
       <custom-icon set="tabs" name="exit"></custom-icon>
     </button>

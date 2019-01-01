@@ -18,7 +18,8 @@ import {CashTutorialPage} from '../cash-tutorial/cash-tutorial';
 })
 export class InputCouponPage {
   coupon;
-  progressBarLoader;
+  //progressBarLoader;
+  couponInfo="";
 
   constructor(public navCtrl: NavController,
                public navParams: NavParams,
@@ -32,20 +33,25 @@ export class InputCouponPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad InputCouponPage');
+    this.serverProvider.post( this.storageProvider.serverAddress+"/getWaiteeCouponInfo",{}).then((res:any)=>{
+        console.log("res:"+JSON.stringify(res));
+        this.couponInfo=res.couponInfo;
+    });
   }
+
+  
 
   input(){
       //register coupon
         let body = {cashId:this.storageProvider.cashId,couponName:this.coupon};
 
-      this.progressBarLoader = this.loadingCtrl.create({
+      let progressBarLoader = this.loadingCtrl.create({
         content: "진행중입니다.",
         duration: 10000 //3 seconds
         });
-      this.progressBarLoader.present();
+      progressBarLoader.present();
       this.serverProvider.post(this.storageProvider.serverAddress+"/registerUserCoupon",body).then((res:any)=>{
-          if(this.progressBarLoader)
-                this.progressBarLoader.dismiss();          
+          progressBarLoader.dismiss();          
           console.log("registerCoupon res:"+JSON.stringify(res));
           if(res.result=="success"){
             this.app.getRootNav().insert(1,CashTutorialPage);
@@ -86,8 +92,7 @@ export class InputCouponPage {
                 alert.present();
           }
       },(err)=>{
-                if(this.progressBarLoader)
-                        this.progressBarLoader.dismiss();
+                progressBarLoader.dismiss();
                 if(err=="NetworkFailure"){
                             let alert = this.alertCtrl.create({
                                 title: "서버와 통신에 문제가 있습니다.",

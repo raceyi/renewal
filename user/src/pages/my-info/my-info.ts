@@ -15,7 +15,7 @@ import {ConfigurePaymentPage} from '../configure-payment/configure-payment';
 import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
 import {ServerProvider} from '../../providers/server/server';
 import {InputCouponPage} from '../input-coupon/input-coupon';
-
+import {NoticePage} from '../notice/notice';
 
 /**
  * Generated class for the MyInfoPage page.
@@ -55,6 +55,10 @@ export class MyInfoPage {
 
   goToFaq(){
     this.app.getRootNavs()[0].push(FaqPage);
+  }
+
+  goToNotice(){
+    this.app.getRootNavs()[0].push(NoticePage);
   }
 
   goToCompanyInfo(){
@@ -265,6 +269,7 @@ export class MyInfoPage {
 
   exitTourMode(){
     console.log("exit Tour Mode");
+    this.storageProvider.name="";
     this.app.getRootNav().pop();
   }
 

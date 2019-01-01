@@ -1,5 +1,5 @@
-import { Component ,ViewChild} from '@angular/core';
-import { IonicPage, NavController, Header, Content,NavParams,AlertController ,App} from 'ionic-angular';
+import { Component ,ViewChild,NgZone} from '@angular/core';
+import { IonicPage, NavController, Header, Content,NavParams,AlertController,LoadingController,Loading,App} from 'ionic-angular';
 import {StorageProvider} from '../../providers/storage/storage';
 import {MenuPage} from '../menu/menu';
 import {TabsPage} from '../tabs/tabs';
@@ -7,6 +7,8 @@ import {ServerProvider} from '../../providers/server/server';
 import {CartPage} from '../cart/cart';
 import {MenuSearchPage} from '../menu-search/menu-search';
 import {SubShopPage} from '../sub-shop/sub-shop';
+import {LoginMainPage} from '../login-main/login-main';
+import {TimeUtil} from '../../classes/TimeUtil';
 
 /**
  * Generated class for the ShopPage page.
@@ -24,7 +26,7 @@ export class ShopPage {
   shop;
   shopName;
   takitId;
-  orderPageEntered:boolean=false;
+  //orderPageEntered:boolean=false;
   nowMenus:any=[];
   @ViewChild('shophomeContent') shophomeContentRef:Content;
   @ViewChild('shophomeHeader') shophomeHeaderRef:Header;
@@ -43,13 +45,24 @@ export class ShopPage {
   branch;  
   section="menu";
 
+  reviews=[];
+  lastOrderId=-1;
+
+  timeUtil= new TimeUtil(); 
   //stampCount=[]; move into storageProvider
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public serverProvider:ServerProvider,private app:App,
+              public loadingCtrl: LoadingController,   private ngZone:NgZone, 
               private alertCtrl:AlertController,public storageProvider:StorageProvider) {
 
       console.log("ShopPage");
+
+      let loading:Loading=navParams.get('loading');
+      if(loading){
+          loading.dismiss();
+      }      
+
       this.storageProvider.takitId=navParams.get("takitId");
       console.log("takitId:"+this.takitId);
       let substrs=this.storageProvider.takitId.split('@');
@@ -86,6 +99,10 @@ export class ShopPage {
             let freeMenu=JSON.parse(this.shop.shopInfo.stampFreeMenu);
             this.freeMenu=freeMenu.menuName;
       }
+      console.log("promotions"+this.shop.shopInfo.promotions);   
+      if(this.shop.shopInfo.promotions!=null && this.shop.shopInfo.promotions)
+            this.shop.shopInfo.promotions=JSON.parse(this.shop.shopInfo.promotions);
+      console.log("upVoteCount:"+this.shop.shopInfo.upVoteCount);
   }
 
  autoHypenPhone(str) {
@@ -156,7 +173,7 @@ export class ShopPage {
           this.loadShopInfo();
           this.shophomeContentRef.resize();
         }
-        this.orderPageEntered=false;
+        //this.orderPageEntered=false;
         //this.businessType=this.shop.shopInfo.businessType;
 
         if(this.storageProvider.shopInfo.takeout){
@@ -164,7 +181,8 @@ export class ShopPage {
 
         }
         //고객의 stamp정보를 가져온다.
-        this.serverProvider.getCurrentShopStampInfo();
+        if(!this.storageProvider.tourMode)
+            this.serverProvider.getCurrentShopStampInfo();
   }
 
   ionViewDidLoad() {
@@ -331,14 +349,11 @@ export class ShopPage {
   }
 
   selectMenu(menu){
-    if(this.orderPageEntered)
-        return;
+    let progressBarLoader = this.loadingCtrl.create({
+        content: "진행중입니다.",
+        duration: 10*1000 //10 seconds
+    });
 
-    this.orderPageEntered=true;
-    setTimeout(() => {
-        console.log("reset orderPageEntered:"+this.orderPageEntered);
-        this.orderPageEntered=false;
-    }, 1000); //  seconds  
     let shopInfo={takitId:this.takitId, 
                 address:this.shop.shopInfo.address, 
                 shopName:this.shop.shopInfo.shopName,
@@ -349,9 +364,33 @@ export class ShopPage {
 
     this.navCtrl.push(MenuPage, {menu:JSON.stringify(menu),
                                 shopInfo:JSON.stringify(shopInfo),
+                                loading:progressBarLoader,
                                 class:"MenuPage"});
   }
   openCart(){
+    if(this.storageProvider.tourMode){
+        //로그인페이지로 이동하시겠습니까?
+        let alert = this.alertCtrl.create({
+            title: '로그인하시겠습니까?',
+            buttons: [
+              {
+                text: '아니오',
+                handler: () => {
+                  console.log('Disagree clicked');
+                  return;
+                }
+              },
+              {
+                text: '네',
+                handler: () => {
+                  console.log('Agree clicked');
+                  this.app.getRootNav().push(LoginMainPage);
+                }
+            }]
+        });
+        alert.present();
+        return;
+    }  
       this.app.getRootNav().push( CartPage,{class:"CartPage"});
   }
 
@@ -437,6 +476,113 @@ export class ShopPage {
             paymethod:this.shop.shopInfo.paymethod,
             deliveryFee:this.shop.shopInfo.deliveryFee};
 
-        this.navCtrl.push(SubShopPage, {category: this.categories[i].categoryName ,menus:this.categories[i].menus,shopInfo: JSON.stringify(shopInfo)});
+        this.navCtrl.push(SubShopPage, {category: this.categories[i].categoryName ,
+                                        menus:this.categories[i].menus,
+                                        shop: this.shop,
+                                        takitId:this.takitId,
+                                        class: "SubShopPage"});
+    }
+
+    openLogin(){
+        this.app.getRootNav().push(LoginMainPage);
+    }
+
+    allSoldOutCategory(i){
+        //console.log("******allSoldOutStore:"+JSON.stringify(this.categories[i]));
+        let menus=this.categories[i].menus;
+        for(let i=0;i<menus.length;i++){
+              if(menus[i].soldout=='0')
+                  return false;
+        }
+        return true;
+    }
+////////////////////////////////////////////////////
+    getReviews(lastOrderId){
+        return new Promise((resolve,reject)=>{
+            let progressBarLoader = this.loadingCtrl.create({
+                content: "진행중입니다.",
+                duration: 10*1000 //10 seconds
+            });
+            progressBarLoader.present();
+        console.log("getReviews");        
+        let body = {takitId:this.takitId,lastOrderId:lastOrderId,limit:this.storageProvider.ReviewsInPage}; //10개씩 가져오자.
+        //review가 등록된 모든 주문(upVote가 null이 아닌)을 가져온다. 
+        this.serverProvider.post(this.storageProvider.serverAddress+"/getReviews",body).then((res:any)=>{
+            //console.log("res:"+JSON.stringify(res));
+            if(res.result=="success" && Array.isArray(res.reviews)){
+                this.ngZone.run(()=>{
+                    console.log("res.reviews:"+JSON.stringify(res.reviews));
+                    res.reviews.forEach((review)=>{
+                        let localTimeString=this.timeUtil.getlocalTimeStringWithoutDay(review.reviewTime);                             
+                        review.date =  localTimeString.substr(0,8);
+                        if(review.shopResponse!=null && review.shopResponseTime!=null){
+                            let localResponseTimeString=this.timeUtil.getlocalTimeStringWithoutDay(review.shopResponseTime); 
+                            review.responseDate=localResponseTimeString.substr(0,8);
+                        }
+                        let j=0;
+                        let user:string="";
+                        for(j=0;j<review.userName.length-1;j++)
+                            user=user+ "*";
+                        user=user+ review.userName.substr(review.userName.length-1,1);
+                        review.user=user;     
+                    })
+                    if(lastOrderId==-1){
+                        this.reviews=res.reviews;
+                    }else{
+                        // push into existing list
+                        this.reviews=this.reviews.concat(res.reviews);
+                    }
+                    this.lastOrderId=res.reviews[res.reviews.length-1].orderId;
+                    progressBarLoader.dismiss();
+                    if(res.reviews.length<this.storageProvider.ReviewsInPage){
+                          resolve(false); // no more orders
+                    }else{
+                          resolve(true); // more orders can be shown.
+                    }
+                });
+          }else if(res.reviews=="0"){ //Please check if it works or not
+              console.log("no more reviews");
+              progressBarLoader.dismiss();
+              resolve(false);
+          }else{
+            progressBarLoader.dismiss();
+              console.log("What happen? !!!sw bug!!!");
+          }
+        },err=>{
+            progressBarLoader.dismiss();
+            let alert = this.alertCtrl.create({
+                        title: "서버로 부터 응답을 받지 못했습니다.",
+                        subTitle:"네크웍상태를 확인해 주시기 바랍니다.",
+                        buttons: ['OK']
+                    });
+                    alert.present();
+            reject();        
+        })
+    });
+    }
+
+    doInfinite(infiniteScroll) {
+        console.log('Begin async operation');
+        this.getReviews(this.lastOrderId).then((more)=>{
+          if(more){
+              console.log("more is true");
+              infiniteScroll.complete();
+          }else{
+              console.log("more is false");
+              infiniteScroll.enable(false); //stop infinite scroll
+          }
+        },err=>{
+              // hum...
+        });
+      }
+    
+    changeSegment(){
+        //request review list from server
+        console.log("changeSegment "+this.section);
+        if((this.section=="review") && (this.shop.shopInfo.downVoteCount!='0' || this.shop.shopInfo.upVoteCount!='0')){
+            this.lastOrderId=-1;
+            this.getReviews(this.lastOrderId);
+        }
+        
     }
 }

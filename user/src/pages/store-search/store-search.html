@@ -4,16 +4,17 @@
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header style="background-color:white;">        
-<div style="display:flex;">
-  <!--
-    <img  class="search-img" src="assets/imgs/store-search/find-top.png">
-  -->
+<ion-header style="background-color:white;" >  
+    <ion-navbar hideBackButton>         
+    <div style="display:flex;">
     <custom-icon style="font-size:8vw;" set="tabbutton" name="find" class="search-img"></custom-icon>   
     <span class="title">매장검색</span>            
     <button ion-button no-margin no-padding class="search-icon" clear (click)="storeSearch()"> <ion-icon name="ios-search-outline"></ion-icon></button>
-    <button ion-button no-margin no-padding class="cart-icon" clear (click)="openCart()"> <ion-icon name="ios-cart-outline"></ion-icon></button>
-</div>
+    <button ion-button no-margin no-padding *ngIf="!storageProvider.tourMode" class="cart-icon" clear (click)="openCart()"> <ion-icon name="ios-cart-outline"></ion-icon></button>
+    <button ion-button no-margin no-padding *ngIf="storageProvider.tourMode && storageProvider.name!='타킷주식회사'" class="cart-icon" clear (click)="openLogin()"> <ion-icon name="ios-log-in-outline"></ion-icon></button>
+    <button ion-button no-margin no-padding *ngIf="storageProvider.tourMode && storageProvider.name=='타킷주식회사'" class="cart-icon" clear (click)="openCart()"> <ion-icon name="ios-cart-outline"></ion-icon></button>
+    </div>
+    </ion-navbar>
 </ion-header>
 
 <ion-content style="background-color:#f7f7f9;">
@@ -23,19 +24,19 @@
 </div>
 
 <ion-slides no-margin no-padding class="slides" pager="true">
-    <ion-slide no-margin no-padding *ngFor="let shop of storageProvider.shopList">
+    <ion-slide no-margin no-padding *ngFor="let shop of newStores">
         <button no-margin no-padding class="shop"  (click)="enterShop(shop)" ion-button>
             <div style="display:flex">
                 <div text-left >
-                        <img style="width: 155px;height:100px;" [src]="correctImagePath(shop.imagePath)">                        
+                            <img style="width: 155px;height:100px;" [src]="storageProvider.awsS3+shop.imagePath"> 
                 </div>
                 <div style="width: 186px;">
                         <ion-row>
-                            <ion-col class="shop-brand"> {{shop.name_main}}</ion-col> 
-                                <ion-col text-right class="like"> <ion-icon name="heart" style="color:red;"></ion-icon> 31</ion-col>
+                            <ion-col class="shop-brand"> {{shop.name_main}}<span *ngIf="shop.ready!='1'" style="font-size:3.4vw;">(메뉴상점)</span></ion-col> 
+                            <ion-col text-right class="like" *ngIf="shop.upVoteCount>0"> <ion-icon name="heart" style="color:red;"></ion-icon> &nbsp;{{shop.upVoteCount}}</ion-col>
                         </ion-row>
                         <div class="shop-location">
-                            {{shop.classification}} 
+                            {{shop.classification}}
                         </div>
                         <hr class="hr" align="left">
                         <div class="shop-info" style="display:flex;">
@@ -53,39 +54,46 @@
 </ion-slides>
 
 <div style="background-color: #f7f7f9;">
-        <ion-select class="filter-selector" multiple="false" interface="action-sheet" [(ngModel)]="filter">
-          <ion-option value="whole">전체보기</ion-option>
-          <ion-option value="1km">1 km</ion-option>
+        <ion-select class="filter-selector" multiple="false" interface="action-sheet" (ionChange)="filterChange()" [(ngModel)]="filter">
+          <ion-option value="whole" style="font-size:14px;">전체보기</ion-option>
+          <ion-option value="1km" style="font-size:14px;">1 km</ion-option>
         </ion-select>
 </div> 
 
 <div class="shop-list" style="background-color:white;" text-center>
-        <button *ngFor="let shop of storageProvider.wholeStores" class="shop" style="height:110px;width:355px;" (click)="enterShop(shop)" no-padding no-margin ion-button>
-            <div style="display:flex">
-                <div text-left >
-                        <img style="width: 155px;height:100px;" [src]="storageProvider.awsS3+shop.imagePath">                        
-                </div>
-                <div style="width: 186px;">
-                        <ion-row>
-                            <ion-col class="shop-brand"> {{shop.name_main}}</ion-col> 
-                                <ion-col text-right class="like"> <ion-icon name="heart" style="color:red;"></ion-icon> 31</ion-col>
-                        </ion-row>
-                        <div class="shop-location">
-                            {{shop.classification}} 
-                        </div>
-                        <hr class="hr" align="left">
-                        <div class="shop-info" style="display:flex;">
-                            <span  *ngIf="shop.deliveryArea!=undefined && shop.deliveryArea!=null">배달</span>    
-                            <div *ngIf="shop.deliveryArea!=undefined && shop.deliveryArea!=null" class="dot"> </div>                                                               
-                            <span  *ngIf="shop.paymethod.cash!=undefined">캐시</span><span *ngIf="shop.paymethod.cash!=undefined && shop.paymethod.cash!='0%'">{{shop.paymethod.cash}}</span>
-                            <div *ngIf="shop.paymethod.card!=undefined" class="dot"> </div> 
-                            <span  *ngIf="shop.paymethod.card!=undefined">카드</span><span *ngIf="shop.paymethod.card!=undefined && shop.paymethod.card!='0%'">{{shop.paymethod.card}}</span>
-                        </div>
-                        <div class="shop-location"><ion-icon ios="ios-pin-outline" md="md-pin"></ion-icon>&nbsp;{{shop.name_sub}}</div>                        
-                    </div>    
+    <button *ngFor="let shop of stores" class="shop" style="height:120px;width:355px;" (click)="enterShop(shop)" no-padding no-margin ion-button>
+        <div style="display:flex">
+            <div text-left >
+                    <img style="width: 155px;height:100px;" [src]="storageProvider.awsS3+shop.imagePath">                        
             </div>
-        </button>          
+            <div style="width: 186px;">
+                    <ion-row>
+                        <ion-col class="shop-brand"> {{shop.name_main}}<span *ngIf="shop.ready!='1'" style="font-size:3.4vw;">(메뉴상점)</span></ion-col> 
+                        <ion-col text-right class="like"  *ngIf="shop.upVoteCount>0"> <ion-icon name="heart" style="color:red;"></ion-icon>&nbsp;{{shop.upVoteCount}}</ion-col>
+                    </ion-row>
+                    <div class="shop-location">
+                        {{shop.classification}} 
+                    </div>
+                    <hr class="hr" align="left">
+                    <div class="shop-info" style="display:flex;">
+                        <span  *ngIf="shop.deliveryArea!=undefined && shop.deliveryArea!=null">배달</span>    
+                        <div *ngIf="shop.deliveryArea!=undefined && shop.deliveryArea!=null" class="dot"> </div>                                                               
+                        <span  *ngIf="shop.paymethod.cash!=undefined">캐시</span><span *ngIf="shop.paymethod.cash!=undefined && shop.paymethod.cash!='0%'">{{shop.paymethod.cash}}</span>
+                        <div *ngIf="shop.paymethod.card!=undefined" class="dot"> </div> 
+                        <span  *ngIf="shop.paymethod.card!=undefined">카드</span><span *ngIf="shop.paymethod.card!=undefined && shop.paymethod.card!='0%'">{{shop.paymethod.card}}</span>
+                    </div>
+                    <div class="shop-location"><ion-icon ios="ios-pin-outline" md="md-pin"></ion-icon>&nbsp;{{shop.name_sub}}</div>                        
+                </div>    
+        </div>
+    </button>          
 </div>
 <div text-center style="height:50px;background-color:#f7f7f9;">
 </div>
+
+<ion-fab bottom left *ngIf="storageProvider.tourMode && storageProvider.name=='타킷주식회사'">
+        <button class="fab-btn" (click)="exitTourMode()" ion-fab color="white">
+          <custom-icon set="tabs" name="exit"></custom-icon>
+        </button>
+</ion-fab>
+    
 </ion-content>

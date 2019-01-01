@@ -1,6 +1,6 @@
 page-signup-payment {
   ion-header{
-      height:calc((50/667)*100vh);
+      height:50px;
       background-color: $default-color; 
   }
 
@@ -26,10 +26,10 @@ page-signup-payment {
 
   .cashid-explain{
        .input-wrapper{
-            height:calc((30/667)*100vh);
+            height:30px;
        }
        ion-label{
-           height:calc((30/667)*100vh);
+           height:30px;
        }
         margin-left:calc((40/376)*100vw);
         color:gray;
@@ -37,7 +37,7 @@ page-signup-payment {
         p{
             font-size:3.5vw;
         }
-           height:calc((30/667)*100vh);
+           height:30px;
   }
 
   .duplicate{
@@ -46,11 +46,11 @@ page-signup-payment {
         font-size: $default-font-size;
         padding:0px;
         width: calc((77/376)*100vw);
-        height: calc((32/667)*100vh);
+        height: 32px;
       }
   }
   .col{
-      height:calc((62/667)*100vh);
+      height:62px;
   }
 
   .col{
@@ -62,9 +62,9 @@ page-signup-payment {
   }
 
   .value-label{
-      height:calc((20/667)*100vh);
+      height:20px;
       font-size: $default-font-size;
-      margin-top:calc((40/667)*100vh);
+      margin-top:40px;
       margin-left:calc((24/376)*100vw);
   }
 
@@ -114,7 +114,7 @@ page-signup-payment {
   }
 
   .select-label{
-        height:calc((20/667)*100vh);
+        height:20px;
         font-size: $default-font-size;
         margin-left:calc((24/376)*100vw);
   }

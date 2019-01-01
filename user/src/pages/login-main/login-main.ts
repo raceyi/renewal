@@ -33,7 +33,7 @@ export class LoginMainPage {
       ,private ionicApp: IonicApp
       ,public viewCtrl: ViewController
       ,private alertCtrl: AlertController
-      ,private storageProvider:StorageProvider
+      ,public storageProvider:StorageProvider
       ,private serverProvider:ServerProvider
       ,private nativeStorage: NativeStorage
       ,private menuCtrl: MenuController
@@ -176,28 +176,6 @@ export class LoginMainPage {
                     this.storageProvider.email="help@takit.biz";
                     this.storageProvider.phone="05051703636";
                     this.tourModeSignInProgress=false;
-
-                    if(res.userInfo.hasOwnProperty("recommendShops")){
-                        this.storageProvider.wholeStores=res.userInfo.recommendShops;
-                        console.log("wholeStores:"+JSON.stringify(res.userInfo.recommendShops));
-                        this.storageProvider.wholeStores.forEach(element => {
-                            let strs=element.takitId.split("@");
-                            element.name_sub = strs[0];
-                            element.name_main= strs[1];
-                            element.paymethod=JSON.parse(element.paymethod);
-                            if(element.rate!=null){
-                                let num:number=element.rate;
-                                element.rate=num.toFixed(1);
-                            }
-                        });
-                        this.storageProvider.recommendations=[];
-                        this.storageProvider.wholeStores.forEach(shop=>{
-                            console.log("shop.ready:"+shop.ready);
-                            if(shop.ready==1){
-                                this.storageProvider.recommendations.push(shop);
-                            }
-                        })
-                    }
                     this.navCtrl.push(TabsPage);                    
                 }else{
                     this.tourModeSignInProgress=false;
@@ -213,4 +191,12 @@ export class LoginMainPage {
             });
       }      
   }
+
+  back(){
+    console.log("back");    
+    if( this.navCtrl.canGoBack() ){
+        this.navCtrl.pop();
+    }
+  }
+
 }

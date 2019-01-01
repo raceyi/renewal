@@ -156,8 +156,13 @@ export class OrderDetailPage {
     }
 
     if(this.order.hasOwnProperty('reviewTime') && this.order.reviewTime!=null){
-        console.log("pickupTime:"+this.order.reviewTime);
+        console.log("reviewTime:"+this.order.reviewTime);
         this.order.localReviewTimeString=this.timeUtil.getlocalTimeString(this.order.reviewTime);        
+    }
+    
+    if(this.order.hasOwnProperty('shopResponseTime') && this.order.shopResponseTime!=null ){
+        console.log("shopResponseTime:"+this.order.shopResponseTime);
+        this.order.localShopResponseTimeString=this.timeUtil.getlocalTimeString(this.order.shopResponseTime);        
     }
 
     if(this.order.orderStatus=="cancelled"){
@@ -258,7 +263,16 @@ export class OrderDetailPage {
         });
   }
 
+  callbackFunction = (order) =>{
+    return new Promise((resolve,reject)=>{
+       console.log("callbackFunction:"+JSON.stringify(order));
+       this.order.voteUp=order.like;
+       this.order.review=order.review;
+       resolve();
+    })
+  }
+
   inputReview(){
-         this.app.getRootNavs()[0].push(ReviewInputPage,{order:this.order});
+         this.app.getRootNavs()[0].push(ReviewInputPage,{order:this.order,callback:this.callbackFunction});
   }
 }

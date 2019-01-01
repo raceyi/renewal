@@ -19,6 +19,7 @@ export class ReviewInputPage {
   order;
   like;
   review;
+  callback;
 
   fontColor=["#f2f2f2","#f2f2f2","#f2f2f2","#f2f2f2","#f2f2f2"];
   constructor(public navCtrl: NavController, 
@@ -28,6 +29,7 @@ export class ReviewInputPage {
               public storageProvider:StorageProvider,              
               public serverProvider:ServerProvider) {
     this.order=this.navParams.get("order");
+    this.callback=this.navParams.get("callback");
     console.log("order:"+JSON.stringify(this.order));
   }
 
@@ -36,7 +38,7 @@ export class ReviewInputPage {
   }
 
   back(){
-    this.navCtrl.pop();
+      this.navCtrl.pop();
   }
 
  removeSpecialCharacters(str){
@@ -54,8 +56,8 @@ export class ReviewInputPage {
   }
 
   inputDone(){
-    let review:string=this.review;
-    if(!this.like){
+    let review:string=this.removeSpecialCharacters(this.review);
+    if(this.like==undefined){
         let alert = this.alertCtrl.create({
             subTitle: '만족/불만족 선택을 해주세요.',
             buttons: ['OK']
@@ -74,37 +76,36 @@ export class ReviewInputPage {
     console.log("like:"+this.like);
     console.log("orderId:"+this.order.orderId);
     console.log("takitId:"+this.order.takitId);
-
     let body = {orderId:this.order.orderId,
                 like:this.like,
-                review:this.removeSpecialCharacters(this.review),
+                review:review,
                 takitId:this.order.takitId};   
 
-    this.serverProvider.post(this.storageProvider.serverAddress+"/shop/inputReviewLike",body).then((res:any)=>{
+    this.serverProvider.post(this.storageProvider.serverAddress+"/inputReviewLike",body).then((res:any)=>{
         let order=this.order;
-        console.log("ordoer:"+JSON.stringify(order));
-        order.review=this.review;
-        order.like=this.like;
+        console.log("order:"+JSON.stringify(order));
+        order.review=review;
+        if(this.like)
+            order.like=1;
+        else
+            order.like=0;
         this.events.publish('orderUpdate',{order:order});
-        this.navCtrl.pop();
-        let alert = this.alertCtrl.create({
-            subTitle: '고객님의 평가가 반영되었습니다.',
-            buttons: ['OK']
+        this.callback(order).then(()=>{
+          this.navCtrl.pop();        
         });
-        alert.present();
     });
   }
 
   getColor(type){
-      if(!this.like){
+      if(this.like==undefined){
           return 'transparent';
-      }else if(this.like=='like'){
+      }else if(this.like){
           if(type=='like'){
               return 'yellow';
           }else{
             return 'transparent';
           }         
-      }else{
+      }else{ // this.like is false
         if(type=='dislike'){
             return 'yellow';
         }else{
@@ -114,11 +115,11 @@ export class ReviewInputPage {
   }
 
   selectLike(){
-    this.like='like';
+    this.like=true;
   }
 
   selectDislike(){
-    this.like='dislike';
+    this.like=false;
   }
 
 }

@@ -14,6 +14,7 @@ import {SignupPaymentPage} from '../pages/signup-payment/signup-payment';
 import { TabsPage } from '../pages/tabs/tabs';
 import { ErrorPage } from '../pages/error/error';
 import { LoginProvider } from '../providers/login/login';
+import {StoreSearchPage} from '../pages/store-search/store-search';
 
 declare var cordova:any;
 
@@ -169,36 +170,8 @@ export class MyApp {
                }
             },(error)=>{
                 console.log("id doesn't exist");
-                
-                if(!this.storageProvider.device){ //ionic-serve
-                        this.loginProvider.loginEmail(this.storageProvider.tourEmail,this.storageProvider.tourPassword).then((res:any)=>{
-                                console.log("MyApp:"+JSON.stringify(res));
-                                if(res.result=="success"){
-                                    if(res.userInfo.hasOwnProperty("shopList")){
-                                        //save shoplist
-                                        this.storageProvider.shoplistSet(JSON.parse(res.userInfo.shopList));
-                                        this.serverProvider.shopListUpdate();
-                                    }
-                                    this.storageProvider.emailLogin=true;
-                                    this.storageProvider.userInfoSetFromServer(res.userInfo);
-                                    if(!res.userInfo.hasOwnProperty("cashId") || res.userInfo.cashId==null || res.userInfo.cashId==undefined){
-                                        console.log("move into signupPaymentPage");
-                                        this.rootPage=SignupPaymentPage;
-                                    }else{
-                                        console.log("move into TabsPage");
-                                        this.rootPage=TabsPage;
-                                    }
-                                }else{ 
-                                    console.log("사용자 정보에 문제가 발생했습니다. 로그인 페이지로 이동합니다.");
-                                    this.rootPage=LoginMainPage;
-                                }
-                            },login_err =>{
-                                console.log(JSON.stringify(login_err));
-                                //this.storageProvider.errorReasonSet('로그인 에러가 발생했습니다'); 
-                                this.rootPage=ErrorPage;
-                        });
-                }else               
-                    this.rootPage=LoginMainPage;
+                this.storageProvider.tourMode=true;
+                this.rootPage=StoreSearchPage;                
             });
 
       // Okay, so the platform is ready and our plugins are available.

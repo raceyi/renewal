@@ -5,6 +5,7 @@ import {TabsPage} from '../tabs/tabs';
 import {StorageProvider} from '../../providers/storage/storage';
 import {ServerProvider} from '../../providers/server/server';
 import {LoginMainPage} from '../login-main/login-main';
+import { NativeStorage } from '@ionic-native/native-storage';
 
 /**
  * Generated class for the SignupPaymentPage page.
@@ -43,6 +44,7 @@ export class SignupPaymentPage {
               private alertCtrl: AlertController,
               public serverProvider:ServerProvider,
               private ngZone:NgZone,
+              private nativeStorage:NativeStorage,
               private storageProvider:StorageProvider) {
 
     if(this.navParams.get("email")==undefined ||
@@ -68,7 +70,29 @@ export class SignupPaymentPage {
   }
 
   back(){
-    this.navCtrl.setRoot(LoginMainPage);
+    //  로그아웃하시겠습니까? 
+    console.log("back comes");
+    let confirm = this.alertCtrl.create({
+        title: '로그아웃하시겠습니까?',
+        buttons: [
+          {
+            text: '아니오',
+            handler: () => {
+              console.log('Disagree clicked');
+            }
+          },
+          {
+            text: '네',
+            handler: () => {
+              console.log('Agree clicked');
+                this.nativeStorage.clear(); 
+                this.nativeStorage.remove("id"); //So far, clear() doesn't work. Please remove this line later
+                this.storageProvider.reset();
+                this.navCtrl.setRoot(LoginMainPage);
+            }
+        }]
+        });
+    confirm.present();
   }
 
   checkValidity(){
@@ -206,12 +230,25 @@ checkCashIdDuplicate(){
                         console.log("res.result is success "+res.cashBalance);
                         this.storageProvider.cashId=this.cashId.trim().toUpperCase();
                         this.storageProvider.cashAmount=res.cashBalance;
+                        let seq;
+                        if(res.seq){
+                            seq=res.seq;
+                        }
                         if(res.cashBalance>0){
+                                if(seq){
+                                    let alert=this.alertCtrl.create({
+                                        title: res.cashBalance+"원의 캐시가 충전되었습니다.",
+                                        subTitle: "2019년 "+seq+"번째 가입자이십니다.",
+                                        buttons: ['OK']
+                                    });
+                                    alert.present();
+                                }else{
                                     let alert=this.alertCtrl.create({
                                             title: res.cashBalance+"원의 캐시가 충전되었습니다.",
                                             buttons: ['OK']
                                     });
                                     alert.present();
+                                }
                         }
                         /////////////////////////////////////////
                         //configure payment info

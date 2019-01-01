@@ -37,15 +37,19 @@ export class LoginEmailPage {
               private ngZone:NgZone,private platform:Platform,
               private serverProvider:ServerProvider,              
               public loadingCtrl: LoadingController) {
-      if(platform.is("android")){
+
+      if(this.storageProvider.device && platform.is("android")){
           var permissions = cordova.plugins.permissions;
           permissions.hasPermission(permissions.GET_ACCOUNTS,(status)=> {
             if (status.hasPermission ) {
               console.log("Yes :D ");
               plugins.DeviceAccounts.getEmail((info)=>{
+                console.log("plugins-getEmail:"+JSON.stringify(info));
                 this.ngZone.run(()=>{
                   this.email=info;
                 });
+              },err=>{
+                console.log("plugins-err:"+JSON.stringify(err));
               });
             }
             else {
@@ -61,11 +65,11 @@ export class LoginEmailPage {
                   }); 
                 }
               },(err)=>{
-
+                  console.log("requestPermission-err:"+JSON.stringify(err));
               });
             }
           },(err)=>{
-
+            console.log("hasPermission-err:"+JSON.stringify(err));
           });
       }
   }

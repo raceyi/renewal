@@ -1,10 +1,10 @@
 import { Component,NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams ,AlertController} from 'ionic-angular';
+import { IonicPage, NavController, NavParams ,Loading,AlertController,App} from 'ionic-angular';
 import {StorageProvider} from '../../providers/storage/storage';
 import {PaymentPage} from '../payment/payment';
 import {CartPage} from '../cart/cart';
 import {CartProvider} from '../../providers/cart/cart';
-
+import {LoginMainPage} from '../login-main/login-main';
 /**
  * Generated class for the MenuPage page.
  *
@@ -42,9 +42,14 @@ export class MenuPage {
               public alertController:AlertController,
               public cartProvider:CartProvider,
               private ngZone:NgZone,
+              public app:App,
               public storageProvider:StorageProvider) {
     this.menu=JSON.parse(navParams.get('menu'));
     this.shopInfo=JSON.parse(navParams.get('shopInfo'));
+    let loading:Loading=navParams.get('loading');
+    if(loading){
+        loading.dismiss();
+    }
     console.log("this.menu.timeConstraint:"+this.menu.timeConstraint);
 
     console.log(".....discountOptions:..."+this.menu.menuDiscountOption);
@@ -302,6 +307,29 @@ export class MenuPage {
         return update;
   }
   command(command){
+    if(this.storageProvider.tourMode){
+        //로그인페이지로 이동하시겠습니까?
+        let alert = this.alertController.create({
+            title: '로그인하시겠습니까?',
+            buttons: [
+              {
+                text: '아니오',
+                handler: () => {
+                  console.log('Disagree clicked');
+                  return;
+                }
+              },
+              {
+                text: '네',
+                handler: () => {
+                  console.log('Agree clicked');
+                  this.app.getRootNav().push(LoginMainPage);
+                }
+            }]
+        });
+        alert.present();
+        return;
+    }  
     if(this.menu.quantity==undefined || this.menu.quantity==0 || this.menu.quantity.toString().length==0){
           let alert = this.alertController.create({
                       title: '수량을 입력해주시기바랍니다.',

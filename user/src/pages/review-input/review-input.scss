@@ -17,12 +17,12 @@ page-review-input {
     }
 
    .message{
-       padding-top:calc((27/667)*100vh);
+       padding-top:27px;
        background-color:white;
        p{
            margin-bottom:0px;
            margin-top:0px;
-           padding-bottom:calc((10/667)*100vh);
+           padding-bottom:10px;
            background-color:white;           
        }
    }
@@ -30,16 +30,16 @@ page-review-input {
    .five-star{
        padding-left:calc((50/376)*100vw);
        padding-right:calc((50/376)*100vw);
-       height:calc((60/667)*100vh);
+       height:60px;
        button{
-           height:calc((41/667)*100vh);
+           height:41px;
        }
-       margin-bottom:calc((33/667)*100vh);
+       margin-bottom:33px;
        background-color:white;
    }
 
    .review-button{
-       height: calc((55/667)*100vh);
+       height: 55px;
    }
 
    .review-text-area{
@@ -48,7 +48,7 @@ page-review-input {
         margin-top: 20px;
         ion-textarea{
             width: calc((334/376)*100vw); 
-            height: calc((85/667)*100vh); 
+            height: 85px; 
             background-color: #ffffff;
             border: solid 1px #bdbdbd;
         }

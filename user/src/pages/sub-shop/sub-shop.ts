@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import { IonicPage, NavController, NavParams,App,AlertController,LoadingController} from 'ionic-angular';
+import {MenuPage} from '../menu/menu';
+import {ServerProvider} from '../../providers/server/server';
+import {CartPage} from '../cart/cart';
+import {MenuSearchPage} from '../menu-search/menu-search';
+import {LoginMainPage} from '../login-main/login-main';
+import {StorageProvider} from '../../providers/storage/storage';
 /**
  * Generated class for the SubShopPage page.
  *
@@ -17,10 +22,17 @@ export class SubShopPage {
   nowMenus:any=[];
   menus:any=[];
   category;
+  shop;
+  takitId;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+    public serverProvider:ServerProvider,private app:App,
+    public loadingCtrl: LoadingController,
+    private alertCtrl:AlertController,public storageProvider:StorageProvider) {
     this.nowMenus=this.navParams.get("menus");
     this.category=this.navParams.get("category");
+    this.shop=this.navParams.get("shop");
+    this.takitId=this.navParams.get("takitId");
 
     this.sortNowMenus();
     this.menus=[];
@@ -55,9 +67,51 @@ export class SubShopPage {
     this.navCtrl.pop();
   }
 
-  /*
+  selectMenu(menu){
+    let progressBarLoader = this.loadingCtrl.create({
+        content: "진행중입니다.",
+        duration: 30*1000 //30 seconds
+    });
+    progressBarLoader.present();
+    let shopInfo={takitId:this.takitId, 
+                address:this.shop.shopInfo.address, 
+                shopName:this.shop.shopInfo.shopName,
+                deliveryArea:this.shop.shopInfo.deliveryArea,
+                freeDelivery:this.shop.shopInfo.freeDelivery,
+                paymethod:this.shop.shopInfo.paymethod,
+                deliveryFee:this.shop.shopInfo.deliveryFee};
+    
+    this.navCtrl.push(MenuPage, {menu:JSON.stringify(menu),
+                                shopInfo:JSON.stringify(shopInfo),
+                                loading:progressBarLoader,
+                                class:"MenuPage"});
+  }
+
   openCart(){
-    this.app.getRootNav().push( CartPage,{class:"CartPage"});
+    if(this.storageProvider.tourMode){
+      //로그인페이지로 이동하시겠습니까?
+      let alert = this.alertCtrl.create({
+          title: '로그인하시겠습니까?',
+          buttons: [
+            {
+              text: '아니오',
+              handler: () => {
+                console.log('Disagree clicked');
+                return;
+              }
+            },
+            {
+              text: '네',
+              handler: () => {
+                console.log('Agree clicked');
+                this.app.getRootNav().push(LoginMainPage);
+              }
+          }]
+      });
+      alert.present();
+      return;
+  }  
+      this.app.getRootNav().push( CartPage,{class:"CartPage"});
   }
 
   search(){
@@ -73,6 +127,6 @@ export class SubShopPage {
 
   this.navCtrl.push(MenuSearchPage,{shopInfo:shopInfo, menus: this.shop.menus,class:"MenuSearchPage" }, { animate: false });    
   }
-*/
+
 
 }

@@ -365,10 +365,20 @@ export class OrderListPage {
 
   exitTourMode(){
     console.log("exit Tour Mode");
+    this.storageProvider.name="";
     this.app.getRootNav().pop();
   }
-  
+
   orderAgain(order){  // hum... payment에서 보내는 구조로 가야만 한다. 확인이 필요함.
+    if(order.price==0 || !order.price || order.price==null){ //order.price는 할인전 가격이다.
+        let alert = this.alertController.create({
+            title: '주문 정보 부족으로 다시 주문이 불가능합니다.',
+            subTitle: '불편하시더라도 메뉴를 선택하여 다시 주문해주시기 바랍니다.',            
+            buttons: ['OK']
+        });
+        alert.present();
+      return;
+    }
       //please check the price & discount rate ! server에서 하는것이 맞다. server에서 확인함. 
      let orderList=[];
      orderList.push({  
@@ -395,7 +405,8 @@ export class OrderListPage {
                     receiptId:this.storageProvider.receiptId,
                     receiptType:this.storageProvider.receiptType,
                     takitId:order.takitId,
-                    total:order.total,
+                    total:order.total, //실제 구매 가격
+                    price:order.price, //할인 전 가격
                     payInfo:order.payInfo,
                     deliveryAddress:order.deliveryAddress,
                     paymethod: JSON.parse(order.payInfo) // 음... payment페이지로 이동해야만 하는가?

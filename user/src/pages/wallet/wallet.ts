@@ -41,8 +41,7 @@ export class WalletPage {
               public modalCtrl: ModalController,
               private events:Events,        
               private webIntent: WebIntent,      
-              private cardProvider: CardProvider) {
-
+              private cardProvider: CardProvider) {    
        events.subscribe('cashUpdate', (param) =>{
         console.log("cashUpdate comes at WalletPage "+JSON.stringify(param));
         if(param!=undefined && param.cashListNoUpdate){
@@ -128,9 +127,10 @@ export class WalletPage {
 
   exitTourMode(){
     console.log("exit Tour Mode");
+    this.storageProvider.name="";
     this.app.getRootNav().pop();
   }
-  
+
   cashTutorial(){
     this.app.getRootNav().push(CashTutorialPage);
   }

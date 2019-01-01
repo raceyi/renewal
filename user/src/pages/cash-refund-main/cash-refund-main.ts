@@ -26,8 +26,8 @@ export class CashRefundMainPage {
   refundAmount;
   refundFee;
 
-  inProgress:boolean=false;
-  public progressBarLoader : any;
+  //inProgress:boolean=false;
+  //public progressBarLoader : any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams
               ,public alertCtrl:AlertController
@@ -100,6 +100,14 @@ export class CashRefundMainPage {
   }
 
   modifyAccount(){
+    if(this.storageProvider.tourMode){
+        let alert = this.alertCtrl.create({
+            title: '둘러보기모드입니다.',
+            buttons: ['OK']
+        });
+        alert.present();
+        return;
+    }      
       this.navCtrl.push( CashRefundAccountPage,{callback:this.callbackFunction});
   }
 
@@ -206,8 +214,8 @@ export class CashRefundMainPage {
 
 
   doWithraw(){
-      if(this.inProgress) return;
-       this.inProgress=true;
+      //if(this.inProgress) return;
+      // this.inProgress=true;
         let body = {depositorName:this.storageProvider.name,
                                 bankCode:this.refundBank.value ,
                                 bankName:this.refundBank.name,
@@ -216,15 +224,13 @@ export class CashRefundMainPage {
                                 withdrawalAmount:this.refundAmount,
                                 fee:this.refundFee};
       console.log("refundCash:"+body);
-      this.progressBarLoader = this.loadingCtrl.create({
+      let progressBarLoader = this.loadingCtrl.create({
         content: "진행중입니다.",
-        duration: 10000 //3 seconds
+        duration: 5000 //5 seconds
         });
-      this.progressBarLoader.present();
+      progressBarLoader.present();
       this.serverProvider.post(this.storageProvider.serverAddress+"/refundCash",body).then((res:any)=>{
-          this.inProgress=false;
-          if(this.progressBarLoader)
-                this.progressBarLoader.dismiss();          
+          progressBarLoader.dismiss();          
           console.log("refundCash res:"+JSON.stringify(res));
           if(res.result=="success"){
               //console.log("cashAmount:"+res.cashAmount);
@@ -272,9 +278,7 @@ export class CashRefundMainPage {
                 alert.present();
           }
       },(err)=>{
-                this.inProgress=false;
-                if(this.progressBarLoader)
-                        this.progressBarLoader.dismiss();
+                progressBarLoader.dismiss();
                 if(err=="NetworkFailure"){
                             let alert = this.alertCtrl.create({
                                 title: "서버와 통신에 문제가 있습니다.",

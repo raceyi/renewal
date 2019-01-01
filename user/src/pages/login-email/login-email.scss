@@ -27,7 +27,7 @@ page-login-email {
     }
 
     .upper{
-        height: calc((114/667)*100vh);
+        height: 114px;
     }
 
     .list-ios > .item-block:first-child {
@@ -45,7 +45,7 @@ page-login-email {
 
     .keypad-input{
         //margin-left: calc((38/376)*100vw);
-        height: calc((28/667)*100vh);
+        height: 28px;
         width: calc((290/376)*100vw);
         font-size: 4vw !important;
         font-weight: 500;
@@ -53,6 +53,7 @@ page-login-email {
         color: #ffffff;
         ion-label{
             width:calc((55/376)*100vw);
+            font-size: 3.4vw;
         }
         //.list-ios .item-block .item-inner {
         .item-inner .input-wrapper{    
@@ -65,16 +66,16 @@ page-login-email {
     }
 
     .under-buttons{
-        height:calc((28/667)*100vh);
+        height:28px;
     }
 
     .under_input{
-        height:calc((95/667)*100vh);
+        height:95px;
     }
 
     .half-button{
         width: calc((125/376)*100vw);
-	    height: calc((42/667)*100vh) !important; 
+	    height: 42px !important; 
         border-radius: 4px;
         border-width: 1px;
         border-style: solid;

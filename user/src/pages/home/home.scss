@@ -1,4 +1,16 @@
 page-home {
+    .toolbar-background-ios {
+        background: white;
+    }
+
+    .header-ios .toolbar-background-ios, .footer-ios .toolbar-background-ios {
+        border-style: hidden;
+    }
+
+    ion-title{
+        font-size:4.8vw;
+    }
+    
     .logo-img{
             margin-top:21px;
             margin-left:144px;
@@ -35,6 +47,13 @@ page-home {
         }
     }
 
+    .welcome-icon{
+        font-size: 50vw;
+        padding-top: 20vh;
+        margin-left: 25vw;
+        color: #ff5d45;
+    }
+    
     .section-title{
         margin-left:12px;
         padding-bottom:8px;
@@ -126,7 +145,7 @@ page-home {
             margin-left:4px;
             margin-right:4px;
             margin-top:4px;
-            border:solid 1px black;
+            border:solid 1px lightgray;
         }
         .hr{
             margin-left:10px; 

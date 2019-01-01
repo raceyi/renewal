@@ -1,4 +1,16 @@
 page-order-list {
+    .toolbar-background-ios {
+        background: white;
+    }
+
+    .header-ios .toolbar-background-ios, .footer-ios .toolbar-background-ios {
+        border-style: hidden;
+    }
+
+    ion-title{
+        font-size:4.8vw;
+    }
+    
     ion-header{
         .header{
             height:calc((50/667)*100vh);
@@ -31,7 +43,11 @@ page-order-list {
         color:#ff5d45;
     }
 //////////////////////////////////
-    
+    .no-list{
+        margin-top: 20vh;
+        width: 50vw;
+        margin-left: 25vw;
+    }
     .selection-area{
             height: 27px;
             margin-left:21px;
@@ -148,7 +164,11 @@ page-order-list {
     }
 
     .history{
-        height:83px;
+        //height:83px;
+
+        padding-top: 10px;
+        padding-bottom: 10px;
+
         .order-first-line{
             font-size:4vw;
             padding-right:20px;            

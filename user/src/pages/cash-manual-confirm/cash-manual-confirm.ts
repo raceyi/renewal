@@ -28,7 +28,7 @@ export class CashManualConfirmPage {
   bankCode:string;
 
   InProgress=false;
-  public progressBarLoader : any;
+  //public progressBarLoader : any;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -138,15 +138,14 @@ cashInComplete(){
             };
 
       console.log("body:"+JSON.stringify(body));
-      this.progressBarLoader = this.loadingCtrl.create({
+      let progressBarLoader = this.loadingCtrl.create({
         content: "진행중입니다.",
         duration: 10000 //3 seconds
         });
-      this.progressBarLoader.present();
+      progressBarLoader.present();
 
       this.serverProvider.post(this.storageProvider.serverAddress+"/checkCashUserself",body).then((res:any)=>{
-                                    if(this.progressBarLoader)
-                                        this.progressBarLoader.dismiss();
+                                    progressBarLoader.dismiss();
                                     console.log("res:"+JSON.stringify(res));
                                     if(res.result=="success"){
                                         if(res.cashlist){
@@ -200,8 +199,7 @@ cashInComplete(){
                                         }
                                     }
                                 },(err)=>{
-                                           if(this.progressBarLoader) 
-                                                this.progressBarLoader.dismiss();                                    
+                                           progressBarLoader.dismiss();                                    
                                            this.InProgress=false;
                                            if(err=="NetworkFailure"){
                                                   let alert = this.alertController.create({

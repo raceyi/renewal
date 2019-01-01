@@ -70,10 +70,10 @@ import { WebIntent } from '@ionic-native/web-intent';
 import {StoreSearchPageModule} from '../pages/store-search/store-search.module';
 import { Media, MediaObject } from '@ionic-native/media';
 import {MenuSearchPageModule} from '../pages/menu-search/menu-search.module';
-import {ShopEntrancePageModule} from '../pages/shop-entrance/shop-entrance.module';
-import {ShopStorePageModule} from '../pages/shop-store/shop-store.module';
 import {SubShopPageModule} from '../pages/sub-shop/sub-shop.module';
 import{CashListPageModule} from '../pages/cash-list/cash-list.module';
+import {Geolocation} from '@ionic-native/geolocation';
+import {NoticePageModule} from '../pages/notice/notice.module';
 
 @NgModule({
   declarations: [
@@ -94,8 +94,6 @@ import{CashListPageModule} from '../pages/cash-list/cash-list.module';
     OrderListPageModule,
     WalletPageModule,
     ShopPageModule,
-    ShopStorePageModule,
-    ShopEntrancePageModule,
     MenuPageModule,
     SearchPageModule,
     PolicyPageModule,
@@ -126,6 +124,7 @@ import{CashListPageModule} from '../pages/cash-list/cash-list.module';
     TossTransferPageModule,
     StoreSearchPageModule,
     SubShopPageModule,
+    NoticePageModule,
     IonicModule.forRoot(MyApp,{mode:'ios'})
   ],
   bootstrap: [IonicApp],
@@ -135,6 +134,7 @@ import{CashListPageModule} from '../pages/cash-list/cash-list.module';
     TabsPage    
   ],
   providers: [
+    Geolocation,
     Media,
     Network, 
     ConfigProvider,

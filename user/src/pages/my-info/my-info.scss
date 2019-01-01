@@ -1,4 +1,16 @@
 page-my-info {
+    .toolbar-background-ios {
+        background: white;
+    }
+
+    .header-ios .toolbar-background-ios, .footer-ios .toolbar-background-ios {
+        border-style: hidden;
+    }
+
+    ion-title{
+        font-size:4.8vw;
+    }
+    
     .profile-icon{
         margin-top:20px;
         //margin-left:160px;

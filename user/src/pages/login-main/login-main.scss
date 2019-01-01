@@ -1,4 +1,25 @@
 page-login-main {
+    .toolbar-background-ios {
+        background: white;
+    }
+
+    .header-ios .toolbar-background-ios, .footer-ios .toolbar-background-ios {
+        border-style: hidden;
+    }
+
+    ion-title{
+        font-size:4.8vw;
+    }
+
+    .toolbar-title-ios {
+        color: $default-color;
+        background-color:white;
+    }
+
+    .header-ios .toolbar-ios:last-child .toolbar-background-ios {
+        border-width: 0px; 
+    }
+
     .logo{
         padding-top: calc((181/667)*100vh);
         img{

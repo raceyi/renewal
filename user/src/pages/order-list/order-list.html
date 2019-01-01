@@ -1,4 +1,5 @@
-<ion-header style="background-color:white;">        
+<ion-header style="background-color:white;">
+<ion-navbar hideBackButton>                
     <div style="display:flex;">
       <!--
         <img  class="search-img" src="assets/imgs/order-list/history-main-top.png">   
@@ -46,21 +47,15 @@
   </ion-col>
   </ion-row>
 </div> 
+</ion-navbar>
 </ion-header>
 
 <ion-content class="empty" *ngIf="storageProvider.shopList.length==0">
-<div text-center>
-    <div class="empty-img">
-        <img src="assets/imgs/profile-pic.png">
-    </div>
-    <div class="empty-text">
-   아직 주문을 하지 않으셨어요!<br>
-   첫주문을 해주시겠어요?
-   </div> 
-</div>
+  <img class="no-list" src="assets/imgs/order-list/no-list.png">
 </ion-content>
 
 <ion-content *ngIf="storageProvider.shopList.length!=0">
+  
 <!--
 <div class="header" text-center>
 <b>주문목록</b>
@@ -147,7 +142,7 @@
    <ion-infinite-scroll-content></ion-infinite-scroll-content>
  </ion-infinite-scroll>
 
-<ion-fab bottom left *ngIf="storageProvider.tourMode">
+ <ion-fab bottom left *ngIf="storageProvider.tourMode && storageProvider.name=='타킷주식회사'">
     <button class="fab-btn" (click)="exitTourMode()" ion-fab color="white">
       <custom-icon set="tabs" name="exit"></custom-icon>
     </button>

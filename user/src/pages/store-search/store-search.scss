@@ -1,6 +1,18 @@
 page-store-search {
-    $latest-W : calc((145/375)*100vw);
-    $latest-H : calc((195/667)*100vh);
+    //$latest-W : calc((145/375)*100vw);
+    //$latest-H : calc((195/667)*100vh);
+
+    .toolbar-background-ios {
+        background: white;
+    }
+
+    .header-ios .toolbar-background-ios, .footer-ios .toolbar-background-ios {
+        border-style: hidden;
+    }
+
+    ion-title{
+        font-size:4.8vw;
+    }
 
     .section-title{
         margin-left:12px;
@@ -78,7 +90,7 @@ page-store-search {
 
         .shop{
             background-color: white;
-            height:110px;
+            height:calc((110/375)*100vw); ;// 110px; LG최근 폰에서만 문제가 발생한다 ㅜㅜ 
             width:355px;
     
             //margin-top:5px;
@@ -86,12 +98,13 @@ page-store-search {
                 margin-left:4px;
                 margin-right:4px;
                 margin-top:4px;
-                border:solid 1px black;
+                border:solid 1px lightgray;
             }
             .hr{
                 margin-left:10px; 
                 width: 10px;
-                height: 1px;
+                //height: 1px;
+                font-size:3vw;
                 background-color: #ff7f39;          
             }
             .shop-brand{
@@ -109,7 +122,7 @@ page-store-search {
             }
     
             .shop-location{
-                padding-top:9px;
+                //padding-top:9px;
                 font-family: AppleSDGothicNeo;
                 font-size: 13px;
                 font-weight: 300;
@@ -164,7 +177,7 @@ page-store-search {
     }
 
     .filter-selector{
-        width:90px;
+        width:100px;
     }
 
     .shop{
@@ -172,16 +185,18 @@ page-store-search {
         margin-top:5px;
         border-bottom: solid 1px lightgray;
         border-radius: 0px;
+        height: 110px; 
         img{
             margin-left:4px;
             margin-right:4px;
             margin-top:4px;
-            border:solid 1px black;
+            border:solid 1px lightgray;
         }
         .hr{
             margin-left:10px; 
             width: 10px;
-            height: 1px;
+            //height: 1px;
+            font-size:3vw;
             background-color: #ff7f39;          
         }
         .shop-brand{
@@ -207,7 +222,7 @@ page-store-search {
             font-stretch: normal;
             line-height: normal;
             letter-spacing: normal;
-            color: #a6a6a6; 
+            color: #000000; 
             text-align:left;
             padding-left:10px;  
         }
