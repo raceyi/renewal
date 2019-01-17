@@ -13,7 +13,6 @@ page-my-info {
     
     .profile-icon{
         margin-top:20px;
-        //margin-left:160px;
         width:26px;
         height:26px;
         color:#ff5d45;
@@ -32,25 +31,24 @@ page-my-info {
     }
 
     .personal-info-section{
-        margin-left:calc((40/376)*100vw);
-        margin-right:calc((40/376)*100vw);
-        margin-top: calc((21/667)*100vh);
-        //height:calc((124/667)*100vh); 2018.07.04
-        height:calc((50/667)*100vh);
+        margin-left:40px;
+        margin-right:40px;
+        margin-top: 21px;
+        height:50px;
         .user-name{
             font-size:5.8vw;
             color:$default-color;
         }
         .user-img{
-            width: calc((66/376)*100vw);   
+            width: 66px;   
         }
     }
 
     .group-title{
         p{
             font-size:3.8vw;
-            margin-left:calc((19/376)*100vw);
-            margin-top:calc((15/667)*100vh);
+            margin-left:19px;
+            margin-top:15px;
             color:#9b9b9b;
         }
         border-top-style: solid;
@@ -59,15 +57,15 @@ page-my-info {
     }
 
     .each-menu{
-        padding-left:calc((19/376)*100vw);
+        padding-left:19px;
         font-size:4.5vw;
         button{
-            height: calc((19/667)*100vh);
+            height: 19px;
             font-size: 3.8vw;
         }
         ion-col{
-            height: calc((35/667)*100vh);
-            padding-top:calc((10/667)*100vh);
+            height: 35px;
+            padding-top:10px;
             padding-bottom:0px;
         }
         border-top-style: solid;
@@ -76,7 +74,6 @@ page-my-info {
     }
 
     .last{
-       // height: calc((60/667)*100vh);
         border-top-style: solid;
         border-width: 1px;
         border-color: #dfdfdf;  

@@ -18,8 +18,8 @@ page-cash-refund-main {
    .refund-account-none{
         background-color:$default-color;
         margin-top:26px !important;  
-        margin-left:calc((55/376)*100vw) !important;
-        margin-right:calc((55/376)*100vw) !important;
+        margin-left:55px !important;
+        margin-right:55px !important;
         height:142px !important;  
         border-radius: 8px;
         color:white;
@@ -34,8 +34,8 @@ page-cash-refund-main {
    .refund-account{
         background-color:$default-color;
         margin-top:26px !important;  
-        margin-left:calc((55/376)*100vw) !important;
-        margin-right:calc((55/376)*100vw) !important;
+        margin-left:55px !important;
+        margin-right:55px !important;
         height:142px !important;  
         border-radius: 8px;
         color:white;
@@ -61,7 +61,7 @@ page-cash-refund-main {
     }
 
    .modify{
-        margin-right:calc((55/376)*100vw) !important;  
+        margin-right:55px !important;  
         button{
             span{
                 font-size:3.4vw;
@@ -86,21 +86,21 @@ page-cash-refund-main {
        height: 41px;
        .account-num-label{
             font-size: 4.5vw;
-            padding-left: calc((20/376)*100vw);
+            padding-left: 20px;
             color:$default-color;
             padding-top:10px;
        }
        .account-num-value{
            ion-input{
             	border: solid 1px #bdbdbd;
-                margin: calc((5/376)*100vw);
+                margin: 5px;
                 height: 31px;
-                width: calc((257/376)*100vw);
+                width: 257px;
            }
        }
    }
 
    .balance{
-       margin-right:calc((20/376)*100vw) !important;  
+       margin-right:20px !important;  
    }
 }

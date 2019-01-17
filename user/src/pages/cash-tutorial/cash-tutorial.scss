@@ -1,6 +1,6 @@
 page-cash-tutorial {
     ion-navbar{
-        height:calc((30/667)*100vh);
+        height:30px;
         .toolbar-background-ios {
             background: $default-color;
         }
@@ -15,22 +15,22 @@ page-cash-tutorial {
         margin:0px;
         font-size:4vw !important;
         color:white;
-        margin-left:calc((60/375)*100vw);
-        margin-right:calc((60/375)*100vw);
+        margin-left:60px;
+        margin-right:60px;
     }
 
     .addition{
-        margin-left:calc((60/375)*100vw);
-        margin-right:calc((60/375)*100vw);
+        margin-left:60px;
+        margin-right:60px;
     }
 
     .slide-zoom {
-     //   margin-top:calc((20/667)*100vh);
+
     }
 
     .swiper-slide img {
         max-width: 65%;
-        padding-top:calc((5/667)*100vh);
+        padding-top:5px;
     }
 
     .header-ios .toolbar-background-ios, .footer-ios .toolbar-background-ios {

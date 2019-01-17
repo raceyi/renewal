@@ -34,13 +34,13 @@ page-cash-refund-account {
     }
 
     .header-section{
-        padding-top: calc((14/667)*100vh);
-        padding-bottom: calc((35/667)*100vh);
+        padding-top: 14px;
+        padding-bottom: 35px;
     }
 
     .account-info{
-        margin-left:calc((21/376)*100vw);
-        width: calc((334/376)*100vw);
+        margin-left:21px;
+        width: 334px;
         background-color:white;
         font-size:4vw;
         .bank-name{
@@ -56,13 +56,13 @@ page-cash-refund-account {
     }
 
     .account-owner{
-        height: calc((53/667)*100vh);
-        padding-top: calc((17/667)*100vh);
-        padding-bottom: calc((17/667)*100vh);
+        height: 53px;
+        padding-top: 17px;
+        padding-bottom: 17px;
     }
 
     .bank-select{
-        height: calc((53/667)*100vh);
+        height: 53px;
         border-bottom-style:solid;
         border-top-style:solid;
         border-width:1px;
@@ -74,8 +74,8 @@ page-cash-refund-account {
     }
 
     .bank-select-label{
-        margin-top: calc((17/667)*100vh) !important;
-        margin-bottom: calc((17/667)*100vh);
+        margin-top: 17px !important;
+        margin-bottom: 17px;
     }
 
     .right-border{
@@ -85,17 +85,17 @@ page-cash-refund-account {
     }
 
     .account-num{
-        height:calc((53/667)*100vh);
+        height:53px;
         color:#4a4a4a;
     }
 
     .account-num-label{
-        padding-top:calc((17/667)*100vh) !important;
-        padding-left:calc((17/376)*100vw) !important;
+        padding-top:17px !important;
+        padding-left:17px !important;
     }
 
     .account-num-value{
-        padding-top:calc((5/667)*100vh) !important;  
+        padding-top:5px !important;  
 
         ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
             font-size:3.5vw;
@@ -112,6 +112,6 @@ page-cash-refund-account {
     }
 
     .bank-select-value{
-         padding-top:calc((17/667)*100vh) !important;
+         padding-top:17px !important;
     }
 }

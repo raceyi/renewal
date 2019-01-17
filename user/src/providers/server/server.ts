@@ -93,7 +93,7 @@ export class ServerProvider {
                                         });
                                 alert.present();
                             }
-                            resolve(res.json());  
+                            resolve(res);  
                          },(err)=>{
                              reject("NetworkFailure");
                          });

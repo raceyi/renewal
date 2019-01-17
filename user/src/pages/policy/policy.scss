@@ -17,15 +17,15 @@ page-policy {
     }
 
     .each-menu{
-        padding-left:calc((38/376)*100vw);
+        padding-left:38px;
         font-size:4.5vw;
         button{
-            height: calc((19/667)*100vh);
+            height: 19px;
             font-size: 3.8vw;
         }
         ion-col{
-            height: calc((55/667)*100vh);
-            padding-top:calc((20/667)*100vh);
+            height: 55px;
+            padding-top:20px;
             padding-bottom:0px;
         }
         border-bottom-style: solid;
@@ -37,7 +37,7 @@ page-policy {
     }
 
     .dummy{
-            height: calc((55/667)*100vh);
+            height: 55px;
             border-bottom-style: solid;
             border-width: 1px;
             border-color: #dfdfdf;   

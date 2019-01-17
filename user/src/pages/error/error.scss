@@ -5,23 +5,23 @@ page-error {
     }
 
     .icon-img{
-        padding-top: calc((203/667)*100vh);
+        padding-top: 203px;
         img{
-            width:calc((84/376)*100vw);
-            height:calc((84/376)*100vw);
+            width:84px;
+            height:84px;
         }
     }
 
     .logo-img{
         img{
-            width:calc((78/376)*100vw);
-            height:calc((18/376)*100vw);
+            width:78px;
+            height:18px;
         }
     }
 
     .action-button{
-         height:calc((50/667)*100vh);
-         width:calc((302/376)*100vw);
+         height:50px;
+         width:302px;
          border-radius: 8px;
 	     border: solid 1px $default-color;
          color:$default-color;
@@ -34,8 +34,8 @@ page-error {
 
     ion-footer{
         img{
-            width:calc((266/376)*100vw);
-            margin-bottom:calc((40/667)*100vh);
+            width:266px;
+            margin-bottom:40px;
         } 
     }
 }

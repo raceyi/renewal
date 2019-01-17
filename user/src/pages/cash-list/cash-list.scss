@@ -18,8 +18,8 @@ page-cash-list {
 
 //////////////////////////////////
 
-$scroll-H:  calc((180/667)*100vh);
-$latest-H : calc((180/667)*100vh);
+$scroll-H:  180px;
+$latest-H : 180px;
 
 .scroll-latest {
     height: $scroll-H;
@@ -32,31 +32,30 @@ $latest-H : calc((180/667)*100vh);
     .scroll-row-latest{
         flex-wrap : inherit;
         height: $latest-H;
-        margin-left: calc((62/376)*100vw);
-        margin-right: calc((62/376)*100vw);
+        margin-left: 62px;
+        margin-right: 62px;
         ion-row{
-            width : calc((227/376)*100vw);   
+            width : 227px;   
         }
 
         .cash-select-border{
-            //height: calc((171/667)*100vh) !important; // increase height, width
             border-style:solid !important;
             border-color: #33b9c6 !important;
             border-radius: 8px;
-            border-left: calc((6/376)*100vw);
-            border-right:calc((6/376)*100vw);
-            border-top:calc((6/667)*100vh);
-            border-bottom:calc((6/667)*100vh);
+            border-left: 6px;
+            border-right:6px;
+            border-top:6px;
+            border-bottom:6px;
         }
 
         .card-select-border{
             border-style:solid !important;
             border-color: #33b9c6 !important;
             border-radius: 8px;
-            border-left: calc((6/376)*100vw);
-            border-right:calc((6/376)*100vw);
-            border-top:calc((6/667)*100vh);
-            border-bottom:calc((6/667)*100vh);
+            border-left: 6px;
+            border-right:6px;
+            border-top:6px;
+            border-bottom:6px;
         }
 
         .card-unselect-border{
@@ -65,35 +64,35 @@ $latest-H : calc((180/667)*100vh);
         }
 
         .card-button{
-            width : calc((227/376)*100vw);
-            height: calc((60/667)*100vh);
+            width : 227px;
+            height: 60px;
             color:white;
         }
 
         .cash-card{
             background-color:$default-color;
             color:white;
-            padding-top:calc((10/667)*100vh);
+            padding-top:10px;
             .cash-label{                            ///////////////
-                padding-top: calc((24/667)*100vh);
-                height:calc((47/667)*100vh);
+                padding-top: 24px;
+                height:47px;
             }
              .cash-value{
-                padding-top:calc((7/667)*100vh);     ////////////////////////
-                padding-bottom:calc((17/667)*100vh); ///////////////////////
+                padding-top:7px;     ////////////////////////
+                padding-bottom:17px; ///////////////////////
              }
              .cash-value-row{
-                padding-bottom:calc((7/667)*100vh); ///////////////////////                     
+                padding-bottom:7px; ///////////////////////                     
              } 
              ion-row{
                  button{
-                    height:calc((25/667)*100vh);
+                    height:25px;
                  }
                  border-top: solid 0.5px #ffffff;
                  ion-col{
                     button{
                             color:white;
-                            padding-bottom:calc((7/667)*100vh); // Please check it on the phone
+                            padding-bottom:7px; // Please check it on the phone
                             span{
                                 font-size:4vw;
                             }
@@ -113,33 +112,33 @@ $latest-H : calc((180/667)*100vh);
              box-shadow: 0 0 7px 0 rgba(70, 70, 70, 0.5);
             .card-add-label{
                 justify-content: center;
-                padding-top: calc((15/667)*100vh);
+                padding-top: 15px;
             }
         }
 
         .card-card{
             color:white;
             .card-remove{
-                height:calc((25/667)*100vh);
+                height:25px;
             }
             button{
-                height:calc((30/667)*100vh);
+                height:30px;
             }
         }
 
         .scroll-col-latest {
             overflow: inherit; 
-            margin-left: calc((12/376)*100vw);
-            margin-right:calc((12/376)*100vw);
-            margin-top:calc((25/667)*100vh);
-            margin-bottom:calc((25/667)*100vh);
-            height:calc((121/667)*100vh);
+            margin-left: 12px;
+            margin-right:12px;
+            margin-top:25px;
+            margin-bottom:25px;
+            height:121px;
         }      
 
         .select-scroll-col-latest {
             overflow: inherit; 
-            margin-top:calc((19/667)*100vh);
-            height:calc((133/667)*100vh);
+            margin-top:19px;
+            height:133px;
         }            
               
     }    
@@ -152,23 +151,23 @@ $latest-H : calc((180/667)*100vh);
         color: #bdbdbd;
         background-color: #ffffff;
         border: solid 1px #bdbdbd;
-        width: calc((125/376)*100vw);
+        width: 125px;
         .datetime-text{
-            padding-top:calc((5/667)*100vh);
-            padding-bottom:calc((5/667)*100vh);
+            padding-top:5px;
+            padding-bottom:5px;
         }
     }
     ion-row{
-        padding-left:calc((21/376)*100vw);
+        padding-left:21px;
         .center{
-            padding-left:calc((21/376)*100vw);
-            padding-top:calc((10/667)*100vh);
+            padding-left:21px;
+            padding-top:10px;
             color: #bdbdbd;
         }
     }
     .close-button{
-        height: calc((23/667)*100vh);
-        padding-right: calc((10/376)*100vw);
+        height: 23px;
+        padding-right: 10px;
         color: #bdbdbd;
         font-size:4vw;
     }
@@ -178,11 +177,8 @@ $latest-H : calc((180/667)*100vh);
         color: #bdbdbd;
         border: solid 1px #bdbdbd;
         border-radius:0px;
-       // margin-left: calc((5/376)*100vw);
-       // margin-right: calc((19/376)*100vw);
-       // margin-bottom: calc((10/376)*100vw);
-       height: calc((29/667)*100vh);
-       width: calc((50/376)*100vw);
+       height: 29px;
+       width: 50px;
     }
 }
 
@@ -190,7 +186,7 @@ $latest-H : calc((180/667)*100vh);
     border-bottom: solid 1px #bdbdbd;
     padding-top: 10px;
     padding-bottom: 10px;
-    
+
     .extra-info{
         color: #bdbdbd;
         font-size:3.5vw;

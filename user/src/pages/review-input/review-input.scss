@@ -28,8 +28,8 @@ page-review-input {
    }
 
    .five-star{
-       padding-left:calc((50/376)*100vw);
-       padding-right:calc((50/376)*100vw);
+       padding-left:50px;
+       padding-right:50px;
        height:60px;
        button{
            height:41px;
@@ -44,10 +44,10 @@ page-review-input {
 
    .review-text-area{
         background-color:#f2f2f2;
-        margin-left:calc((20/376)*100vw);
+        margin-left:20px;
         margin-top: 20px;
         ion-textarea{
-            width: calc((334/376)*100vw); 
+            width: 334px; 
             height: 85px; 
             background-color: #ffffff;
             border: solid 1px #bdbdbd;

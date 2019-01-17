@@ -96,30 +96,30 @@ page-shop {
     .shop-text-info{
         font-size:3.4vw;
         color: #4a4a4a;
-        margin-top:calc((4/667)*100vh);
-        margin-bottom:calc((4/667)*100vh);
+        margin-top:4px;
+        margin-bottom:4px;
        .label{
-           margin-left: calc((20/376)*100vw);
-           width: calc((60/376)*100vw);
+           margin-left: 20px;
+           width: 60px;
            display: inline-block
        }  
        .noti{
-           margin-left: calc((20/376)*100vw);           
+           margin-left: 20px;           
        } 
     }
 
     .stamp{
-        margin-left: calc((20/376)*100vw);           
-        margin-right: calc((20/376)*100vw);           
+        margin-left: 20px;           
+        margin-right: 20px;           
     }
 
     .shop-img{
-        width: 54vw;
-        height: calc((136/667)*100vh);
-        background-size: 54vw calc((136/667)*100vh); 
+        width: 202px;
+        height: 136px;
+        background-size: 202px 136px; 
 
-        margin-left:23vw;//calc((35/376)*100vw);
-        margin-right:23vw;//calc((35/376)*100vw);
+        margin-left:86px;
+        margin-right:86px;
         span{
             font-size:3.4vw;
         	border-radius: 13px;
@@ -144,7 +144,7 @@ page-shop {
             padding-left: 0px;
         }
         .item-inner{
-            height: calc((30/667)*100vh); //Does it work?
+            height: 30px; //Does it work?
             background-color:white; 
             border-bottom:0px;
             padding:0px !important;
@@ -169,7 +169,7 @@ page-shop {
         .item-ios .item-button {
             padding-left: 5px;
             padding-right:0px; 
-            height: calc((30/667)*100vh);
+            height: 30px;
         }
     }
 
@@ -193,7 +193,7 @@ page-shop {
                 border-width: 0.5px;
                 border-color: #bdbdbd;
 
-                height: calc((175/667)*100vh);
+                height: 175px;
                 h2{
                     font-size:3.4vw;
                     color:#4a4a4a;
@@ -202,16 +202,15 @@ page-shop {
                     color:$default-color;
                 }
                 .img-shop{
-                    //margin-left:1.25vw;
-                    margin-left:8vw;
-                    width:  calc((120/376)*100vw);
-                    height: calc((120/376)*100vw);
-                    background-size: calc((120/376)*100vw) calc((120/376)*100vw);                 
-                    padding-top: calc((40/376)*100vw);
+                    margin-left:30px;
+                    width:  120px;
+                    height: 120px;
+                    background-size: 120px 120px;                 
+                    padding-top: 40px;
                     .sold-out{
                         font-size:6vw;
                         color: #33b9c6;
-                        padding:calc((10/376)*100vw); 
+                        padding:10px; 
                         border: solid 2px #33b9c6;
                         border-radius: 23.5px;
                         background-color:white;
@@ -219,12 +218,12 @@ page-shop {
                 }
 
                 ion-label{
-                    margin: 1.25vw 1.25vw 1.25vw 1.25vw;
+                    margin: 4.6px 4.6px 4.6px 4.6px;
                     h2{
-                        margin-left:10vw;
+                        //margin-left:10vw;
                     }
                     p{
-                        margin-left:10vw;
+                        //margin-left:10vw;
                     }
                 }
                  .item-inner{
@@ -251,7 +250,7 @@ page-shop {
     }
     
     .store-information-button{
-        width:calc((23/376)*100vw); 
+        width:23px; 
     }
     
     ion-select{
@@ -282,7 +281,65 @@ page-shop {
     }
     .popover-ios .popover-content {
         border-radius: 10px;
-        width:90vw !important;
+        width:337.5px !important;
+    }
+
+    ////////////////////////////////
+    // 나중에 상점별 theme로 변경한다.
+    .store-background-image{
+        height:111px;
+        width:375px;
+    }
+
+    .category-button{
+       ion-col:nth-child(even){
+            border-bottom: solid 0.5px lightgray;  
+       }
+       ion-col:nth-child(odd){
+            border-right: solid 0.5px lightgray;
+            border-bottom: solid 0.5px lightgray;  
+        }
+    }
+
+    .category-level-select{
+         .segment-button.segment-activated {
+            border-color: #73a251;
+            color: white !important;
+            opacity: 1;
+            background-color: #73a251;
+            font-size: 15px;                      
+            font-weight: bold !important;
+        }
+        .segment-md .segment-button {
+            border-color: #73a251;
+            color: rgba(255, 255, 255, 0.69);
+            opacity: 1;
+            background-color: #73a251; 
+            font-size: 15px;
+            font-weight: normal;            
+        }
+    }
+
+    .shop-keyword{
+        margin-left:15px;
+        border-radius: 16.5px;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+        background-color: #ffffff;
+        
+        padding-left: 19px;
+        padding-right: 18px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+
+        font-family: AppleSDGothicNeo;
+        font-size: 12px;
+        font-weight: 500;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        text-align: center;
+        color: #4a4a4a;  
     }
 
 }

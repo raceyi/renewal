@@ -32,15 +32,15 @@ page-cash-cancel-charge {
     .warning{
         background-color:#f2f2f2;
         color:#4a4a4a;
-        height:calc((175/667)*100vh);
-        padding-top:calc((45/667)*100vh);
+        height:175px;
+        padding-top:45px;
         font-size:3.4vw;
     }
 
     .cashId{
-        padding-top:calc((34/667)*100vh); //376
+        padding-top:34px; //376
         font-size: 4.5vw;
-        padding-bottom:calc((16/667)*100vh);
+        padding-bottom:16px;
     }
 
     .amount{
@@ -50,10 +50,10 @@ page-cash-cancel-charge {
     .info{
         background-color:white;
         color: #4a4a4a;
-        margin-left:calc((21/376)*100vw);
-        width:calc((334/376)*100vw);
-        margin-bottom: calc((62/667)*100vh);
-        margin-top:calc((20/667)*100vh);
+        margin-left:21px;
+        width:334px;
+        margin-bottom: 62px;
+        margin-top:20px;
     }
 
     .info-label{

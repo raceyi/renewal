@@ -25,12 +25,12 @@ page-order-detail {
     }
 
     .order-no{
-        height: calc((99/667)*100vh);
+        height: 99px;
 	    background-color: #f2f2f2;
         .order-value{
             font-size:12.7vw;
             color: #33b9c6;
-            padding-top:calc((9/667)*100vh);
+            padding-top:9px;
         }
         .order-label{
             font-size:4.5vw;
@@ -38,37 +38,52 @@ page-order-detail {
         }
     }
 
+    .order-preparing{
+        height: 99px;
+        background-color: #f2f2f2;
+        .order-label{
+            padding-top: 25px;
+            margin-bottom:0px;
+            font-size:7vw;
+	        color: $default-color;
+        }
+        .order-explain{
+            font-size:3.5vw; 
+            color: #4a4a4a;           
+        }        
+    }
+
     .curr-status{
         background-color: $default-color;
         border-radius: 50%;
-        height: calc((47/376)*100vw);
-        width: calc((47/376)*100vw);
-        margin-left:calc((15/376)*100vw);
+        height: 47px;
+        width: 47px;
+        margin-left:15px;
     }
 
     .invalid-status{
 	    background-color: #bdbdbd;
         border-radius: 50%;
-        height: calc((30/376)*100vw);
-        width:calc((30/376)*100vw);
-        margin-left:calc((20/376)*100vw);
-        margin-top:calc((10/376)*100vw);
+        height: 30px;
+        width:30px;
+        margin-left:20px;
+        margin-top:10px;
     }
 
     .order-status{
-        padding-left:calc((50/376)*100vw);
-        padding-right:calc((50/376)*100vw);
+        padding-left:50px;
+        padding-right:50px;
         background-color:white;
     }
 
     .pickup-area{
-        padding-left: calc((44/376)*100vw);
-        padding-right: calc((44/376)*100vw);
+        padding-left: 44px;
+        padding-right: 44px;
         font-size:3.4vw;
         ion-row{
-            padding-bottom:calc((10/667)*100vh);
+            padding-bottom:10px;
         }
-        padding-top:calc((10/667)*100vh);
+        padding-top:10px;
     }
 
     .cancel-area{
@@ -82,35 +97,35 @@ page-order-detail {
             color: #bdbdbd;
             border-right:solid 1px #bdbdbd;
             border-left:solid 1px #bdbdbd;
-            margin-right:calc((20/376)*100vw);
-            margin-left:calc((20/376)*100vw);
-            padding-top:calc((10/667)*100vh);
-            padding-bottom:calc((10/667)*100vh);
-            padding-left: calc((24/376)*100vw); 
-            padding-right: calc((24/376)*100vw); 
+            margin-right:20px;
+            margin-left:20px;
+            padding-top:10px;
+            padding-bottom:10px;
+            padding-left: 24px; 
+            padding-right: 24px; 
         }
         .logo{
             img{
-                width:calc((75/376)*100vw);
-                height:calc((17/667)*100vh);
+                width:75px;
+                height:17px;
             }
             justify-content: center;
-            padding-top:calc((10/667)*100vh);
-            padding-bottom:calc((10/667)*100vh);
-            margin-left:calc((20/376)*100vw); 
-            margin-right:calc((20/376)*100vw);
+            padding-top:10px;
+            padding-bottom:10px;
+            margin-left:20px; 
+            margin-right:20px;
             border-top:solid 1px #bdbdbd;
             border-left:solid 1px #bdbdbd;
             border-right:solid 1px #bdbdbd;
         }
 
         .show-border{
-            padding-top:calc((10/667)*100vh);
-            padding-bottom:calc((10/667)*100vh);
-            padding-left:calc((24/376)*100vw);
-            padding-right:calc((24/376)*100vw);
-            margin-left:calc((20/376)*100vw); 
-            margin-right:calc((20/376)*100vw);  
+            padding-top:10px;
+            padding-bottom:10px;
+            padding-left:24px;
+            padding-right:24px;
+            margin-left:20px; 
+            margin-right:20px;  
             border-left:solid 1px #bdbdbd;
             border-right:solid 1px #bdbdbd;                          
         }
@@ -122,15 +137,15 @@ page-order-detail {
             .receipt-amount{
                 color:$default-color;
             }
-            padding-left:calc((24/376)*100vw);
-            padding-right:calc((24/376)*100vw);
-            padding-bottom:calc((10/667)*100vh);
-            padding-top:calc((10/667)*100vh);
+            padding-left:24px;
+            padding-right:24px;
+            padding-bottom:10px;
+            padding-top:10px;
 
             border-left: solid 1px #bdbdbd;
             border-right: solid 1px #bdbdbd;
-            margin-left:calc((20/376)*100vw);
-            margin-right:calc((20/376)*100vw);
+            margin-left:20px;
+            margin-right:20px;
         }
 
         .paymentLast{
@@ -140,17 +155,17 @@ page-order-detail {
             .receipt-amount{
                 color:$default-color;
             }
-            padding-left:calc((24/376)*100vw);
-            padding-right:calc((24/376)*100vw);
-            padding-bottom:calc((10/667)*100vh);
-            padding-top:calc((10/667)*100vh);
+            padding-left:24px;
+            padding-right:24px;
+            padding-bottom:10px;
+            padding-top:10px;
 
             border: solid 1px #bdbdbd;
-            margin-left:calc((20/376)*100vw);
-            margin-right:calc((20/376)*100vw);
-            margin-bottom:calc((20/667)*100vh);
+            margin-left:20px;
+            margin-right:20px;
+            margin-bottom:20px;
         }
-        padding-bottom: calc((15/667)*100vh);
+        padding-bottom: 15px;
     }
 
     .menu-detail{
@@ -161,17 +176,16 @@ page-order-detail {
     .review-section{
             .detail{
                 border: solid 1px #bdbdbd;
-                margin-left:calc((20/376)*100vw);
-                margin-right:calc((20/376)*100vw);
-                padding-left:calc((24/376)*100vw);
-                padding-right:calc((15/376)*100vw);
+                margin-left:20px;
+                margin-right:20px;
+                padding-left:24px;
+                padding-right:15px;
                 padding-top: 10px;
-                padding-bottom:calc((10/376)*100vw);
+                padding-bottom:10px;
                 .star{
-                    padding-top:calc((10/667)*100vh);
-                    padding-bottom:calc((10/667)*100vh);
+                    padding-top:10px;
+                    padding-bottom:10px;
                     font-size:4vw;
-                    //color: #6445a3;
                     color:#FF5F3A;
                 }
             }
@@ -180,12 +194,12 @@ page-order-detail {
                 color: #bdbdbd;
                 border-right:0px;
                 border-left:0px;
-                margin-right:calc((20/376)*100vw);
-                margin-left:calc((20/376)*100vw);
+                margin-right:20px;
+                margin-left:20px;
                 padding-top:0;
                 padding-bottom:0;
-                padding-left: calc((24/376)*100vw); 
-                padding-right: calc((24/376)*100vw); 
+                padding-left: 24px; 
+                padding-right: 24px; 
             }            
     }    
 }

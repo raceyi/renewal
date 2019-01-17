@@ -153,7 +153,9 @@ export class HomePage {
                         deliveryArea:res.shopInfo.deliveryArea,
                         freeDelivery:res.shopInfo.freeDelivery,
                         paymethod:res.shopInfo.paymethod,
-                        deliveryFee:res.shopInfo.deliveryFee};
+                        deliveryFee:res.shopInfo.deliveryFee,
+                        themeColor:res.shopInfo.themeColor,
+                        memoEnable:res.shopInfo.memoEnable};  // res.shopInfo를 전달하는 것이 어떨까?
 
             this.app.getRootNavs()[0].push(MenuPage, {menu:JSON.stringify(menu),
                                         shopInfo:JSON.stringify(shopInfo),

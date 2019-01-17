@@ -53,7 +53,7 @@ export class LoginProvider {
     }else if(type=="kakao"){
       return new Promise((resolve,reject)=>{
         this.kakaologin(this.serverLogin,this,{}).then((res:any)=>{
-                this.alertNotice(res.notice);            
+                this.alertNotice(res.notice);  
                 resolve(res);
             }, (err)=>{
                 reject(err);

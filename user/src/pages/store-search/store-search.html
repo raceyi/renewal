@@ -9,10 +9,10 @@
     <div style="display:flex;">
     <custom-icon style="font-size:8vw;" set="tabbutton" name="find" class="search-img"></custom-icon>   
     <span class="title">매장검색</span>            
-    <button ion-button no-margin no-padding class="search-icon" clear (click)="storeSearch()"> <ion-icon name="ios-search-outline"></ion-icon></button>
-    <button ion-button no-margin no-padding *ngIf="!storageProvider.tourMode" class="cart-icon" clear (click)="openCart()"> <ion-icon name="ios-cart-outline"></ion-icon></button>
-    <button ion-button no-margin no-padding *ngIf="storageProvider.tourMode && storageProvider.name!='타킷주식회사'" class="cart-icon" clear (click)="openLogin()"> <ion-icon name="ios-log-in-outline"></ion-icon></button>
-    <button ion-button no-margin no-padding *ngIf="storageProvider.tourMode && storageProvider.name=='타킷주식회사'" class="cart-icon" clear (click)="openCart()"> <ion-icon name="ios-cart-outline"></ion-icon></button>
+    <button ion-button no-margin no-padding class="search-icon" clear (click)="storeSearch()"><ion-icon name="ios-search"></ion-icon> </button>
+    <button ion-button no-margin no-padding *ngIf="!storageProvider.tourMode" class="cart-icon" clear (click)="openCart()"> <custom-icon style="font-size:40px;" set="tabs" name="cart"></custom-icon></button>
+    <button ion-button no-margin no-padding *ngIf="storageProvider.tourMode && storageProvider.name!='타킷주식회사'" class="cart-icon" clear (click)="openLogin()"> <ion-icon name="ios-log-in"></ion-icon></button>
+    <button ion-button no-margin no-padding *ngIf="storageProvider.tourMode && storageProvider.name=='타킷주식회사'" class="cart-icon" clear (click)="openCart()"> <custom-icon style="font-size:40px;" set="tabs" name="cart"></custom-icon></button>
     </div>
     </ion-navbar>
 </ion-header>
@@ -28,7 +28,7 @@
         <button no-margin no-padding class="shop"  (click)="enterShop(shop)" ion-button>
             <div style="display:flex">
                 <div text-left >
-                            <img style="width: 155px;height:100px;" [src]="storageProvider.awsS3+shop.imagePath"> 
+                    <img style="width: 155px;height:100px;" [src]="storageProvider.awsS3+shop.imagePath"> 
                 </div>
                 <div style="width: 186px;">
                         <ion-row>

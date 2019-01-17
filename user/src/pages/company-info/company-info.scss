@@ -17,26 +17,26 @@ page-company-info {
     }
 
     .company-name{
-        margin-top:calc((44/667)*100vh);
-        margin-left:calc((52/376)*100vw);
+        margin-top:44px;
+        margin-left:52px;
         font-size:6.6vw;
         color:#4a4a4a;
     }
 
     .company-name-eng{
-        margin-left:calc((52/376)*100vw);
+        margin-left:52px;
         font-size:4.8vw;
         color:#9b9b9b;
-        padding-bottom:calc((44/667)*100vh);
+        padding-bottom:44px;
         border-bottom-style:solid;
         border-bottom-width:2px;
         border-bottom-color:#bdbdbd;
-        width:calc((280/376)*100vw);
+        width:280px;
     }
 
     .info{
-        margin-top:calc((44/667)*100vh);
-        margin-left:calc((52/376)*100vw);
+        margin-top:44px;
+        margin-left:52px;
     }
 
     a {

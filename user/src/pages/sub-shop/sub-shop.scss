@@ -12,13 +12,12 @@ page-sub-shop {
     }
 
     .toolbar-title-ios {
-        color: $default-color;
+        color: #73a251;
     }
     
     .col-menus{
         width: 100%;
         height: 100%;
-        //padding-bottom: 5%;
         margin : 0px;
         button.left{
             border-left: solid; 
@@ -26,30 +25,28 @@ page-sub-shop {
             border-color: #bdbdbd;
         }
         button{
-            //border-left: solid;
             border-bottom: solid;
             border-width: 0.5px;
             border-color: #bdbdbd;
 
-            height: calc((175/667)*100vh);
+            height: 175px;
             h2{
                 font-size:3.4vw;
                 color:#4a4a4a;
             }
             p{
-                color:$default-color;
+                color:#73a251;
             }
             .img-shop{
-                //margin-left:1.25vw;
-                margin-left:8vw;
-                width:  calc((120/376)*100vw);
-                height: calc((120/376)*100vw);
-                background-size: calc((120/376)*100vw) calc((120/376)*100vw);                 
-                padding-top: calc((40/376)*100vw);
+                margin-left:30px;
+                width:  120px;
+                height: 120px;
+                background-size: 120px 120px;                 
+                padding-top: 40px;
                 .sold-out{
                     font-size:6vw;
                     color: #33b9c6;
-                    padding:calc((10/376)*100vw); 
+                    padding:10px; 
                     border: solid 2px #33b9c6;
                     border-radius: 23.5px;
                     background-color:white;
@@ -57,12 +54,12 @@ page-sub-shop {
             }
 
             ion-label{
-                margin: 1.25vw 1.25vw 1.25vw 1.25vw;
+                margin: 4.6px 4.6px 4.6px 4.6px;
                 h2{
-                    margin-left:10vw;
+
                 }
                 p{
-                    margin-left:10vw;
+
                 }
             }
              .item-inner{

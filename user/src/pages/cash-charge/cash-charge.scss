@@ -1,7 +1,4 @@
 page-cash-charge {
-    //ion-content{
-    //    height:calc((550/667)*100vh);
-    //}
     .toolbar-background-ios {
         background: $default-color;
         color:white;
@@ -21,35 +18,35 @@ page-cash-charge {
 
     .account-info{
         background-color:$default-color;
-        margin-top:calc((26/667)*100vh) !important;  
-        margin-left:calc((55/376)*100vw) !important;
-        margin-right:calc((55/376)*100vw) !important;
-        height:calc((142/667)*100vh) !important;  
+        margin-top:26px !important;  
+        margin-left:55px !important;
+        margin-right:55px !important;
+        height:142px !important;  
         border-radius: 8px;
         color:white;
 
         .message{
-            padding-top:calc((40/667)*100vh);
-            padding-bottom:calc((10/667)*100vh);
+            padding-top:40px;
+            padding-bottom:10px;
             font-size:4.5vw;
         }
 
         .account{
-            padding-top:calc((10/667)*100vh);
-            padding-bottom:calc((10/667)*100vh);
+            padding-top:10px;
+            padding-bottom:10px;
             font-size:4.5vw;           
         }
     }
 
        .tutorial-button{
-        padding-left:calc((13/375)*100vw);
-        padding-right:calc((12/375)*100vw);
-        padding-top:calc((23/667)*100vh);
-        padding-bottom:calc((23/667)*100vh);
+        padding-left:13px;
+        padding-right:12px;
+        padding-top:23px;
+        padding-bottom:23px;
         background-color:#f2f2f2;
         button{
-            width:calc((350/375)*100vw);
-            height:calc((55/667)*100vh);
+            width:350px; //???
+            height:55px;
             background-color: #33b9c6;;
             font-size:4.5vw; 
             font-weight: 600;
@@ -65,9 +62,9 @@ page-cash-charge {
 
 
     .account-copy{
-        margin-right:calc((55/376)*100vw) !important;
+        margin-right:55px !important;
         button{
-            height:calc((30/667)*100vh);
+            height:30px;
             span{
                 font-size:3.4vw;
                 color: #4a4a4a;                
@@ -76,37 +73,37 @@ page-cash-charge {
     }
 
     .cash-id{
-        border-bottom:solid calc((19/667)*100vh) #f2f2f2;
+        border-bottom:solid 19px #f2f2f2;
         font-size:4.5vw;
         color: $default-color;
-        padding-left:calc((20/376)*100vw); 
-        padding-right:calc((20/376)*100vw); 
-        height:calc((73/667)*100vh); //60+13
-        padding-top:calc((15/667)*100vh);
+        padding-left:20px; 
+        padding-right:20px; 
+        height:73px; //60+13
+        padding-top:15px;
     }
 
     .manual-check{
         color: $default-color;
         background-color:white;
         .question{
-            width: calc((320/376)*100vw) 
+            width: 320px;
         }
         span{
             font-size: 4.5vw;
         }
-        padding-top:calc((10/667)*100vh);
-        height:calc((50/667)*100vh);
+        padding-top:10px;
+        height:50px;
     }
 
     .warning-section{
        	color: #bdbdbd;
         background-color: #f2f2f2;
-        height:calc((175/667)*100vh); //???
-        padding-top:calc((23/667)*100vh);
+        height:175px; 
+        padding-top:23px;
         font-size:3.4vw;
    }
 
    .tutorial{
-       width: calc((320/376)*100vw)        
+       width: 320px;   
    }  
 }

@@ -52,6 +52,7 @@ export class OrderDetailPage {
                     if(view.getNavParams().get("class")=="CashPasswordPage" ||
                       view.getNavParams().get("class")=="MenuPage"||
                       view.getNavParams().get("class")=="CartPage"||
+                      view.getNavParams().get("class")=="SubShopPage" ||
                       view.getNavParams().get("class")=="PaymentPage")  {
                             console.log("remove "+view.getNavParams().get("class"));
                             this.navCtrl.removeView(view);
@@ -146,7 +147,7 @@ export class OrderDetailPage {
         console.log("completedTime:"+this.order.completedTime);
         this.order.localCompleteTimeString=this.timeUtil.getlocalTimeString(this.order.completedTime);
     }
-    if(this.order.hasOwnProperty('checkedTime') && this.order.completedTime!=null){
+    if(this.order.hasOwnProperty('checkedTime') && this.order.checkedTime!=null){
         console.log("checkedTime:"+this.order.checkedTime);
         this.order.localCheckedTimeString=this.timeUtil.getlocalTimeString(this.order.checkedTime);        
     }

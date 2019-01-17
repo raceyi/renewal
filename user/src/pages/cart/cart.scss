@@ -34,8 +34,8 @@ page-cart {
        background-color: white;
        .info-label{
            font-size:3.4vw;
-           padding-left: calc((28/376)*100vw);
-           padding-bottom:calc((10/667)*100vh); 
+           padding-left: 28px;
+           padding-bottom:10px; 
            color:#4a4a4a;
            .address{
                color: #bdbdbd;
@@ -46,16 +46,16 @@ page-cart {
                 color: #bdbdbd;
            }
            .label-width{
-               width:calc((61/376)*100vw);
+               width:61px;
            }
        }
    }
 
    .menu{
-       margin: calc((10/376)*100vw);
+       margin: 10px;
        background-color:white;
        .close-button{
-            height:calc((20/376)*100vw);
+            height:20px;
             ion-icon{
                 font-size:8vw;
             }
@@ -69,8 +69,8 @@ page-cart {
        }
 
         button{
-            height:calc((29/376)*100vw);
-            width:calc((29/376)*100vw);
+            height:29px;
+            width:29px;
             color: #4a4a4a;
             background-color: transparent;
             margin:0px;
@@ -84,7 +84,7 @@ page-cart {
             border-style: solid;
             border-color: #bdbdbd;
             color: #4a4a4a;
-            padding-top: calc((5/376)*100vw);
+            padding-top: 5px;
         }
         .col-border{
             border-width: 1px;
@@ -93,17 +93,17 @@ page-cart {
         }
         .menu-price{
             border-top: solid 1px #f7f7f7;
-            padding-top: calc((18/667)*100vh);
-            padding-bottom:calc((18/667)*100vh);
+            padding-top: 18px;
+            padding-bottom:18px;
             color:$default-color;
             font-size:4.5vw;
         }
         .left-padding{
-            padding-left: calc((17/376)*100vw);
-            padding-right:calc((17/376)*100vw);
+            padding-left: 17px;
+            padding-right:17px;
         }
         .top-padding{
-            padding-top: calc((13/667)*100vh);
+            padding-top: 13px;
         }
         .gray-color{
 	        color: #9b9b9b;
@@ -113,14 +113,14 @@ page-cart {
    .total-price{
        background-color:white;
        color:$default-color;
-       padding-left:calc((18/376)*100vw);
-       padding-right:calc((18/376)*100vw);
+       padding-left:18px;
+       padding-right:18px;
        font-size:4.8vw;
     }
 
     .empty-cart{
-        padding-top:calc((92/667)*100vh);
-        width:calc((117/376)*100vw);
+        padding-top:92px;
+        width:117px;
     }
 }
 

@@ -21,22 +21,22 @@ page-login-main {
     }
 
     .logo{
-        padding-top: calc((181/667)*100vh);
+        padding-top: 181px;
         img{
-            width:calc((132/376)*100vw);
+            width:132px;
         }
     }
 
     .first{
-        padding-top: calc((128/667)*100vh);
+        padding-top: 128px;
     }
 
     .second{
-        padding-top: calc((419/667)*100vh);
+        padding-top: 419px;
     }
 
     .third{
-        padding-top: calc((484/667)*100vh);
+        padding-top: 484px;
     }
 
     .tour{
@@ -44,8 +44,8 @@ page-login-main {
     }
 
     .login-button{
-        width:calc((302/376)*100vw);
-        height:calc((50/667)*100vh);
+        width:302px;
+        height:50px;
         border-radius: 8px;
         border: solid 1px $default-color;
         font-size:$default-font-size;
@@ -60,6 +60,6 @@ page-login-main {
     }
 
     .button-text{
-        padding-left:calc((48/376)*100vw);        
+        padding-left:48px;        
     }
 }

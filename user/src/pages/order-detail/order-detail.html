@@ -19,14 +19,30 @@
 </ion-header>
 
 <ion-content>
-<div class="order-no" text-center>
-  <p no-margin class="order-value">{{order.orderNO}}
+<div *ngIf="order.manualStore!='1'" class="order-no" text-center align-self-center>
+  <p  no-margin class="order-value">{{order.orderNO}}
     <span *ngIf="order.takeout==1">(포장)</span>
     <span *ngIf="order.takeout==2">(배달)</span>
-  </p>
+  </p>  
   <p no-margin class="order-label">주문번호</p>
 </div>
-<ion-row  class="order-status" *ngIf="order.orderStatus!='pickup' && order.orderStatus!='cancelled'">
+<div *ngIf="order.manualStore=='1' && (!order.manualOrderNO || order.manualOrderNO==null) && order.orderStatus=='checked'" class="order-preparing" text-center align-self-center>
+  <p class="order-label">
+   주문번호를 준비중에 있습니다.
+  </p>
+  <p class="order-explain">      
+  (수동 주문번호 입력 상점으로 주문번호를 기다려 주시기 바랍니다.)
+  </p>
+</div>
+<div *ngIf="order.manualStore=='1' && (order.manualOrderNO && order.manualOrderNO!=null) && order.orderStatus=='completed'" class="order-no"  style="margin-bottom:10px;" text-center align-self-center>
+    <p  no-margin class="order-value">{{order.manualOrderNO}}
+        <span *ngIf="order.takeout==1">(포장)</span>
+        <span *ngIf="order.takeout==2">(배달)</span>
+      </p>  
+    <p no-margin style="font-size:3.5vw;color:#4a4a4a;">상점 알림판에 주문번호가 표기되면 <br>식음료를 전달 받으시기 바랍니다.</p>
+</div>
+  
+<ion-row  class="order-status" *ngIf="order.manualStore!='1' && (order.orderStatus!='pickup' && order.orderStatus!='cancelled')">
   <ion-col text-center> 
     <div class="invalid-status" *ngIf="order.orderStatus!='paid'">
       &nbsp;
@@ -52,7 +68,7 @@
     </div>    
   </ion-col>
 </ion-row>
-<ion-row  class="order-status" *ngIf="order.orderStatus!='pickup' && order.orderStatus!='cancelled'">
+<ion-row  class="order-status" *ngIf="order.manualStore!='1' && (order.orderStatus!='pickup' && order.orderStatus!='cancelled')">
   <ion-col text-center> 
     <div style="color:#bdbdbd" *ngIf="order.orderStatus!='paid'">
       결제완료
@@ -131,8 +147,8 @@
             <ion-col col-4 text-right><span class="status"><amount-display [amount]="menu.price"></amount-display>원</span></ion-col>
   </ion-row>          
   <ion-row *ngFor="let option of menu.options" class="menu-detail">
-      <ion-col col-8 text-left>{{option.name}}({{option.number}})<span class="status" *ngIf="option.select!=undefined">:{{option.select}}</span> </ion-col>
-      <ion-col col-4 text-right><span class="status">+{{option.price}}</span>
+      <ion-col col-8 text-left>{{option.name}}({{option.number}}) <span *ngIf="menu.quantity>1">x{{menu.quantity}}</span><span class="status" *ngIf="option.select!=undefined">:{{option.select}}</span> </ion-col>
+      <ion-col col-4 text-right><span class="status">+{{option.price}}</span><span *ngIf="option.number>1">x{{option.number}}</span><span *ngIf="menu.quantity>1">x{{menu.quantity}}</span>
       </ion-col>        
   </ion-row> 
   <ion-row *ngIf="menu.memo" class="menu-detail">

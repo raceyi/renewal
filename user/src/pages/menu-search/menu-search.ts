@@ -23,6 +23,7 @@ export class MenuSearchPage {
   shopInfo;
   menus=[];
   menuList=[];
+  themeColor="#FF5F3A"; //default color
 
   constructor(public navCtrl: NavController,
               public cartProvider:CartProvider,
@@ -32,6 +33,8 @@ export class MenuSearchPage {
     this.shopInfo=this.navParams.get("shopInfo");
     this.menuList=this.navParams.get("menus");
     console.log("menus:"+JSON.stringify(this.menus));
+    if(this.shopInfo.themeColor && this.shopInfo.themeColor!=null)
+    this.themeColor=this.shopInfo.themeColor;
   }
 
   ionViewDidLoad() {

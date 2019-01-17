@@ -7,9 +7,9 @@
 <ion-header>
   <ion-navbar hideBackButton>
   <ion-buttons start>
-    <button style="background-color:#FF5F3A;color:white;" (click)="back()" ><ion-icon style="font-size:4.8vw;" name="ios-arrow-back"></ion-icon></button>
+    <button [style.color]="themeColor" style="background-color: transparent;" (click)="back()" ><ion-icon style="font-size:4.8vw;" name="ios-arrow-back"></ion-icon></button>
   </ion-buttons>
-  <ion-title class="menu-name"> {{menu.menuName}}
+  <ion-title class="menu-name"> <span [style.color]="themeColor">{{menu.menuName}}</span>
   </ion-title>
   </ion-navbar>
 </ion-header>
@@ -18,10 +18,10 @@
 <div class="menu-img" text-center>
   <img [src]="storageProvider.awsS3+menu.imagePath">
 </div>
-  <p *ngIf="menu.explanation!=undefined && menu.explanation!=null" text-wrap text-center style="color:#FF5F3A;font-size:4vw;">
+  <p *ngIf="menu.explanation!=undefined && menu.explanation!=null" text-wrap text-center [style.color]="themeColor" style="font-size:4vw;">
   {{menu.explanation}}
   </p>
-  <p *ngIf="menu.timeConstraint" text-wrap text-center style="color:#FF5F3A;font-size:4vw;">
+  <p *ngIf="menu.timeConstraint" text-wrap text-center [style.color]="themeColor" style="font-size:4vw;">
     {{timeConstraintString}}
   </p>
 <div *ngIf="menu.ingrediant!=undefined && menu.ingrediant!=null">  
@@ -32,7 +32,7 @@
 </div>
 
 <ion-row *ngIf="menu.menuDiscount && menu.menuDiscount!=null && menu.menuDiscount>0">
-  <ion-col class="menu-text-info" text-center>
+  <ion-col class="menu-text-info" [style.color]="themeColor" text-center>
    {{menu.menuDiscount}}%할인
   </ion-col>
 </ion-row>
@@ -46,10 +46,10 @@
 </ion-row>
                              
 <ion-row>
-  <ion-col class="menu-text-info" text-left>
+  <ion-col class="menu-text-info" [style.color]="themeColor" text-left>
    가격
   </ion-col>
-  <ion-col class="menu-text-info" text-right>
+  <ion-col class="menu-text-info" [style.color]="themeColor" text-right>
   <amount-display [amount]="menu.price"></amount-display>원
   </ion-col>
 </ion-row>
@@ -59,7 +59,7 @@
   <ion-col class="option-name"  text-left>
    스탬프 제공수
   </ion-col>
-  <ion-col class="option-price" text-right>
+  <ion-col class="option-price" [style.color]="themeColor" text-right>
   {{menu.stampCount}}
   </ion-col>
   <ion-col col-1>
@@ -68,7 +68,7 @@
 
 <div class="option-section" *ngIf="options.length>0" >
   <ion-row>
-    <ion-col class="menu-text-info" text-left>
+    <ion-col class="menu-text-info" [style.color]="themeColor" text-left>
       추가 옵션 
     </ion-col>
   </ion-row>
@@ -78,7 +78,7 @@
     <ion-col no-padding no-margin col-5 class="option-name" text-left>
         {{option.name}}
     </ion-col>
-    <ion-col class="option-price" no-padding no-margin col-3 text-right>
+    <ion-col class="option-price" [style.color]="themeColor" no-padding no-margin col-3 text-right>
         +<amount-display [amount]="option.price"></amount-display>원
     </ion-col>
     <ion-col class="number" style="border:none;" text-right col-3 *ngIf="option.flagType"> <!-- 숫자가 아닌 선택옵션임 -->
@@ -124,10 +124,10 @@
     <ion-col no-padding no-margin col-3 class="option-name" text-left>
        {{option.extendedOption.name}}
     </ion-col>
-    <ion-col class="option-price" *ngIf="!option.extendedOption.ignoreUnitPrice" no-padding no-margin col-5 text-right>
+    <ion-col class="option-price" [style.color]="themeColor" *ngIf="!option.extendedOption.ignoreUnitPrice" no-padding no-margin col-5 text-right>
         +<amount-display [amount]="option.extendedOption.price"></amount-display>원
     </ion-col>
-    <ion-col class="option-price" *ngIf="option.extendedOption.ignoreUnitPrice" no-padding no-margin col-5 text-right>
+    <ion-col class="option-price" [style.color]="themeColor" *ngIf="option.extendedOption.ignoreUnitPrice" no-padding no-margin col-5 text-right>
         <amount-display [amount]="option.extendedOption.price"></amount-display>원
     </ion-col>
     <ion-col class="number" style="border:none;" text-right col-3 *ngIf="option.extendedOption.flagType"> <!-- 숫자가 아닌 선택옵션임 -->
@@ -163,20 +163,20 @@
          <ion-col class="unit" col-1>개</ion-col>
        </ion-row>
 </div>
-<div class="price">
+<div class="price" [style.color]="themeColor">
 <ion-row>
   <ion-col class="left-col" text-left>결제금액</ion-col>
   <ion-col class="right-col" text-right> <amount-display [amount]="amount" ></amount-display>원</ion-col>
 </ion-row>
 </div>
-<div class="request">
+<div class="request" *ngIf="shopInfo && shopInfo.memoEnable=='1'" [style.color]="themeColor" >
   요청사항 
 <ion-textarea [(ngModel)]="memo" placeholder="특수문자를 제외한 한글,영문,숫자만 전달됩니다." ></ion-textarea>
 </div>
 </ion-content>
 <ion-footer>
 <ion-row>
-<ion-col no-padding no-margin><button no-margin ion-button full class="cart" (click)="command('cart')" color="white">장바구니</button></ion-col>
-<ion-col no-padding no-margin><button no-margin ion-button full color="primary" (click)="command('order')">바로주문</button></ion-col>
+<ion-col no-padding no-margin><button no-margin ion-button full class="cart" (click)="command('cart')" style="background-color:white;" [style.color]="themeColor">장바구니</button></ion-col>
+<ion-col no-padding no-margin><button no-margin ion-button full [style.background-color]="themeColor" style="color:white;" (click)="command('order')">바로주문</button></ion-col>
 </ion-row>
 </ion-footer>

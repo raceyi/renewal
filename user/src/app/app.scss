@@ -72,7 +72,6 @@ $default-color:#FF5F3A;
 
 .tabs-ios .tabbar{
     background:white;
-   // height: calc((82/667)*100vh); it results in problem under iPhoneX
 }
 
 
@@ -93,7 +92,7 @@ $default-color:#FF5F3A;
 
 ion-fab {
     custom-icon{
-        padding-top:calc((12/667)*100vh);
+        padding-top:12px;
     }
 }
 

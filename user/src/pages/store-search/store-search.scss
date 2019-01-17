@@ -1,7 +1,4 @@
 page-store-search {
-    //$latest-W : calc((145/375)*100vw);
-    //$latest-H : calc((195/667)*100vh);
-
     .toolbar-background-ios {
         background: white;
     }
@@ -90,7 +87,7 @@ page-store-search {
 
         .shop{
             background-color: white;
-            height:calc((110/375)*100vw); ;// 110px; LG최근 폰에서만 문제가 발생한다 ㅜㅜ 
+            height:110px;// 110px; LG최근 폰에서만 문제가 발생한다 ㅜㅜ 
             width:355px;
     
             //margin-top:5px;

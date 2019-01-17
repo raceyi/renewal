@@ -14,15 +14,15 @@
         </ion-title>
         <ion-buttons end>
               <button ion-button (click)="search()" style="background-color:white;color:#000000;">
-                   <ion-icon  class="store-information-button"name="ios-search-outline"></ion-icon>
+                   <ion-icon  class="store-information-button"name="ios-search"></ion-icon>
               </button>
               <button ion-button (click)="openCart()" style="background-color:white;color:#000000;">
-                   <b><ion-icon  class="store-information-button" name="ios-cart-outline"></ion-icon></b>
+                  <custom-icon set="tabs" name="cart" style="font-size:40px;"></custom-icon>
               </button>
         </ion-buttons>
         </ion-navbar>
        
-        <div style="display:flex;justify-content:center;">
+        <div *ngIf="shop.shopInfo.categoryLevel!='1'" style="display:flex;justify-content:center;">
                 <div class="branch">
                     <ion-icon ios="ios-pin-outline" md="md-pin"></ion-icon>
                     {{branch}}    
@@ -35,6 +35,27 @@
                     <span  *ngIf="shop.shopInfo.paymethod.card!=undefined">카드</span><span *ngIf="shop.shopInfo.paymethod.card!=undefined && shop.shopInfo.paymethod.card!='0%'">{{shop.shopInfo.paymethod.card}}</span>
                 </div>
         </div>
+        <div *ngIf="shop.shopInfo.categoryLevel=='1'" class="store-background-image category-level-select" style="padding-top: 64px;" [ngStyle]="ngStyle">
+            <span class="shop-keyword" text-center align-self-center > {{location}} </span>
+            <span class="shop-keyword" *ngIf="shop.shopInfo.paymethod.cash!=undefined && shop.shopInfo.paymethod.cash!='0%'">할인 {{shop.shopInfo.paymethod.cash}}</span>
+        </div>
+        <div *ngIf="shop.shopInfo.categoryLevel=='1'" class="category-level-select">    
+                <ion-segment  mode="md" [(ngModel)]="section" (ionChange)="changeSegment()">
+                        <ion-segment-button value="menu">
+                          메뉴
+                        </ion-segment-button>
+                        <ion-segment-button *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp" value="stamp">
+                                스탬프
+                        </ion-segment-button>        
+                        <ion-segment-button value="review">
+                          리뷰
+                        </ion-segment-button>  
+                        <ion-segment-button value="info">
+                          정보
+                        </ion-segment-button>
+                      </ion-segment> 
+        </div>               
+        <div *ngIf="shop.shopInfo.categoryLevel!='1'">
                 <ion-segment mode="md" [(ngModel)]="section" (ionChange)="changeSegment()" color="primary">
                     <ion-segment-button value="menu">
                       메뉴
@@ -49,6 +70,7 @@
                       정보
                     </ion-segment-button>
                   </ion-segment>  
+        </div>
                   <div *ngIf="section=='menu' && shop.shopInfo.categoryLevel!='1'">
                         <ion-row>
                             <ion-col text-center>
@@ -60,26 +82,17 @@
                             </ion-col>
                         </ion-row>  
                   </div>      
-                  <div class="classification" *ngIf="section=='info'">
+                  <div class="classification" *ngIf="section=='info' && shop.shopInfo.categoryLevel!='1'">
                     {{shop.shopInfo.classification}}
                   </div>                  
-                  <div *ngIf="section=='review' && (shop.shopInfo.downVoteCount!='0' || shop.shopInfo.upVoteCount!='0')">
-                        <ion-row  style="padding-top: 10px;">
-                            <ion-col text-right>
-                                <img style="width:30px;height:30px;" src="assets/imgs/review-input/iconmonstr-smiley-thin-240.png">
-                            </ion-col>
-                            <ion-col text-left style="font-size:20px;" align-self-center>
-                                {{shop.shopInfo.upVoteCount}}
-                            </ion-col>
-                            <ion-col text-right>
-                                <img style="width:30px;height:30px;" src="assets/imgs/review-input/iconmonstr-frown-thin-240.png">                                
-                            </ion-col>
-                            <ion-col text-left style="font-size:20px;" align-self-center>
-                                {{shop.shopInfo.downVoteCount}}
+                  <div *ngIf="section=='review' && shop.shopInfo.categoryLevel!='1' && (shop.shopInfo.downVoteCount!='0' || shop.shopInfo.upVoteCount!='0')">
+                    <ion-row  style="padding-top: 10px;">
+                            <ion-col text-left style="padding-left:24px;font-size: 17px;color: #5a5a5a;">
+                                전체 {{shop.shopInfo.voteCount}} 개 
                             </ion-col>
                         </ion-row>
-                  </div>
-                  <div *ngIf="section=='review' && shop.shopInfo.downVoteCount=='0' && shop.shopInfo.upVoteCount=='0'">
+                </div>
+                  <div *ngIf="section=='review' && shop.shopInfo.categoryLevel!='1' && shop.shopInfo.downVoteCount=='0' && shop.shopInfo.upVoteCount=='0'">
                     <ion-row  style="padding-top: 10px;">
                         <ion-col text-center>
                             리뷰가 존재하지 않습니다.
@@ -101,24 +114,19 @@
       <ion-content #shophomeContent>
       
       <div *ngIf="section=='menu' && shop.shopInfo.categoryLevel=='1'">
-          <ion-row>
-              <ion-col text-center style="background-color:#ff7f39;">
-                    <img src="assets/imgs/shop/haksik.png">                    
-              </ion-col>
-          </ion-row>
-          <ion-row>
-              <ion-col col-12 text-center *ngFor="let category of categories;let i=index;">
-                <button ion-button clear (click)="moveSubShop(i)" >{{category.categoryName}}<span *ngIf="allSoldOutCategory(i)">(판매종료)</span></button> 
-                <!--
-                  <button class="store-button" style="background-color:white;color:black;" (click)="enterStore(store)" no-padding no-margin ion-button>
-                    <div class="store-img" text-center [ngStyle]="store.ngStyle">
-                        <span class="soldout" *ngIf="allSoldOutStore(i)">판매종료</span>
+          <ion-row class="category-button">
+              <ion-col col-6 text-center *ngFor="let category of categories;let i=index;" >
+                <button ion-button clear (click)="moveSubShop(i)"  style="height:140px;color: #848484;" >
+                    <div style="display:flex;flex-direction: column;">
+                        <div>
+                                <img style="width:45px;height:45px;margin-bottom:14px;margin-top:22px;" [src]="storageProvider.awsS3+shop.shopInfo.takitId+'_'+category.categoryName">                                                                                                                         
+                        </div>
+                        <div style="font-size:15px;">
+                                {{category.categoryName}}                                                                                                                                                    
+                        </div>
+                        <div *ngIf="allSoldOutCategory(i)" style="font-size:15px;">(판매종료)</div>
                     </div>
-                    <div text-center class="store-name">
-                      {{store.name}}
-                    </div>
-                  </button>
-                -->
+                </button> 
               </ion-col>
             </ion-row>
       </div>
@@ -131,8 +139,8 @@
                                         <label *ngIf="menu[0].soldout==1" class="sold-out"> <b>판매종료</b></label>
                                         <label *ngIf="menu[0].soldout==0"> &nbsp;&nbsp;&nbsp;&nbsp;</label>
                                        </div>
-                                      <h2>{{menu[0].menuName}}</h2> 
-                                      <p><amount-display [amount]="menu[0].price"></amount-display>원 <span class="text-border" *ngIf="menu[0].takeout>0 && shop.shopInfo.deliveryArea==null" >&nbsp;&nbsp;포장&nbsp;&nbsp;</span> 
+                                      <h2 text-center>{{menu[0].menuName}}</h2> 
+                                      <p text-center><amount-display [amount]="menu[0].price"></amount-display>원 <span class="text-border" *ngIf="menu[0].takeout>0 && shop.shopInfo.deliveryArea==null" >&nbsp;&nbsp;포장&nbsp;&nbsp;</span> 
                                                            <span class="text-border" *ngIf="menu[0].takeout>0 && shop.shopInfo.deliveryArea!=null" >&nbsp;&nbsp;포장/배달&nbsp;&nbsp;</span></p>
                                   </ion-item>
                               </button>
@@ -144,8 +152,8 @@
                                         <label *ngIf="menu[1].soldout==1" class="sold-out"> <b>판매종료</b></label>
                                         <label *ngIf="menu[1].soldout==0"> &nbsp;&nbsp;&nbsp;&nbsp;</label>
                                        </div>   
-                                       <h2>{{menu[1].menuName}}</h2>
-                                      <p><amount-display [amount]="menu[1].price"></amount-display>원 <span class="text-border" *ngIf="menu[1].takeout>0 && shop.shopInfo.deliveryArea==null" >&nbsp;&nbsp;포장&nbsp;&nbsp;</span> 
+                                       <h2 text-center>{{menu[1].menuName}}</h2>
+                                      <p text-center><amount-display [amount]="menu[1].price"></amount-display>원 <span class="text-border" *ngIf="menu[1].takeout>0 && shop.shopInfo.deliveryArea==null" >&nbsp;&nbsp;포장&nbsp;&nbsp;</span> 
                                                              <span class="text-border" *ngIf="menu[1].takeout>0 && shop.shopInfo.deliveryArea!=null" >&nbsp;&nbsp;포장/배달&nbsp;&nbsp;</span></p> 
                                   </ion-item>
                               </button>
@@ -167,6 +175,20 @@
       </div>
       <div *ngIf="section=='review'">
                         <!-- Review -begin -->
+                        <div *ngIf="section=='review' && shop.shopInfo.categoryLevel=='1' && (shop.shopInfo.downVoteCount!='0' || shop.shopInfo.upVoteCount!='0')">
+                                <ion-row  style="padding-top: 10px;">
+                                        <ion-col text-left style="padding-left:24px;font-size: 17px;color: #5a5a5a;">
+                                            전체 {{shop.shopInfo.voteCount}} 개 
+                                        </ion-col>
+                                    </ion-row>
+                            </div>
+                              <div *ngIf="section=='review' && shop.shopInfo.categoryLevel=='1' && shop.shopInfo.downVoteCount=='0' && shop.shopInfo.upVoteCount=='0'">
+                                <ion-row  style="padding-top: 10px;">
+                                    <ion-col text-center>
+                                        리뷰가 존재하지 않습니다.
+                                    </ion-col>
+                                </ion-row>
+                            </div>
                         <div style="border-bottom:solid 1px lightgray;padding: 15px;" *ngFor="let review of reviews;let i=index; ">
                                 <ion-row>
                                     <ion-col col-1 text-center *ngIf="review.voteUp=='1'">
@@ -190,7 +212,7 @@
                                 <ion-row *ngIf="review.shopResponse!=null && review.shopResponse!=undefined">
                                     <ion-col col-1>
                                     </ion-col>
-                                        <ion-col style="background-color:#d8d8d8;" text-left>
+                                        <ion-col style="background-color:#f7f7f9;" text-left>
                                             <ion-row>
                                                 <ion-col no-padding no-margin>
                                                         사장님 답글
@@ -238,6 +260,9 @@
                                 <!-- Review -end -->            
       </div>
       <div *ngIf="section=='info'" style="background-color:#f7f7f9;">
+            <div class="classification" *ngIf="section=='info' && shop.shopInfo.categoryLevel=='1'">
+                    {{shop.shopInfo.classification}}
+            </div>                  
             <ion-slides class="slides" pager="true" *ngIf="shop.shopInfo.promotions!=null">
                     <ion-slide *ngFor="let promotion of shop.shopInfo.promotions;let i=index;">
                         <button class="each-img" clear no-margin no-padding ion-button><img [src]="storageProvider.awsS3+promotion"></button>

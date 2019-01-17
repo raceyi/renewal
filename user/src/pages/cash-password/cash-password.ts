@@ -360,6 +360,13 @@ export class CashPasswordPage {
                                     buttons: ['OK']
                                 });
                                 alert.present();                            
+                        }else if(error.startsWith("paymethod is out of date")){
+                            let alert = this.alertController.create({
+                                title: '결제 정보가 변경되었습니다.',
+                                subTitle:'상점에 다시 입장하여 새로운 결제 정보로 주문해주세요',
+                                buttons: ['OK']
+                            });
+                            alert.present();
                         }else{
                             let alert = this.alertController.create({
                                     title: '주문에 실패했습니다.',

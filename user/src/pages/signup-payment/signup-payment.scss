@@ -31,7 +31,7 @@ page-signup-payment {
        ion-label{
            height:30px;
        }
-        margin-left:calc((40/376)*100vw);
+        margin-left:40px;
         color:gray;
         font-size: 3.5vw;
         p{
@@ -45,7 +45,7 @@ page-signup-payment {
       .button-ios{
         font-size: $default-font-size;
         padding:0px;
-        width: calc((77/376)*100vw);
+        width: 77px;
         height: 32px;
       }
   }
@@ -65,19 +65,19 @@ page-signup-payment {
       height:20px;
       font-size: $default-font-size;
       margin-top:40px;
-      margin-left:calc((24/376)*100vw);
+      margin-left:24px;
   }
 
   .keypad-input{
-      margin-left:calc((24/376)*100vw);   
+      margin-left:24px;   
       font-size: $default-font-size;   
       border-bottom-style: solid;
       border-bottom-width: 1px;
   }
 
   .keypad-button{
-      margin-left:calc((24/376)*100vw);   
-      width: calc((290/376)*100vw);
+      margin-left:24px;   
+      width: 290px;
       padding:0px;
       span{
         color:gray;
@@ -90,11 +90,11 @@ page-signup-payment {
   }
 
   .keypad-receiptId{
-    margin-right: calc((40/376)*100vw);
+    margin-right: 40px;
   }
 
   .keypad-cashId{
-      width: calc((230/376)*100vw) !important;
+      width: 230px !important;
   }
 
   .list-ios {
@@ -116,7 +116,7 @@ page-signup-payment {
   .select-label{
         height:20px;
         font-size: $default-font-size;
-        margin-left:calc((24/376)*100vw);
+        margin-left:24px;
   }
 
   .select-text{

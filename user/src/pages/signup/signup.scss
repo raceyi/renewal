@@ -59,8 +59,8 @@ page-signup {
     }
 
     .list-ios {
-        margin-left: calc((43/376)*100vw);
-        margin-right: calc((43/376)*100vw);
+        margin-left: 43px;
+        margin-right: 43px;
     }
 
     .under_input{
@@ -68,7 +68,7 @@ page-signup {
     }
 
     .one-button{
-        width:calc((310/376)*100vw);
+        width:310px;
         height:42px;
         border-radius: 4px;
         border-width: 1px;
@@ -81,28 +81,27 @@ page-signup {
     }
 
    .agreement-check-box{
-        margin-left: calc((33/376)*100vw);
-        margin-right: calc((33/376)*100vw);
-        width:calc((310/376)*100vw);
+        margin-left: 33px;
+        margin-right: 33px;
+        width:310px;
         height:42px;
         border-style: solid;
         border-width: 1px;
         border-radius: 4px;
         border-color:$default-color;
-       // font-family:$default-font-style;
         font-size:4vw !important;        
    }
 
     .details{
-        margin-left: calc((51/376)*100vw);
-        margin-right: calc((51/376)*100vw);
+        margin-left: 51px;
+        margin-right: 51px;
         margin-top:20px;
         color: #4a4a4a;
     }
 
     .explain{
-        margin-left: calc((33/376)*100vw);  
-        width: calc((310/376)*100vw); 
+        margin-left: 33px;  
+        width: 310px; 
         height: 317px; 
         border-radius: 8px;
         border: solid 1px $default-color; 

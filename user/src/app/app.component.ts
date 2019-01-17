@@ -79,6 +79,15 @@ export class MyApp {
                     this.loginProvider.loginSocialLogin(id).then((res:any)=>{
                                 console.log("MyApp:"+JSON.stringify(res));
                                 if(res.result=="success"){
+                                    if(parseFloat(res.version)>parseFloat(this.storageProvider.version)){
+                                        console.log("post invalid version");
+                                        let alert = this.alertCtrl.create({
+                                                    title: '앱버전을 업데이트해주시기 바랍니다.',
+                                                    subTitle: '현재버전에서는 일부 기능이 정상동작하지 않을수 있습니다.',
+                                                    buttons: ['OK']
+                                                });
+                                        alert.present();
+                                    }
                                     //save shoplist
                                     console.log("res.email:"+res.userInfo.email +"res.name:"+res.userInfo.name);
                                     if(res.userInfo.hasOwnProperty("shopList")){
@@ -127,6 +136,15 @@ export class MyApp {
                         this.loginProvider.loginEmail(id,password).then((res:any)=>{
                                 console.log("MyApp:"+JSON.stringify(res));
                                 if(res.result=="success"){
+                                    if(parseFloat(res.version)>parseFloat(this.storageProvider.version)){
+                                        console.log("post invalid version");
+                                        let alert = this.alertCtrl.create({
+                                                    title: '앱버전을 업데이트해주시기 바랍니다.',
+                                                    subTitle: '현재버전에서는 일부 기능이 정상동작하지 않을수 있습니다.',
+                                                    buttons: ['OK']
+                                                });
+                                        alert.present();
+                                    }
                                     if(res.userInfo.hasOwnProperty("shopList")){
                                         //save shoplist
                                         this.storageProvider.shoplistSet(JSON.parse(res.userInfo.shopList));

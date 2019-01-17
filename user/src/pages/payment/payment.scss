@@ -22,18 +22,18 @@ page-payment {
 
     .pickup-area{
         background-color:white;
-        padding-bottom: calc((10/667)*100vh);  
+        padding-bottom: 10px;  
     }
 
    .pickup-method{
         .circle{
             background-color: $default-color;
-            width: calc((47/376)*100vw);
-            height: calc((47/376)*100vw);  
+            width: 47px;
+            height: 47px;  
             border-radius: 50%;
         }
-        padding-left:calc((40/376)*100vw);
-        padding-right:calc((40/376)*100vw);
+        padding-left:40px;
+        padding-right:40px;
         font-size:4.5vw;
         color:$default-color;
 
@@ -48,33 +48,33 @@ page-payment {
         }
 
         ion-row{
-            padding-left:calc((20/376)*100vw);
-            padding-right:calc((20/376)*100vw);
+            padding-left:20px;
+            padding-right:20px;
         }
-        padding-top: calc((10/376)*100vw);
-        padding-bottom:calc((10/376)*100vw);
+        padding-top: 10px;
+        padding-bottom:10px;
     }
 
     .pay-amount{
         font-size:4.5vw;
         background-color:white;
         ion-row{
-            padding-left:calc((20/376)*100vw);
-            padding-right:calc((20/376)*100vw);
+            padding-left:20px;
+            padding-right:20px;
         }        
-        margin-top:  calc((10/667)*100vh); 
+        margin-top:  10px; 
         .pay-amount-label{
-            padding-top:calc((15/667)*100vh); 
-            padding-bottom:calc((15/667)*100vh); 
+            padding-top:15px; 
+            padding-bottom:15px; 
             color:$default-color;
         }     
         .amount-value{
-            padding-top:calc((15/667)*100vh); 
-            padding-bottom:calc((15/667)*100vh); 
+            padding-top:15px; 
+            padding-bottom:15px; 
             color:$default-color;            
         } 
         .delivery-fee{
-            padding-bottom:calc((15/667)*100vh);
+            padding-bottom:15px;
         }        
     }
 
@@ -82,24 +82,24 @@ page-payment {
         font-size:4.5vw;
         background-color:white;
         ion-row{
-            padding-left:calc((20/376)*100vw);
-            padding-right:calc((20/376)*100vw);
+            padding-left:20px;
+            padding-right:20px;
         }       
         button{
-            height:calc((20/667)*100vh);
+            height:20px;
         } 
 
         .discount-label{
-            padding-top:calc((10/667)*100vh);
-            padding-bottom:calc((10/667)*100vh);
+            padding-top:10px;
+            padding-bottom:10px;
             color: $default-color;
         }
 
         .coupon-button{
-            padding-bottom:calc((10/667)*100vh);
+            padding-bottom:10px;
             color: #4a4a4a;
             .coupon-label{
-                padding-top: calc((5/667)*100vh);
+                padding-top: 5px;
             }
         }
     }
@@ -108,13 +108,13 @@ page-payment {
         background-color: #f2f2f2;
         color: #4a4a4a;
         font-size: 3.2vw;
-        padding-top:calc((10/667)*100vh);
-        padding-bottom:calc((10/667)*100vh);
-        padding-left:calc((20/376)*100vw);
-        padding-right:calc((20/376)*100vw);
+        padding-top:10px;
+        padding-bottom:10px;
+        padding-left:20px;
+        padding-right:20px;
     }
-    $scroll-H:  calc((180/667)*100vh);
-    $latest-H : calc((180/667)*100vh);
+    $scroll-H:  180px;
+    $latest-H : 180px;
     
     .scroll-latest {
         height: $scroll-H;
@@ -124,11 +124,10 @@ page-payment {
     }
 
   .paymethod{
-       margin-top:calc((10/667)*100vh);
+       margin-top:10px;
     .pay-amount-label {
-        padding-left:calc((20/376)*100vw);
-        padding-top: calc((15/667)*100vh);
-        //padding-bottom: calc((15/667)*100vh);
+        padding-left:20px;
+        padding-top: 15px;
         color: $default-color;
         font-size:4.5vw;
     }
@@ -138,31 +137,30 @@ page-payment {
         .scroll-row-latest{
             flex-wrap : inherit;
             height: $latest-H;
-            margin-left: calc((62/376)*100vw);
-            margin-right: calc((62/376)*100vw);
+            margin-left: 62px;
+            margin-right: 62px;
             ion-row{
-                width : calc((227/376)*100vw);   
+                width : 227px;   
             }
 
             .cash-select-border{
-                //height: calc((171/667)*100vh) !important; // increase height, width
                 border-style:solid !important;
                 border-color: #33b9c6 !important;
                 border-radius: 8px;
-                border-left: calc((6/376)*100vw);
-                border-right:calc((6/376)*100vw);
-                border-top:calc((6/667)*100vh);
-                border-bottom:calc((6/667)*100vh);
+                border-left: 6px;
+                border-right:6px;
+                border-top:6px;
+                border-bottom:6px;
             }
 
             .card-select-border{
                 border-style:solid !important;
                 border-color:$default-color !important;
                 border-radius: 8px;
-                border-left: calc((6/376)*100vw);
-                border-right:calc((6/376)*100vw);
-                border-top:calc((6/667)*100vh);
-                border-bottom:calc((6/667)*100vh);
+                border-left: 6px;
+                border-right:6px;
+                border-top:6px;
+                border-bottom:6px;
             }
  
             .card-unselect-border{
@@ -171,35 +169,35 @@ page-payment {
             }
 
             .card-button{
-                width : calc((227/376)*100vw);
-                height: calc((60/667)*100vh);
+                width : 227px;
+                height: 60px;
                 color:white;
             }
 
             .cash-card{
                 background-color:$default-color;
                 color:white;
-                padding-top:calc((10/667)*100vh);
+                padding-top:10px;
                 .cash-label{
-                    padding-top: calc((24/667)*100vh);
-                    height:calc((47/667)*100vh);                    
+                    padding-top: 24px;
+                    height:47px;                    
                 }                
                  .cash-value{
-                    padding-top:calc((7/667)*100vh);
-                    padding-bottom:calc((17/667)*100vh);
+                    padding-top:7px;
+                    padding-bottom:17px;
                  }
                 .cash-value-row{
-                    padding-bottom:calc((7/667)*100vh); ///////////////////////                     
+                    padding-bottom:7px; ///////////////////////                     
                 }                      
                  ion-row{
                      button{
-                        height:calc((23/667)*100vh);
+                        height:23px;
                      }
                      border-top: solid 0.5px #ffffff;
                      ion-col{
                         button{
                                 color:white;
-                                padding-bottom:calc((7/667)*100vh); // Please check it on the phone
+                                padding-bottom:7px; // Please check it on the phone
                                 span{
                                     font-size:4vw;
                                 }
@@ -218,34 +216,33 @@ page-payment {
  	            box-shadow: 0 0 7px 0 rgba(70, 70, 70, 0.5);
                 .card-add-label{
                     justify-content: center;
-                    padding-top: calc((15/667)*100vh);
+                    padding-top: 15px;
                 }
             }
 
             .card-card{
-                //background-color:$default-color;
                 color:white;
                 .card-remove{
-                    height:calc((25/667)*100vh);
+                    height:25px;
                 }
                 button{
-                    height:calc((30/667)*100vh);
+                    height:30px;
                 }
             }
 
             .scroll-col-latest {
                 overflow: inherit; 
-                margin-left: calc((12/376)*100vw);
-                margin-right:calc((12/376)*100vw);
-                margin-top:calc((25/667)*100vh);
-                margin-bottom:calc((25/667)*100vh);
-                height:calc((121/667)*100vh);
+                margin-left: 12px;
+                margin-right:12px;
+                margin-top:25px;
+                margin-bottom:25px;
+                height:121px;
             }      
 
             .select-scroll-col-latest {
                 overflow: inherit; 
-                margin-top:calc((19/667)*100vh);
-                height:calc((133/667)*100vh);
+                margin-top:19px;
+                height:133px;
             }            
                   
         }    
@@ -253,11 +250,11 @@ page-payment {
   }
    .delivery-text-area{
         background-color:#f2f2f2;
-        margin-left:calc((20/376)*100vw);
-        margin-right:calc((20/376)*100vw);
+        margin-left:20px;
+        margin-right:20px;
         ion-textarea{
-            width: calc((334/376)*100vw); 
-            height: calc((65/667)*100vh); 
+            width: 334px; 
+            height: 65px; 
             background-color: #ffffff;
             border: solid 1px #bdbdbd;
         }

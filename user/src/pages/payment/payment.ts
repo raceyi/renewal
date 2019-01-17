@@ -64,6 +64,7 @@ export class PaymentPage {
   deliveryAddress;
 
   trigger;
+  shopName;
 
   //menu-discount begin
   menuDiscountAmount=0;
@@ -86,7 +87,13 @@ export class PaymentPage {
     //this.orderName=JSON.stringify(param.orderName);
     this.trigger=param.trigger;
 
-    
+    ////////////////////////////////////////
+    // 개인정보 제공항목의 받는자에 표기하기 위해서
+    let takitId:string=this.carts[0].takitId;
+    let substrs=takitId.split("@");
+    this.shopName= substrs[1]+" "+substrs[0];
+    ////////////////////////////////////////
+
     this.checkTakeoutAvailable();
     this.checkDeliveryAvailable();
 

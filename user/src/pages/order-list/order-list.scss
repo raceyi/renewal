@@ -13,11 +13,11 @@ page-order-list {
     
     ion-header{
         .header{
-            height:calc((50/667)*100vh);
+            height:50px;
             font-size:4.8vw;
             background-color:$default-color;
             color:white;
-            padding-top: calc((15/667)*100vh);
+            padding-top: 15px;
         }
     }
     .scroll-content{
@@ -44,9 +44,9 @@ page-order-list {
     }
 //////////////////////////////////
     .no-list{
-        margin-top: 20vh;
-        width: 50vw;
-        margin-left: 25vw;
+        margin-top: 133.4px;
+        width: 187.5px;
+        margin-left: 93.75px;
     }
     .selection-area{
             height: 27px;

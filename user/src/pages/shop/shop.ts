@@ -25,6 +25,7 @@ import {TimeUtil} from '../../classes/TimeUtil';
 export class ShopPage {
   shop;
   shopName;
+  location;
   takitId;
   //orderPageEntered:boolean=false;
   nowMenus:any=[];
@@ -74,6 +75,10 @@ export class ShopPage {
 
       this.shop.shopInfo.businessTimesObj=JSON.parse(this.shop.shopInfo.businessTime);
 
+      let upVoteCount:number=parseInt(this.shop.shopInfo.upVoteCount);
+      let downVoteCount:number=parseInt(this.shop.shopInfo.downVoteCount);
+      this.shop.shopInfo.voteCount=upVoteCount+downVoteCount;
+
       var date=new Date();
       this.shop.shopInfo.TodayBusinessTime=this.shop.shopInfo.businessTimesObj[date.getDay()];
       console.log("TodayBusinessTime:.."+this.shop.shopInfo.TodayBusinessTime);
@@ -88,7 +93,7 @@ export class ShopPage {
         storageProvider.shopResponse.shopInfo.paymethod=JSON.parse(storageProvider.shopResponse.shopInfo.paymethod);
       console.log("paymethod:"+ storageProvider.shopResponse.shopInfo.paymethod.card);
       console.log("paymethod:"+ storageProvider.shopResponse.shopInfo.paymethod.cash);
-      this.ngStyle={'background-image': 'url('+ storageProvider.awsS3+storageProvider.shopResponse.shopInfo.imagePath + ')'};
+      this.ngStyle={'background-image': 'url('+ storageProvider.awsS3+this.shop.shopInfo.takitId+'_background' + ')'};
 
       console.log("phone:"+this.storageProvider.shopResponse.shopInfo.shopPhone);
       if(this.storageProvider.shopResponse.shopInfo.shopPhone && this.storageProvider.shopResponse.shopInfo.shopPhone!=null){
@@ -288,6 +293,9 @@ export class ShopPage {
         console.log("[loadShopInfo]this.storageProvider.shopResponse: "+JSON.stringify(this.storageProvider.shopResponse));
 
         this.shopName=this.shop.shopInfo.shopName;
+       
+        let strs=this.shop.shopInfo.takitId.split("@");
+        this.location=strs[0];
 
         if(this.shop.categories.length===0 || this.shop.menus.length===0){
             let alert = this.alertCtrl.create({
@@ -360,7 +368,9 @@ export class ShopPage {
                 deliveryArea:this.shop.shopInfo.deliveryArea,
                 freeDelivery:this.shop.shopInfo.freeDelivery,
                 paymethod:this.shop.shopInfo.paymethod,
-                deliveryFee:this.shop.shopInfo.deliveryFee};
+                deliveryFee:this.shop.shopInfo.deliveryFee,
+                themeColor:this.shop.shopInfo.themeColor,
+                memoEnable: this.shop.shopInfo.memoEnable};
 
     this.navCtrl.push(MenuPage, {menu:JSON.stringify(menu),
                                 shopInfo:JSON.stringify(shopInfo),
@@ -460,7 +470,9 @@ export class ShopPage {
                 deliveryArea:this.shop.shopInfo.deliveryArea,
                 freeDelivery:this.shop.shopInfo.freeDelivery,
                 paymethod:this.shop.shopInfo.paymethod,
-                deliveryFee:this.shop.shopInfo.deliveryFee};
+                deliveryFee:this.shop.shopInfo.deliveryFee,
+                themeColor:this.shop.shopInfo.themeColor,
+                memoEnable: this.shop.shopInfo.memoEnable};
 
         //console.log("menus:"+JSON.stringify(this.storageProvider.shopResponse.shopInfo.menus));
 
@@ -474,7 +486,8 @@ export class ShopPage {
             deliveryArea:this.shop.shopInfo.deliveryArea,
             freeDelivery:this.shop.shopInfo.freeDelivery,
             paymethod:this.shop.shopInfo.paymethod,
-            deliveryFee:this.shop.shopInfo.deliveryFee};
+            deliveryFee:this.shop.shopInfo.deliveryFee,
+            memoEnable:this.shop.shopInfo.memoEnable};
 
         this.navCtrl.push(SubShopPage, {category: this.categories[i].categoryName ,
                                         menus:this.categories[i].menus,

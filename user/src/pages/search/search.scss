@@ -3,16 +3,16 @@ page-search {
         background-color:$default-color;
     }
     .close-button{
-        margin-top: calc((77/667)*100vh);
-        margin-left: calc((38/376)*100vw);
+        margin-top: 77px;
+        margin-left: 38px;
     }
 
     .keyword-input{
         border-bottom-style:solid;
         border-bottom-width:1px;
         border-bottom-color:white;
-        margin-left:calc((38/376)*100vw);
-        width:calc((290/376)*100vw);
+        margin-left:38px;
+        width:290px;
         background: transparent !important;
         input{
             padding:0px;
@@ -25,8 +25,8 @@ page-search {
     }
 
     .recent-label{
-        margin-top: calc((75/667)*100vh);
-        margin-left:calc((38/376)*100vw);
+        margin-top: 75px;
+        margin-left:38px;
     }
 
     .searchbar-ios .searchbar-search-icon {
@@ -46,8 +46,8 @@ page-search {
     .shops{
         font-size:4vw;
         button{
-            margin-left:calc((38/376)*100vw);
-            width:calc((290/376)*100vw);
+            margin-left:38px;
+            width:290px;
             span{
                 justify-content: left;
             }
@@ -61,8 +61,8 @@ page-search {
     .search-shops{
         font-size:4vw;
         button{
-            margin-left:calc((38/376)*100vw);
-            width:calc((290/376)*100vw);
+            margin-left:38px;
+            width:290px;
             span{
                 justify-content: left;
             }

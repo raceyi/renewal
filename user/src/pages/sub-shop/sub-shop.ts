@@ -79,7 +79,9 @@ export class SubShopPage {
                 deliveryArea:this.shop.shopInfo.deliveryArea,
                 freeDelivery:this.shop.shopInfo.freeDelivery,
                 paymethod:this.shop.shopInfo.paymethod,
-                deliveryFee:this.shop.shopInfo.deliveryFee};
+                deliveryFee:this.shop.shopInfo.deliveryFee,
+                themeColor:this.shop.shopInfo.themeColor,
+                memoEnable:this.shop.shopInfo.memoEnable};
     
     this.navCtrl.push(MenuPage, {menu:JSON.stringify(menu),
                                 shopInfo:JSON.stringify(shopInfo),
@@ -121,7 +123,9 @@ export class SubShopPage {
       deliveryArea:this.shop.shopInfo.deliveryArea,
       freeDelivery:this.shop.shopInfo.freeDelivery,
       paymethod:this.shop.shopInfo.paymethod,
-      deliveryFee:this.shop.shopInfo.deliveryFee};
+      deliveryFee:this.shop.shopInfo.deliveryFee,
+      themeColor:this.shop.shopInfo.themeColor,
+      memoEnable: this.shop.shopInfo.memoEnable};
 
 //console.log("menus:"+JSON.stringify(this.storageProvider.shopResponse.shopInfo.menus));
 

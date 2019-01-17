@@ -125,7 +125,7 @@ import {NoticePageModule} from '../pages/notice/notice.module';
     StoreSearchPageModule,
     SubShopPageModule,
     NoticePageModule,
-    IonicModule.forRoot(MyApp,{mode:'ios'})
+    IonicModule.forRoot(MyApp,{mode:'ios'/*, animate: false*/ })
   ],
   bootstrap: [IonicApp],
   entryComponents: [

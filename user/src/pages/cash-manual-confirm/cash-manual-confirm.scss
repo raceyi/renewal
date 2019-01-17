@@ -34,13 +34,13 @@ page-cash-manual-confirm {
     }
 
     .header-section{
-        padding-top: calc((14/375)*100vw);
-        padding-bottom: calc((35/375)*100vw);
+        padding-top: 14px;
+        padding-bottom: 35px;
     }
 
     .account-info{
-        margin-left:calc((21/375)*100vw);
-        width: calc((334/376)*100vw);
+        margin-left:21px;
+        width: 334px;
         background-color:white;
         font-size:4vw;
         .bank-name{
@@ -56,7 +56,7 @@ page-cash-manual-confirm {
     }
 
     .bank-select{
-        height: calc((53/375)*100vw);
+        height: 53px;
         border-bottom-style:solid;
         border-top-style:solid;
         border-width:1px;
@@ -64,8 +64,8 @@ page-cash-manual-confirm {
     }
 
     .bank-select-label{
-        margin-top: calc((17/375)*100vw) !important;
-        margin-bottom: calc((17/375)*100vw);
+        margin-top: 17px !important;
+        margin-bottom: 17px;
     }
 
     .right-border{
@@ -75,17 +75,17 @@ page-cash-manual-confirm {
     }
 
     .account-num{
-        height:calc((53/375)*100vw);
+        height:53px;
         color:#4a4a4a;
     }
 
     .account-num-label{
-        padding-top:calc((17/375)*100vw) !important;
-        padding-left:calc((17/375)*100vw) !important;
+        padding-top:17px !important;
+        padding-left:17px !important;
     }
 
     .account-num-value{
-        padding-top:calc((5/375)*100vw) !important;  
+        padding-top:5px !important;  
 
         ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
             font-size:3.5vw;
@@ -102,7 +102,7 @@ page-cash-manual-confirm {
     }
 
     .bank-select-value{
-         padding-top:calc((17/375)*100vw) !important;
+         padding-top:17px !important;
     }
 
 }

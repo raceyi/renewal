@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar hideBackButton>
-    <button class="close-button" clear ion-button (click)="back()"><ion-icon style="font-size:6vw;" name="md-close"></ion-icon>
+    <button class="close-button" [style.color]="themeColor" clear ion-button (click)="back()"><ion-icon style="font-size:6vw;" name="md-close"></ion-icon>
     </button>
     <div class="searchbar-div">
     <ion-searchbar  mode="md" class="keyword-input" 
@@ -9,7 +9,7 @@
                   (ionInput)="onInput($event)">
     </ion-searchbar>
     </div>
-    <div class="explain" text-center>
+    <div class="explain" [style.color]="themeColor" text-center>
       <b>초성만으로도 검색가능합니다.</b><br>
       <b>떡볶이   =>  ㄸㅂㅇ </b><br>
     </div>

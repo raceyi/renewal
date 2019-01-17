@@ -38,18 +38,26 @@ export class MenuPage {
   ignoreUnitPrice:boolean=false;
   ignoreUnitPriceOption:string;
 
+  themeColor="#FF5F3A"; //default color
+  //themeColor="#73a251";
+  
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public alertController:AlertController,
               public cartProvider:CartProvider,
               private ngZone:NgZone,
               public app:App,
               public storageProvider:StorageProvider) {
+                
     this.menu=JSON.parse(navParams.get('menu'));
     this.shopInfo=JSON.parse(navParams.get('shopInfo'));
     let loading:Loading=navParams.get('loading');
     if(loading){
         loading.dismiss();
     }
+
+    if(this.shopInfo.themeColor && this.shopInfo.themeColor!=null)
+        this.themeColor=this.shopInfo.themeColor;
+
     console.log("this.menu.timeConstraint:"+this.menu.timeConstraint);
 
     console.log(".....discountOptions:..."+this.menu.menuDiscountOption);
