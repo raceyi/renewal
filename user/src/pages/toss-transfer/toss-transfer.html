@@ -33,10 +33,14 @@
     </button>
    </ion-col>
    </ion-row>
-   <br>
-   <br>
-   <br>
-   <ion-row>
+
+<ion-row padding>
+  <ion-col text-center style="font-size:4.5vw;" *ngIf="storageProvider.cashId && storageProvider.cashId.length>0">
+      '보낸이'를 <b style="color:#FF5F3A;">{{storageProvider.cashId}}</b> 로 설정        
+  </ion-col>
+</ion-row>
+
+<ion-row>
      <ion-col col-1 text-right>
        <ion-icon style="color:#FF5F3A;" name="md-alert"></ion-icon>
      </ion-col>
@@ -50,14 +54,6 @@
      </ion-col>
      <ion-col text-left>
      입금 알림을 못받으셨을 경우 지갑에서 알림 확인이 가능합니다.
-     </ion-col>
-   </ion-row>
-   <ion-row>
-     <ion-col col-1 text-right>
-       <ion-icon style="color:#FF5F3A;" name="md-alert"></ion-icon>
-     </ion-col>
-     <ion-col text-left>
-     토스 화면에서 '메시지(선택사항)'를 변경하지 말아주세요.
      </ion-col>
    </ion-row>
  </ion-list>

@@ -108,6 +108,12 @@ export class ShopPage {
       if(this.shop.shopInfo.promotions!=null && this.shop.shopInfo.promotions)
             this.shop.shopInfo.promotions=JSON.parse(this.shop.shopInfo.promotions);
       console.log("upVoteCount:"+this.shop.shopInfo.upVoteCount);
+
+      if(this.shop.shopInfo.foodOrigin!=null){
+            // replace '\n' with <br>
+            this.shop.shopInfo.foodOrigin=this.shop.shopInfo.foodOrigin.replace(new RegExp('\n','g'), '<br>');
+            console.log("foodOrigin:"+this.shop.shopInfo.foodOrigin);
+      }   
   }
 
  autoHypenPhone(str) {

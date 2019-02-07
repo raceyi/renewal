@@ -291,9 +291,6 @@
                     <div class="shop-text-info" *ngIf="shop.shopInfo.deliveryArea!=null">
                     <label class="label">배달</label> {{shop.shopInfo.deliveryArea}} <span class="value"><amount-display [amount]="shop.shopInfo.freeDelivery"></amount-display>원이상 무료 배송</span>
                     </div>
-                    <div class="shop-text-info" *ngIf="shop.shopInfo.foodOrigin!=null">
-                    <label class="label">원산지</label>  <span class="value">{{shop.shopInfo.foodOrigin}}</span>
-                    </div>
                     
                     <div class="shop-text-info" *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp && shop.shopInfo.stampFreeMenu!=null">
                     <label class="label">스탬프</label>  스탬프 <span class="value">{{shop.shopInfo.stampUsageCount}}개에 {{freeMenu}} 1개 (자동 적용) </span>
@@ -301,6 +298,14 @@
                     
                     <div class="shop-text-info" *ngIf="shop.shopInfo.stamp!=null && shop.shopInfo.stamp && shop.shopInfo.stampFreeAmount!=null">
                     <label class="label">스탬프</label> <span class="value">{{shop.shopInfo.stampUsageCount}}개에 {{shop.shopInfo.stampFreeAmount}}원 차감</span>
+                    </div>
+
+                    <div class="shop-text-info" *ngIf="shop.shopInfo.foodOrigin!=null">
+                            <label class="label">원산지</label> 
+                            <!--
+                             <div class="value" style="margin-left: 30px;margin-right: 20px;">{{shop.shopInfo.foodOrigin}}</div>
+                            -->
+                             <p  text-wrap style="color:black;" style="margin-left: 30px;margin-right: 20px;margin-top: 0px;" [innerHTML]="shop.shopInfo.foodOrigin"></p>
                     </div>
       </div>
 

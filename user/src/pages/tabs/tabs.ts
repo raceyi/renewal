@@ -198,7 +198,8 @@ export class TabsPage {
                                     {
                                         text: '네',
                                         handler: () => {
-                                            
+                                                // backgournd를 disable하고 exit해보자....
+                                                // LG폰에서 종료시 문제발생함.
                                                 this.cartProvider.db.close().then(()=>{
                                                     this.platform.exitApp();
                                                 },(err)=>{

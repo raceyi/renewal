@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams,AlertController } from 'ionic-angular';
 import {ServerProvider} from '../../providers/server/server';
+import {StorageProvider} from '../../providers/storage/storage';
 
 /**
  * Generated class for the TossTransferPage page.
@@ -21,6 +22,7 @@ export class TossTransferPage {
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               public serverProvider:ServerProvider,
+              public storageProvider:StorageProvider,
               public alertCtrl:AlertController) {
   }
 

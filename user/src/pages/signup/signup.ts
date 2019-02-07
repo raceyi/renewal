@@ -310,6 +310,7 @@ phoneAuth(){
                         buttons: ['OK']
                     });
                     alert.present();
+                    return;
      }
      console.log("loginMethod:"+this.loginMethod);
      if(this.loginMethod=="facebook" || this.loginMethod=="kakao"){
