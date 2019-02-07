@@ -1,0 +1,8 @@
+<!-- Generated template for the AmountDisplayComponent component -->
+<!-- Android 일 경우만 localeString을 사용한다 
+   <span *ngIf="(amount-amount%1000)>0 && (amount%1000)>=100">{{(amount-amount%1000)/1000}},{{amount%1000}}</span>
+   <span *ngIf="(amount-amount%1000)>0 && (amount%1000)<100 && (amount%1000)>=10">{{(amount-amount%1000)/1000}},0{{amount%1000}}</span>
+   <span *ngIf="(amount-amount%1000)>0 && (amount%1000)<10">{{(amount-amount%1000)/1000}},00{{amount%1000}}</span>
+   <span *ngIf="(amount-amount%1000)==0">{{amount%1000}}</span>
+   -->
+  <span>{{amount.toLocaleString()}}</span>

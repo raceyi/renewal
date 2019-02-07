@@ -1,0 +1,135 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{storageProvider.myshop.takitId}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="cashInfo">
+  <ion-row padding>
+      <ion-col col-10 no-padding no-margin>
+        <ion-row  style="border-bottom: solid 1px;">
+          <ion-col col-8 text-left>
+              인출 가능 금액(매출액-수수료) 
+          </ion-col>
+          <ion-col text-right>
+              <amount-display [amount]="storageProvider.withdrawable.netSales" ></amount-display>원             
+          </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col col-8 text-left>
+                할인전 금액 
+            </ion-col>
+            <ion-col text-right>
+                <amount-display [amount]="storageProvider.withdrawable.originalPrice" ></amount-display>원             
+            </ion-col>
+        </ion-row>        
+        <ion-row >
+            <ion-col col-8 text-left>
+               매출액</ion-col>
+            <ion-col text-right>
+                <amount-display [amount]="storageProvider.withdrawable.sales" ></amount-display>원             
+            </ion-col>
+        </ion-row>
+        <ion-row *ngIf="storageProvider.shop.shopInfo.feeRate!=null">
+            <ion-col col-8 text-left>
+                수수료(부가세)
+            </ion-col>
+            <ion-col text-right>
+                <amount-display [amount]="storageProvider.withdrawable.fee" ></amount-display>원             
+            </ion-col>
+        </ion-row>
+      </ion-col>      
+      <ion-col col-2>
+        <button ion-button  (click)="withdrawCash()">
+            <span>인출</span>
+        </button>
+      </ion-col>
+  </ion-row>
+  <ion-row text-center>
+      <ion-col text-center >* 현 할인율:{{storageProvider.shop.shopInfo.paymethod.cash}}<span *ngIf="storageProvider.shop.shopInfo.feeRate!=null">,수수료율:{{storageProvider.shop.shopInfo.feeRate*100}}%</span> </ion-col>
+  </ion-row>
+
+  <ion-row padding>
+      <ion-col col-10 no-padding no-margin>
+          <ion-row >
+              <ion-col col-8 text-left>
+                  미정산 할인전 금액</ion-col>
+              <ion-col text-right>
+                  <amount-display [amount]="storageProvider.available.originalPrice" ></amount-display>원             
+              </ion-col>
+          </ion-row>
+        <ion-row >
+          <ion-col col-8 text-left>
+              미정산 매출액 
+          </ion-col>
+          <ion-col text-right>
+              <amount-display [amount]="storageProvider.available.sales" ></amount-display>원             
+          </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col col-8 text-left>
+                미정산 수수료 
+            </ion-col>
+            <ion-col text-right>
+                <amount-display [amount]="storageProvider.available.fee" ></amount-display>원             
+            </ion-col>
+        </ion-row>        
+      </ion-col>      
+      <ion-col col-2>
+      </ion-col>
+  </ion-row>
+  
+  <ion-row padding>
+      <ion-col width-10 class="collapse">
+      <ion-icon name="add-circle" [hidden]="!bankAccountHidden" (click)="expand($event)"></ion-icon>
+      <ion-icon name="remove-circle" [hidden]="bankAccountHidden" (click)="collapse($event)"></ion-icon>
+      </ion-col>
+      <ion-col class="orderInfo title" width-90>
+      등록 계좌 정보 
+      </ion-col>
+    </ion-row>
+    <div padding [hidden]="bankAccountHidden">
+        <ion-row>
+          <ion-col width-33 class="orderInfo">은행 </ion-col>
+          <ion-col width-66 class="orderInfo1">{{storageProvider.bankName}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col width-33 class="orderInfo">계좌번호</ion-col>
+          <ion-col width-66 class="orderInfo1">{{storageProvider.maskAccount}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col width-33 class="orderInfo">예금주</ion-col>
+          <ion-col width-66 class="orderInfo1">{{storageProvider.depositor}}</ion-col>
+        </ion-row>
+    </div>
+  <ion-list>
+    <ion-item>
+    <ion-row style="font-size: 3vw;">
+        <ion-col col-3>일자</ion-col>
+        <ion-col col-2 style="text-align: -webkit-right;">인출금액</ion-col>
+        <ion-col col-2 style="text-align: -webkit-right;">웨이티수수료</ion-col>        
+        <ion-col col-2 style="text-align: -webkit-right;">인출수수료</ion-col>
+        <ion-col col-3></ion-col>
+    </ion-row>    
+    </ion-item>   
+    <ion-item *ngFor="let trans of transactions">
+      <ion-row style="font-size: 3vw;">
+        <ion-col col-3 align-self-center>{{trans.localTime}}</ion-col>
+        <ion-col col-2 align-self-center style="text-align: -webkit-right;">{{trans.amount}}</ion-col>
+        <ion-col col-2 align-self-center style="text-align: -webkit-right;">{{trans.waiteeFee}}</ion-col>        
+        <ion-col col-2 align-self-center style="text-align: -webkit-right;">{{trans.fee}}</ion-col>
+        <ion-col col-3 align-self-center text-right ><button style="font-size: 3vw;" ion-button clear no-margin no-padding (click)="displyDetail(trans)" *ngIf="showDetail(trans)">상세보기</button></ion-col>
+      </ion-row>
+    </ion-item>
+  </ion-list>
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)" [hidden]="transactions.length==0">
+   <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div class="dummy">
+  </div>
+
+</ion-content>

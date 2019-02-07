@@ -1,0 +1,70 @@
+<!--
+  Generated template for the OrderListPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>정산주문목록</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+<ion-list class="phone">
+  <ion-item>
+      <ion-row style="font-size:3.4vw;">
+          <ion-col col-2 >
+                주문번호
+          </ion-col>
+          <ion-col text-right>
+               완료일
+          </ion-col>
+          <ion-col text-right>
+                  주문금액
+          </ion-col>
+          <ion-col text-right>
+                   결제금액
+          </ion-col>
+          <ion-col text-right>
+                   수수료
+          </ion-col>
+      </ion-row>
+  </ion-item>
+
+  <ion-item *ngFor="let order of orders">
+    <div>
+        <ion-row style="font-size:3.4vw;">
+          <ion-col text-center col-2 >
+                   {{order.orderNO}}
+          </ion-col>
+          <ion-col text-right >
+              <span *ngIf="order.localCompleteTimeString">{{order.localCompleteTimeString}}</span>    
+          </ion-col>
+          <ion-col  text-right>
+                   <amount-display *ngIf="order.price" [amount]="order.price"></amount-display>
+          </ion-col>
+          <ion-col text-right>
+              <amount-display *ngIf="order.amount" [amount]="order.amount"></amount-display>     
+          </ion-col>
+          <ion-col text-right>
+              <amount-display *ngIf="order.fee" [amount]="order.fee"></amount-display>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="order.couponDiscountAmount && order.couponDiscountAmount!=null && order.couponDiscountAmount>0"> 
+          <ion-col text-left>
+          </ion-col>
+          <ion-col text-right>
+                  쿠폰할인:{{order.couponDiscountAmount}}원
+          </ion-col>
+        </ion-row>
+    </div>
+    </ion-item>
+</ion-list>
+<ion-infinite-scroll (ionInfinite)="doInfinite($event)" [hidden]="orders.length==0">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
