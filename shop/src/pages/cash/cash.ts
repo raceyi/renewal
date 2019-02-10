@@ -394,10 +394,11 @@ export class CashPage {
   }
 
   showDetail(trans){
-    return (trans.fromOrderId!=null && trans.toOrderId!=null);
+    return (trans.fromOrderId!=null && trans.toOrderId!=null && trans.toOrderId!=0);
   }
 
   displyDetail(trans){
         this.navController.push(OrderListPage,{trans:trans});
   } 
+
 }

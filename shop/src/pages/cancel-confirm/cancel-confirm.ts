@@ -19,7 +19,7 @@ export class CancelConfirmPage {
   order;
   menus;
   refundTotal:number=0;
-  refundInputAmount:number=0;
+  //refundInputAmount:number=0;
 
   partial:boolean=false;
 
@@ -109,17 +109,16 @@ export class CancelConfirmPage {
         this.refundTotal=0;
         this.menus.forEach(menu=>{
             if(menu.refund){
-                let amount=menu.amount;
-                if(typeof amount ==='string'){
-                    amount=parseInt(amount);
+                let price=menu.price;
+                if(typeof price ==='string'){
+                    price=parseInt(price);
                 }
-                this.refundTotal+=amount;
+                this.refundTotal+=price;
             }
         })
-        if(typeof this.refundInputAmount ==='string')
-            this.refundInputAmount=parseInt(this.refundInputAmount);
-
-        this.refundTotal+=this.refundInputAmount;
+      //  if(typeof this.refundInputAmount ==='string')
+      //      this.refundInputAmount=parseInt(this.refundInputAmount);
+      //  this.refundTotal+=this.refundInputAmount;
  }
 
   addRefund(){
@@ -127,7 +126,6 @@ export class CancelConfirmPage {
   }
 
   refund(){
-      
     let total=this.order.total;
     if(typeof total ==='string')
         total=parseInt(total);
@@ -157,8 +155,8 @@ export class CancelConfirmPage {
             }
     })
 
+    //할인율을 order마다 저장하는게 맞다. 부분 취소를 지금 구현해야 할까? ㅜㅜ (우선 제외하자.나중에 부분 취소를 위해 자료 구조를 변경하는것이 필요하다.)
+    //우선은 price와 amount로 계산하자(x). 메뉴별 할인 금액이 상이할수 있다. ㅜㅜ
     let body={ refundMenus:refundMenus, refundTotal:this.refundTotal, order:this.order.orderId};
-
-    
   }
 }

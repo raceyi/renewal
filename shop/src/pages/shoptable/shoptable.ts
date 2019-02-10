@@ -2915,4 +2915,16 @@ export class ShopTablePage {
         let modal= this.modalCtrl.create(ResponseInputPage, { order:order,callback:this.callbackFunction});
         modal.present();
     }
+
+    hideCancelOrder(order){
+        if(order.completedTime!=undefined && order.completedTime!=null){
+            let completedTime:string=order.completedTime;
+            let d=this.getGMTtimeInMilliseconds(completedTime);
+            let now=new Date();
+            if(now.getTime()>=(d+7*24*60*60*1000)){ //7일 이전
+                return true;
+            }
+        } 
+        return false;  
+    }
 }

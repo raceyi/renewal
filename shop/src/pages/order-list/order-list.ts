@@ -60,7 +60,7 @@ export class OrderListPage {
             headers.append('Content-Type', 'application/json');
             let body:any;
             if(!this.lastOrderId){
-                this.lastOrderId=this.trans.fromOrderId-1; 
+                this.lastOrderId=this.trans.fromOrderId; 
             }
             body  = {  
                         takitId:this.storageProvider.myshop.takitId,
@@ -72,9 +72,7 @@ export class OrderListPage {
             let reqUrl="/shop/getWithdrawOrders"; // completed or pickup인 주문만 얻어온다.
     
             console.log("body:"+JSON.stringify(body));
-    
-             console.log("body:"+JSON.stringify(body));
-             this.serverProvider.post(reqUrl,JSON.stringify(body)).then((res:any)=>{  
+                 this.serverProvider.post(reqUrl,JSON.stringify(body)).then((res:any)=>{  
                 console.log("!!!getOrders-res:"+JSON.stringify(res));
                 var result:string=res.result;
                 if(result==="success" &&Array.isArray(res.orders)){
@@ -95,7 +93,11 @@ export class OrderListPage {
                       }
                       return 0;
                   });
-                  this.lastOrderId=this.orders[this.orders.length-1].orderId;
+                  let lastOrderId:number=parseInt(this.orders[this.orders.length-1].orderId);
+                  //console.log(JSON.stringify(this.orders[this.orders.length-1]));
+                  console.log("lastOrderId:"+lastOrderId);
+                  this.lastOrderId=lastOrderId+1;
+
                   if(this.lastOrderId>=this.trans.toOrderId){
                       resolve(false);
                   }else{

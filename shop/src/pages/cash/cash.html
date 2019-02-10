@@ -8,14 +8,18 @@
 </ion-header>
 
 <ion-content class="cashInfo">
+    <ion-row text-center>
+            <ion-col text-center >* 현 할인율:{{storageProvider.shop.shopInfo.paymethod.cash}}<span *ngIf="storageProvider.shop.shopInfo.feeRate!=null">,수수료율:{{storageProvider.shop.shopInfo.feeRate*100}}%</span> </ion-col>
+    </ion-row>    
   <ion-row padding>
       <ion-col col-10 no-padding no-margin>
         <ion-row  style="border-bottom: solid 1px;">
           <ion-col col-8 text-left>
-              인출 가능 금액(매출액-수수료) 
+              인출 가능 금액<br>7일 이전 (매출액-수수료) 
           </ion-col>
-          <ion-col text-right>
-              <amount-display [amount]="storageProvider.withdrawable.netSales" ></amount-display>원             
+          <ion-col text-right style="font-size:5vw;" align-self-center>
+              <amount-display *ngIf="storageProvider.withdrawable && storageProvider.withdrawable.netSales" [amount]="storageProvider.withdrawable.netSales" ></amount-display> 
+               <span *ngIf="!(storageProvider.withdrawable && storageProvider.withdrawable.netSales)">0</span> 원            
           </ion-col>
         </ion-row>
         <ion-row>
@@ -23,23 +27,40 @@
                 할인전 금액 
             </ion-col>
             <ion-col text-right>
-                <amount-display [amount]="storageProvider.withdrawable.originalPrice" ></amount-display>원             
+                <amount-display *ngIf="storageProvider.withdrawable && storageProvider.withdrawable.originalPrice" [amount]="storageProvider.withdrawable.originalPrice" ></amount-display>            
+                <span *ngIf="!(storageProvider.withdrawable && storageProvider.withdrawable.originalPrice)">0</span>원
             </ion-col>
         </ion-row>        
         <ion-row >
             <ion-col col-8 text-left>
                매출액</ion-col>
             <ion-col text-right>
-                <amount-display [amount]="storageProvider.withdrawable.sales" ></amount-display>원             
+                <amount-display *ngIf="storageProvider.withdrawable && storageProvider.withdrawable.sales" [amount]="storageProvider.withdrawable.sales" ></amount-display>  
+                <span *ngIf="!(storageProvider.withdrawable && storageProvider.withdrawable.sales)">0</span>원           
             </ion-col>
         </ion-row>
         <ion-row *ngIf="storageProvider.shop.shopInfo.feeRate!=null">
             <ion-col col-8 text-left>
-                수수료(부가세)
+                수수료(부가세포함)
             </ion-col>
             <ion-col text-right>
-                <amount-display [amount]="storageProvider.withdrawable.fee" ></amount-display>원             
+                        <amount-display *ngIf="storageProvider.withdrawable && storageProvider.withdrawable.fee" [amount]="storageProvider.withdrawable.fee" ></amount-display> 
+                        <span *ngIf="!(storageProvider.withdrawable && storageProvider.withdrawable.fee)">0</span>원                         
             </ion-col>
+        </ion-row>
+        <ion-row *ngIf="storageProvider.shop.shopInfo.feeRate!=null">
+                <ion-col text-right>
+                        수수료:<amount-display *ngIf="storageProvider.withdrawable && storageProvider.withdrawable.netFee" [amount]="storageProvider.withdrawable.netFee" ></amount-display>
+                        <span *ngIf="!(storageProvider.withdrawable && storageProvider.withdrawable.netFee)">0</span>
+                        원                           
+                </ion-col>
+                <ion-col text-right>
+                        부가세:<amount-display *ngIf="storageProvider.withdrawable && storageProvider.withdrawable.tax" [amount]="storageProvider.withdrawable.tax" ></amount-display>
+                        <span *ngIf="!(storageProvider.withdrawable && storageProvider.withdrawable.tax)">0</span>원                            
+                </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col align-self-center text-right ><button style="font-size: 3vw;" ion-button clear no-margin no-padding (click)="displyDetail(storageProvider.withdrawable)" *ngIf="showDetail(storageProvider.withdrawable)">상세보기</button></ion-col>        
         </ion-row>
       </ion-col>      
       <ion-col col-2>
@@ -48,9 +69,7 @@
         </button>
       </ion-col>
   </ion-row>
-  <ion-row text-center>
-      <ion-col text-center >* 현 할인율:{{storageProvider.shop.shopInfo.paymethod.cash}}<span *ngIf="storageProvider.shop.shopInfo.feeRate!=null">,수수료율:{{storageProvider.shop.shopInfo.feeRate*100}}%</span> </ion-col>
-  </ion-row>
+
 
   <ion-row padding>
       <ion-col col-10 no-padding no-margin>
@@ -58,7 +77,8 @@
               <ion-col col-8 text-left>
                   미정산 할인전 금액</ion-col>
               <ion-col text-right>
-                  <amount-display [amount]="storageProvider.available.originalPrice" ></amount-display>원             
+                  <amount-display *ngIf="storageProvider.available && storageProvider.available.originalPrice" [amount]="storageProvider.available.originalPrice" ></amount-display>
+                  <span *ngIf="!(storageProvider.available && storageProvider.available.originalPrice)">0</span>원             
               </ion-col>
           </ion-row>
         <ion-row >
@@ -66,17 +86,32 @@
               미정산 매출액 
           </ion-col>
           <ion-col text-right>
-              <amount-display [amount]="storageProvider.available.sales" ></amount-display>원             
+              <amount-display *ngIf="storageProvider.available && storageProvider.available.sales" [amount]="storageProvider.available.sales" ></amount-display>
+              <span *ngIf="!(storageProvider.available && storageProvider.available.sales)">0</span>원             
           </ion-col>
         </ion-row>
-        <ion-row>
+        <ion-row *ngIf="storageProvider.shop.shopInfo.feeRate!=null">
             <ion-col col-8 text-left>
-                미정산 수수료 
+                미정산 수수료(부가세포함)
             </ion-col>
             <ion-col text-right>
-                <amount-display [amount]="storageProvider.available.fee" ></amount-display>원             
+                <amount-display *ngIf="storageProvider.available && storageProvider.available.fee" [amount]="storageProvider.available.fee" ></amount-display>
+                <span *ngIf="!(storageProvider.available && storageProvider.available.fee)"></span>원             
             </ion-col>
-        </ion-row>        
+        </ion-row>
+        <ion-row *ngIf="storageProvider.shop.shopInfo.feeRate!=null">
+                <ion-col text-right>
+                        수수료:<amount-display *ngIf="storageProvider.available && storageProvider.available.netFee" [amount]="storageProvider.available.netFee" ></amount-display>
+                        <span *ngIf="!(storageProvider.available && storageProvider.available.netFee)"></span>원                           
+                </ion-col>
+                <ion-col text-right>
+                        부가세:<amount-display *ngIf="storageProvider.available && storageProvider.available.tax" [amount]="storageProvider.available.tax" ></amount-display>
+                        <span *ngIf="!(storageProvider.available && storageProvider.available.tax)"></span>원                            
+                </ion-col>
+        </ion-row>
+        <ion-row>
+                <ion-col align-self-center text-right ><button style="font-size: 3vw;" ion-button clear no-margin no-padding (click)="displyDetail(storageProvider.available)" *ngIf="showDetail(storageProvider.available)">상세보기</button></ion-col>        
+        </ion-row>    
       </ion-col>      
       <ion-col col-2>
       </ion-col>
@@ -107,10 +142,10 @@
     </div>
   <ion-list>
     <ion-item>
-    <ion-row style="font-size: 3vw;">
+    <ion-row style="font-size: 2.8vw;">
         <ion-col col-3>일자</ion-col>
         <ion-col col-2 style="text-align: -webkit-right;">인출금액</ion-col>
-        <ion-col col-2 style="text-align: -webkit-right;">웨이티수수료</ion-col>        
+        <ion-col col-2 style="text-align: -webkit-right;">웨이티수수료<br>(부가세포함)</ion-col>        
         <ion-col col-2 style="text-align: -webkit-right;">인출수수료</ion-col>
         <ion-col col-3></ion-col>
     </ion-row>    

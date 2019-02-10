@@ -126,7 +126,7 @@
                    <div *ngIf="order.orderStatus=='pickup'">
                               <ion-row>
                                 <ion-col text-right>
-                                  <button ion-button clear no-padding no-margin class="cancel-button" style="font-size:4vw;" (click)="cancel(order)">취소하기</button>                                              
+                                  <button ion-button clear no-padding no-margin class="cancel-button" style="font-size:4vw;" [hidden]="hideCancelOrder(order)" (click)="cancel(order)">취소하기</button>                                              
                                 </ion-col>  
                               </ion-row>
                    </div>
@@ -274,7 +274,7 @@
                    <div *ngIf="order.orderStatus=='pickup' ||(order.manualStore=='1' && order.orderStatus=='completed')">
                               <ion-row>
                                 <ion-col text-right>
-                                  <button ion-button clear no-padding no-margin class="cancel-button" style="font-size:4vw;" (click)="cancel(order)">취소하기</button>                                              
+                                  <button ion-button clear no-padding no-margin class="cancel-button" style="font-size:4vw;" [hidden]="hideCancelOrder(order)" (click)="cancel(order)">취소하기</button>                                              
                                 </ion-col>  
                               </ion-row>
                    </div>

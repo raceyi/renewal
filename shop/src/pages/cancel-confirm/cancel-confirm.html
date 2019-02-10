@@ -12,14 +12,14 @@
 
 
 <ion-content padding>
-<!--
-  <ion-list>
+  <!--
+  <ion-list *ngIf="!order.type">
   <ion-item>
     <ion-label>부분 취소</ion-label>
     <ion-checkbox [(ngModel)]="partial" ></ion-checkbox>
   </ion-item>
   </ion-list>
--->
+--> 
 <div class="menu-detail" *ngIf="partial">
   <div *ngFor="let menu of menus">    
   <ion-row>
@@ -30,7 +30,7 @@
         </ion-item>
       </ion-col>
     <ion-col col-2 align-self-center>
-         결제금액: {{menu.amount}}
+         결제금액: {{menu.price}}
     </ion-col>
   </ion-row>
   <ion-row *ngIf="menu.options!=undefined && menu.options.length>0">
@@ -46,14 +46,17 @@
     <ion-col col-3>
     </ion-col>
     <ion-col col-4 text-center>
-      <ion-input text-right style="border-bottom: solid 1px;" type="number" [(ngModel)]="refundInputAmount"></ion-input>
+      <ion-input text-right style="border-bottom: solid 1px;" type="number" [(ngModel)]="refundTotal"></ion-input>
     </ion-col>
     <ion-col col-2 text-center> <button ion-button (click)="addRefund()"> 차감</button>
     </ion-col>
     <ion-col col-3>
     </ion-col>    
   </ion-row>
-  <!-- !!! 고객에게 돌려줄때는 알아서 수수료와 할인을 계산해야 한다. !!!-->
+  <!-- !!! 고객에게 돌려줄때는 알아서 수수료와 할인을 계산해야 한다. 할인율은 주문정보에서 확인해야만 한다.(ㅜㅜ) price와 amount로? 우선 상점의 할인율로 계산하자. 
+        어렵다. 부분 취소일 경우 orderList도 수정해야만 한다 ㅜㅜ 취소 orderList를 추가하거나... 
+        *우선 입력하게 하고 할인율을제외한 금액을 환불하게 하자.
+        *취소 금액만 기록하자 => 고객에게 취소 금액을 보여줘야만 한다. !!!-->
 </div>
 <div class="extender" style="height:23vh;font-size:larger;">
        <div class="padder-center">
