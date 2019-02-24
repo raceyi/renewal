@@ -1,5 +1,5 @@
-import { Component,NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams ,AlertController} from 'ionic-angular';
+import { Component,NgZone ,ViewChild} from '@angular/core';
+import { IonicPage, NavController, NavParams ,AlertController,Slides} from 'ionic-angular';
 import {OrderDetailPage} from '../order-detail/order-detail';
 import {CashChargePage} from '../cash-charge/cash-charge';
 import {StorageProvider} from '../../providers/storage/storage';
@@ -23,7 +23,8 @@ export class PaymentPage {
   inStoreColor="#FF5F3A";
   takeoutColor="#bdbdbd";
   deliveryColor="#bdbdbd";
-
+  @ViewChild('slides') slides:Slides;
+  
   cardAvailable:boolean=false;
 
   deliveryAvailable:boolean=false;  ///////동일 매장에서만 배송이 가능합니다.
@@ -71,6 +72,9 @@ export class PaymentPage {
   cashDiscountAmount=0;
   //menu-discount end
   computePayAmountDone:boolean=false;
+
+  voucherAvailable:boolean=false;
+  voucherName:string;
 
   constructor(public navCtrl: NavController, 
               private ngZone:NgZone,
@@ -137,9 +141,19 @@ export class PaymentPage {
                             console.log("cart.paymethod:"+JSON.stringify(cart.paymethod));
                             if(cart.paymethod.card==undefined)
                                 cardAvailable=false;
+                            if(cart.paymethod.voucher){ // cart의 길이는 1이다.
+                                let voucherNames=cart.paymethod.voucher[0].split(" ");
+                                if(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 && voucherNames[0]==this.storageProvider.vouchers[0].name && this.storageProvider.vouchers[0].valid && this.storageProvider.vouchers[0].available>0){ // 내가 가진 식비 카드일 경우
+                                    this.voucherAvailable=true;
+                                    this.paymentSelection="voucher";
+                                    this.voucherName=this.storageProvider.vouchers[0].name;
+                                }
+                            }                    
                         }
                     }
                 });
+
+
                 this.ngZone.run(()=>{
                     this.cardAvailable=cardAvailable;                  
                     this.computePayAmount();
@@ -292,6 +306,8 @@ export class PaymentPage {
                     this.carts[i].couponDiscountAmount=this.couponDiscountAmount;
                     this.carts[i].stampUsage=this.stampUsage;
                     this.carts[i].couponDiscount=this.couponDiscount;
+                }else if(this.paymentSelection=="voucher"){
+                    this.carts[i].amount=this.carts[i].price;
                 }
                 // compute discount of each menu  // 각 메뉴의 할인을 계산할 이유가 있을까???? 메뉴별로 discount가 틀릴수도 있다 ㅜㅜ . 현재 사용안함.
                 let menuDiscountExist=false;
@@ -313,8 +329,11 @@ export class PaymentPage {
                         }else{
                             this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price; 
                         }                           
-                    }else // card
+                    }else if(this.paymentSelection=="card")// card
                         this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price-Math.round((this.carts[i].orderList.menus[j].price*cardDiscount)/100);                    
+                    else if(this.paymentSelection=="voucher"){ // 바우처는 할인이 없음.
+                        this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price;
+                    }    
                 }
                 if(menuDiscountExist){ //compute carts[i].amoun again. cart는 1만 있다. 
                     this.carts[i].amount=this.carts[i].price -(this.menuDiscountAmount+this.cashDiscountAmount);
@@ -327,8 +346,10 @@ export class PaymentPage {
             this.payAmount=this.totalAmount-(this.menuDiscountAmount+this.cashDiscountAmount)-this.couponDiscountAmount;
         }else
             this.payAmount=this.totalAmount-this.cashDiscount-this.couponDiscountAmount;
-    }else{
+    }else if(this.paymentSelection=="card"){
         this.payAmount=this.totalAmount-this.cardDiscount-this.couponDiscountAmount;
+    }else if(this.paymentSelection=="voucher"){
+        this.payAmount=this.totalAmount;
     }
     if(this.takeout==2 && this.payAmount<this.carts[0].freeDelivery){
         this.deliveryFee=parseInt(this.carts[0].deliveryFee);
@@ -614,6 +635,7 @@ export class PaymentPage {
         return;
       }
       //Just for test-end
+      
       let carts=this.carts;
       this.carts.forEach((order)=>{
         delete order.freeDelivery;
@@ -632,6 +654,34 @@ export class PaymentPage {
                     receiptId:this.storageProvider.receiptId,
                     receiptType:this.storageProvider.receiptType,
                 };
+    }else if(this.paymentSelection=="voucher"){  
+        let carts=this.carts;
+        this.carts.forEach((order)=>{
+          delete order.freeDelivery;
+          delete order.deliveryFee;
+          delete order.address; 
+        });
+
+        if(this.storageProvider.vouchers[0].available<this.payAmount){
+            let alert = this.alertController.create({
+                subTitle: '식비카드 잔액이 부족합니다.',
+                buttons: ['OK']
+            });
+            alert.present();            
+            return;
+        }else{
+            body = {      payment:this.paymentSelection,
+                          orderList:JSON.stringify(this.carts), 
+                          //orderName:this.orderName, each cart has own orderName.
+                          amount:this.payAmount,
+                          takeout: this.takeout, // takeout:0(inStore) , 1(takeout), 2(delivery) 
+                          orderedTime:new Date().toISOString(),
+                          cashId: this.storageProvider.cashId,
+                          receiptIssue:false,
+                          voucherName:this.voucherName
+                    };
+
+        }
     }else{ // card
       body = {      payment:this.paymentSelection,
                     orderList:JSON.stringify(this.carts), 
@@ -765,4 +815,47 @@ export class PaymentPage {
     alert.present();
   
   }
+
+  selectVoucherPayment(){
+    this.paymentSelection=this.voucherName;
+  }
+
+  selectCashPayment(){
+      this.paymentSelection="cash";
+  }
+
+
+  slideChanged(){
+      if(this.voucherAvailable){
+        let currentIndex = this.slides.getActiveIndex();
+        console.log("Current index is", currentIndex);
+        //0 => voucher,1=>cash
+        if(currentIndex==0){
+            this.paymentSelection="voucher";
+            this.computePayAmountDone=false;
+            this.computePayAmount();
+        }else{
+            this.paymentSelection="cash";   
+            this.computePayAmountDone=false;     
+            this.computePayAmount();
+        }
+      }
+  }
+/*
+  checkValidVouchers(){
+      console.log("checkValidVouchers");
+    for(let j=0;j<this.carts[j].length;j++){ // [주의]현재 cart의 길이는 1이다. 그러므로 아래 코드가 동작한다. 
+        let cart=this.carts[j];
+        console.log("cart.paymethod:"+JSON.stringify(cart.paymethod));
+        if(cart.paymethod.voucher){
+            let voucherNames=cart.paymethod.voucher[0].split(" ");
+            if(!(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 && voucherNames[0]==this.storageProvider.vouchers[0].name && this.storageProvider.vouchers[0].valid)){ // 내가 가진 식비 카드가 아닐 경우
+                return false;
+            }else
+                return true;
+        }
+    }
+    return false;
+  }
+*/  
 }

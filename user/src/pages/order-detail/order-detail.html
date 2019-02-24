@@ -10,7 +10,7 @@
     주문 취소
     </button>
   </ion-buttons>
-  <ion-buttons *ngIf="order.orderStatus=='pickup' && order.review==null" end>
+  <ion-buttons *ngIf="(order.orderStatus=='pickup' || order.orderStatus=='completed' )&& order.review==null" end>
     <button style="font-size:4vw;" ion-button (click)="inputReview()">
     후기작성
     </button>
@@ -33,6 +33,11 @@
   <p class="order-explain">      
   (수동 주문번호 입력 상점으로 주문번호를 기다려 주시기 바랍니다.)
   </p>
+  <p>
+      주문 <span style="color:#FF5F3A;font-size:4.5vw;">취소</span>는  
+      <a *ngIf="shopPhoneHref" [href]="shopPhoneHref" style="font-size:4.5vw;"><ion-icon name="call"></ion-icon></a>
+      로만 가능합니다.
+    </p>
 </div>
 <div *ngIf="order.manualStore=='1' && (order.manualOrderNO && order.manualOrderNO!=null) && order.orderStatus=='completed'" class="order-no"  style="margin-bottom:10px;" text-center align-self-center>
     <p  no-margin class="order-value">{{order.manualOrderNO}}
@@ -189,7 +194,7 @@
   </ion-col>
 </ion-row>
 
-<ion-row>
+<ion-row *ngIf="order.discount!=null && order.discount>0">
   <ion-col text-left>
     할인 금액  
   </ion-col>
@@ -282,3 +287,6 @@
   </div>
 </div>
 </ion-content>
+<ion-footer>
+    <button *ngIf="(order.orderStatus=='pickup' || order.orderStatus=='completed') && order.payInfo && order.payInfo!=null" (click)="orderAgain(order)" full no-padding no-margin  ion-button>한번 더 주문하기</button>
+</ion-footer>

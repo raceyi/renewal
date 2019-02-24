@@ -368,7 +368,7 @@ export class OrderListPage {
     this.storageProvider.name="";
     this.app.getRootNav().pop();
   }
-
+/*
   orderAgain(order){  // hum... payment에서 보내는 구조로 가야만 한다. 확인이 필요함.
     if(order.price==0 || !order.price || order.price==null){ //order.price는 할인전 가격이다.
         let alert = this.alertController.create({
@@ -417,4 +417,5 @@ export class OrderListPage {
                                          class:"CashPasswordPage"});
 
   }
+  */
 }

@@ -12,6 +12,7 @@ import {CartProvider} from '../../providers/cart/cart';
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
  */
+var gCashPasswordPage;
 
 @IonicPage()
 @Component({
@@ -32,6 +33,8 @@ export class CashPasswordPage {
   body;
   trigger;
 
+  timerId; //가끔 orderDetail페이지로 전환되지 않는경우가 있다. 이경우를 위해 3초내로 전환되지 않을 경우 alert을 보여준다.
+
   constructor(public navCtrl: NavController, public navParams: NavParams,
               private alertController:AlertController,
               public serverProvider:ServerProvider,
@@ -45,6 +48,7 @@ export class CashPasswordPage {
     this.callback = this.navParams.get("callback");                
     this.title=navParams.get("title");
     this.description=navParams.get("description");
+    gCashPasswordPage=this;
 }
 
   ionViewDidLoad() {
@@ -55,6 +59,11 @@ export class CashPasswordPage {
       this.navCtrl.pop();
   }
 
+  ionViewWillUnload(){
+      if(this.timerId){
+        clearTimeout(this.timerId); // orderDetail페이지로 화면전환이 정상적으로 될경우 timer가 취소됨.
+      }
+  }
  buttonPressed(val:number){
         console.log("cursor:"+this.cursor+" val:"+val);
         if(val==-1 ){
@@ -142,6 +151,16 @@ export class CashPasswordPage {
                         let result:string=res.result;
                         if(result=="success"){
                             console.log("this.trigger:"+this.trigger);
+                            //방어코드: timer를 둬서 만약 orderDetailPage로 전환이 안될경우 alert을 표기하자.
+                            this.timerId = setTimeout(function(){ 
+                                let alert = gCashPasswordPage.alertController.create({
+                                    title: '주문이 정상처리되었으나 화면전환에 실패했습니다.',
+                                    subTitle:'주문 목록에서 주문정보 확인이 가능합니다.',
+                                    buttons: ['OK']
+                                });
+                                alert.present();
+                            }, 3000);
+
                             if(this.trigger=="cart"){
                                     console.log("trigger is cart. call deleteAll");
                                     this.cartProvider.deleteAll().then(()=>{
@@ -160,9 +179,11 @@ export class CashPasswordPage {
                                     this.serverProvider.getCurrentShopStampInfo();
                                 }
                             }
-                            console.log("send orderUpdate");
-                            this.events.publish('orderUpdate',{order:res.order});
-                            this.events.publish("cashUpdate");
+                            //shopList update이후에 호출되도록 한다.
+                            //console.log("send orderUpdate");
+                            //this.events.publish('orderUpdate',{order:res.order});
+                            //this.events.publish("cashUpdate");
+
                             //임시로 shopEnter로 구현하였다. 서버에서 최근 주문 음식점을 관리하도록 한다.   
                             console.log("body:"+JSON.stringify(this.body));                        
                             let carts=JSON.parse(this.body.orderList);
@@ -176,6 +197,10 @@ export class CashPasswordPage {
 
                             let body = {shopList:JSON.stringify(this.storageProvider.shopList)};
                             console.log("!!shopEnter-body:",body);
+
+                            console.log("send orderUpdate");
+                            this.events.publish('orderUpdate',{order:res.order});
+                            this.events.publish("cashUpdate");
 
                             if(this.storageProvider.tourMode==false){    
                                 this.serverProvider.post(this.storageProvider.serverAddress+"/shopEnter",body).then((res:any)=>{
@@ -238,7 +263,7 @@ export class CashPasswordPage {
                                     buttons: ['OK']
                                 });
                                 alert.present();
-                        }else if(error=="soldout"){
+                        }else if(error=="soldout"){  // 추후 서버의 에러 문장을 그대로 보여주도록 수정하자.
                             let alert = this.alertController.create({
                                     title: '판매 종료 메뉴가 포함되어 있습니다.',
                                     buttons: ['OK']

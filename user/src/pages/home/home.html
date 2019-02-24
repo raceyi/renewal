@@ -9,7 +9,7 @@
 </ion-header>
 
 <ion-content style="background-color:#f7f7f9;" > <!-- rgb(228, 228, 228);-->
-<ion-slides class="slides" pager="true">
+<ion-slides *ngIf="promotions.length>=1"class="slides" pager="true">
         <ion-slide  *ngFor="let promotion of promotions">
             <button class="each-img" clear no-margin no-padding ion-button (click)="enterShop(promotion.takitId)"><img [src]="storageProvider.awsS3+promotion.imagePath"></button>
         </ion-slide>
@@ -64,6 +64,8 @@
                             <span  *ngIf="shop.paymethod.cash!=undefined">캐시</span><span *ngIf="shop.paymethod.cash!=undefined && shop.paymethod.cash!='0%'">{{shop.paymethod.cash}}</span>
                             <div *ngIf="shop.paymethod.card!=undefined" class="dot"> </div> 
                             <span  *ngIf="shop.paymethod.card!=undefined">카드</span><span *ngIf="shop.paymethod.card!=undefined && shop.paymethod.card!='0%'">{{shop.paymethod.card}}</span>
+                            <div *ngIf="shop.paymethod.voucher!=undefined && (shop.paymethod.cash!=undefined || shop.paymethod.card!=undefined)" class="dot"> </div> 
+                            <span *ngIf="shop.paymethod.voucher!=undefined">{{shop.paymethod.voucher[0]}}</span>    
                         </div>
                         <div class="shop-location"><ion-icon ios="ios-pin-outline" md="md-pin"></ion-icon>&nbsp;{{shop.name_sub}}</div>                        
                     </div>    

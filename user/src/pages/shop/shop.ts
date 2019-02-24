@@ -1,5 +1,5 @@
-import { Component ,ViewChild,NgZone} from '@angular/core';
-import { IonicPage, NavController, Header, Content,NavParams,AlertController,LoadingController,Loading,App} from 'ionic-angular';
+import { Component ,ViewChild,NgZone,ElementRef } from '@angular/core';
+import { IonicPage, NavController, Header, Platform, Events,Content,NavParams,AlertController,LoadingController,Loading,App} from 'ionic-angular';
 import {StorageProvider} from '../../providers/storage/storage';
 import {MenuPage} from '../menu/menu';
 import {TabsPage} from '../tabs/tabs';
@@ -9,6 +9,13 @@ import {MenuSearchPage} from '../menu-search/menu-search';
 import {SubShopPage} from '../sub-shop/sub-shop';
 import {LoginMainPage} from '../login-main/login-main';
 import {TimeUtil} from '../../classes/TimeUtil';
+import JsBarcode from 'jsbarcode';
+import { Sim } from '@ionic-native/sim';
+import { Device } from '@ionic-native/device';
+import {ConfigProvider} from '../../providers/config/config';
+
+var gShopPage;
+declare var window:any;
 
 /**
  * Generated class for the ShopPage page.
@@ -23,6 +30,8 @@ import {TimeUtil} from '../../classes/TimeUtil';
   templateUrl: 'shop.html',
 })
 export class ShopPage {
+  @ViewChild('barcode') barcode: ElementRef;
+
   shop;
   shopName;
   location;
@@ -52,13 +61,19 @@ export class ShopPage {
   timeUtil= new TimeUtil(); 
   //stampCount=[]; move into storageProvider
 
+  authPhone;
+  authResult:boolean=false; // 모든 조건을 통과하여 바코드가 생성되면 true가 된다. 이후 다시 발급받기가 가능해진다. 
+
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public serverProvider:ServerProvider,private app:App,
               public loadingCtrl: LoadingController,   private ngZone:NgZone, 
+              public platform:Platform,public sim:Sim,private device: Device, 
+              public configProvider:ConfigProvider, 
+              private events:Events,
               private alertCtrl:AlertController,public storageProvider:StorageProvider) {
 
       console.log("ShopPage");
-
+      gShopPage=this;
       let loading:Loading=navParams.get('loading');
       if(loading){
           loading.dismiss();
@@ -114,6 +129,18 @@ export class ShopPage {
             this.shop.shopInfo.foodOrigin=this.shop.shopInfo.foodOrigin.replace(new RegExp('\n','g'), '<br>');
             console.log("foodOrigin:"+this.shop.shopInfo.foodOrigin);
       }   
+/*
+      if(this.platform.is("android")){ //android platform 이라면 phone번호를 확인 , Just for testing
+        this.platform.ready().then(() => {
+           // 화면 캡처를 불가능하게 만든다.
+           window.plugins.preventscreenshot.disable(function(){
+                console.log("success prevent screenshop");
+           }, function(err){
+                console.log("fail prevent screenshop");
+           });
+        });
+    }
+*/
   }
 
  autoHypenPhone(str) {
@@ -196,9 +223,264 @@ export class ShopPage {
             this.serverProvider.getCurrentShopStampInfo();
   }
 
+  checkSimInfo(){ // android 일경우만 동작함.
+     return new Promise((resolve,reject)=>{
+        window.plugins.sim.getSimInfo(function(info){
+            console.log("android-sim-info:"+JSON.stringify(info));
+            console.log("getSimInfo:"+info.cards[0].phoneNumber);
+            resolve();
+        }, function(error){
+            console.log("info:"+JSON.stringify(error));
+            let alert = gShopPage.alertCtrl.create({
+                title: "휴대폰 번호 확인에 실패했습니다.-API오류",
+                subTitle:JSON.stringify(error),
+                buttons: ['OK']
+            });
+            alert.present();
+            reject();            
+        });
+    });
+  }
+
+  getBarcodeInfo(){
+    return new Promise((resolve,reject)=>{
+        this.serverProvider.post(this.storageProvider.serverAddress+"/getBarcodeInfo",{takitId:this.takitId}).then((res:any)=>{
+            console.log("info:["+JSON.stringify(res)+"]");
+            if(res.result=="success"){
+                resolve(res.info);                
+            }else{
+                let alert = this.alertCtrl.create({
+                    title: "바코드생성정보를 가져오지 못했습니다.",
+                    subTitle:"@웨이티로 문의 바랍니다.",
+                    buttons: ['OK']
+                });
+                alert.present();
+                reject();                    
+            }
+        },err=>{
+            let alert = this.alertCtrl.create({
+                title: "바코드생성정보를 가져오지 못했습니다.",
+                subTitle:"네트웍상태를 확인해주세요.",
+                buttons: ['OK']
+            });
+            alert.present();
+            reject();
+        })
+    });
+  }
+
+  updateMyShoplist(){ // 동작여부 확인 필요함.
+      this.authResult=true; // 바코드가 생성되었음으로.
+
+      let shops=[];
+      shops.push({ takitId:this.shop.shopInfo.takitId ,imagePath:this.shop.shopInfo.takitId+"_main", 
+                   deliveryArea: this.shop.shopInfo.deliveryArea,paymethod:this.shop.shopInfo.paymethod});
+
+      console.log("shops:"+JSON.stringify(shops));
+      this.storageProvider.updateShopList(shops);
+      this.events.publish("updateShopList");
+
+      let body = {shopList:JSON.stringify(this.storageProvider.shopList)};
+      console.log("!!shopEnter-body:",JSON.stringify(body));
+     
+      if(this.storageProvider.tourMode==false){    
+          this.serverProvider.post(this.storageProvider.serverAddress+"/shopEnter",body).then((res:any)=>{
+              console.log("res.result:"+res.result);
+              var result:string=res.result;
+              if(result=="success"){
+
+              }else{
+                  
+              }
+          },(err)=>{
+              console.log("shopEnter-http post err "+err);
+              //Please give user an alert!
+              if(err=="NetworkFailure"){
+              let alert = this.alertCtrl.create({
+                      title: '서버와 통신에 문제가 있습니다',
+                      subTitle: '최근 주문 음식점이 서버에 반영되지 않았습니다.',
+                      buttons: ['OK']
+                  });
+                  alert.present();
+              }
+          });
+        }
+  }
+
+  ionViewWillUnload(){
+    if(this.platform.is("android") && !this.storageProvider.shopResponse.shopInfo.paymethod.cash 
+    && this.storageProvider.shopResponse.shopInfo.paymethod.voucher){ // 캐시사용 불가능
+        window.plugins.preventscreenshot.enable(function(){
+            console.log("success enable screenshot");
+       }, function(err){
+            console.log("fail enable screenshot");
+       });
+    }
+    this.storageProvider.barCodeShown=false; //iOS의 화면 캡처 monitoring을 disable한다.
+  }
+
+  
   ionViewDidLoad() {
     console.log('ionViewDidLoad ShopPage');
     this.shophomeContentRef.resize();
+
+    if(!this.storageProvider.shopResponse.shopInfo.paymethod.cash 
+        && this.storageProvider.shopResponse.shopInfo.paymethod.voucher){ // 캐시사용 불가능 
+        let voucherNames=this.storageProvider.shopResponse.shopInfo.paymethod.voucher[0].split(" ");
+        if(!(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 && voucherNames[0]==this.storageProvider.vouchers[0].name && this.storageProvider.vouchers[0].valid)){ // 내가 가진 식비 카드가 아닐 경우
+            let alert = this.alertCtrl.create({
+                title: "고객님께서는 주문이 불가능한 매장입니다.",
+                subTitle:"식권카드로만 구매가능합니다.",
+                buttons: ['OK']
+            });
+            alert.present();
+            this.navCtrl.pop();
+        }else{
+            console.log("Generate barcode!!!");
+            //server로 부터 생성 정보를 가져온다.
+            //1.phone 번호 가져오기(voucherUsers테이블값). 
+            //2.code: 폰번호의 합(두자리수=> 16진수로 변경)과 오늘의 코드(1byte=>0xFF)와 XOR 하여 이루어지 2자리 수 
+            //3.mobile provider: 휴대폰 번호 인증시(uuid등록시) 저장한 mobile provider정보.
+            //4.uuid:휴대폰 번호 인증시 저장한 값.
+            //generate bar code
+            this.getBarcodeInfo().then((info:any)=>{
+
+            let authPhone=info.phone;
+            let authUUID=info.uuid;
+            let authCarrier=info.mobileProvider;
+            let authCode=info.code; //
+
+            this.authPhone=info.phone; // 사용자의 휴대폰 인증된 폰번호
+
+            let barCode=authCode +authPhone;
+            console.log("barCode:"+barCode);
+
+            if(authUUID==null || authUUID!=this.device.uuid){
+                let alert = this.alertCtrl.create({
+                    title: "등록된 휴대폰 앱이 아닙니다.",
+                    subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                    buttons: ['OK']
+                });
+                alert.present();    
+                return;
+           }            
+            if(this.platform.is("android")){ //android platform 이라면 phone번호를 확인
+                this.platform.ready().then(() => {
+                   // 화면 캡처를 불가능하게 만든다.
+                   window.plugins.preventscreenshot.disable(function(){
+                        console.log("success prevent screenshop");
+                   }, function(err){
+                        console.log("fail prevent screenshop");
+                        // 바코드는 우선 생성하고 server에 report한다. 
+                        gShopPage.serverProvider.reportBarCodeCheat();
+                   });
+                   
+                   window.plugins.sim.hasReadPermission(function(info){
+                       console.log("hasReadPermission:"+JSON.stringify(info)); 
+                       if(info){
+                            gShopPage.checkSimInfo().then(()=>{
+                                JsBarcode( gShopPage.barcode.nativeElement,barCode, {displayValue: false});
+                                gShopPage.updateMyShoplist();
+                            });
+                       }else{
+                            window.plugins.sim.requestReadPermission(function(info){
+                                console.log("requestReadPermission-info:"+JSON.stringify(info)); 
+                                if(info){
+                                    gShopPage.checkSimInfo().then((phone)=>{
+                                        if(authPhone==phone){
+                                            JsBarcode( gShopPage.barcode.nativeElement, barCode, {displayValue: false});
+                                            gShopPage.updateMyShoplist();
+                                        }else{
+                                            let alert = gShopPage.alertCtrl.create({
+                                                title: "등록된 휴대폰 번호와 일치하지 않습니다.",
+                                                subTitle:"나의정보->휴대폰 번호->변경하기를 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
+                                                buttons: ['OK']
+                                            });
+                                            alert.present();
+                                        }
+                                    });
+                                } else{ // 실제로는 error로 return 됨. 방어코드로 추가함.
+                                    let alert = gShopPage.alertCtrl.create({
+                                        title: "휴대폰 번호 권한 요청에 실패했습니다.",
+                                        subTitle:"상점을 나갔다 다시 들어오신후 권한을 반드시 승인해주세요.",
+                                        buttons: ['OK']
+                                    });
+                                    alert.present();            
+                                }
+                            }, function(err){
+                                console.log("info:"+JSON.stringify(err));
+                                let alert = gShopPage.alertCtrl.create({
+                                    title: "휴대폰 번호 권한 요청에 실패했습니다-API오류"+JSON.stringify(err),
+                                    subTitle:"상점을 나갔다 다시 들어오신후 권한을 반드시 승인해주세요.",
+                                    buttons: ['OK']
+                                });
+                                alert.present();        
+                            });                   
+                       }
+                   }, function(err){
+                        console.log("hasReadPermission:"+JSON.stringify(err));
+                        let alert = gShopPage.alertCtrl.create({
+                            title: "휴대폰 번호 권한 확인에 실패했습니다.-API오류",
+                            subTitle:JSON.stringify(err),
+                            buttons: ['OK']
+                        });
+                        alert.present();
+                   });
+                });
+            }else if(this.platform.is("ios")){
+                window.addEventListener('screenshotDidTake', function(){
+                    // nativeStorage에 저장했다가 나중에 server에 보고한다. home 화면 생성할때 확인해 서버로 보고한다.
+                    // 다른 화면으로 이동했는지를 어떻게 알지?
+                        if(gShopPage.storageProvider.barCodeShown){ // barcode가 생성되어 있다면.
+                                let alert = gShopPage.alertCtrl.create({
+                                    title: "화면 캡처가 인식되었습니다.",
+                                    subTitle:"고객님의 화면 캡처는 식비지급처에 보고됩니다.",
+                                    buttons: ['OK']
+                                });
+                                alert.present();
+                            gShopPage.serverProvider.reportBarCodeCheat();    
+                            gShopPage.storageProvider.barCodeShown=false;// 생성된 바코드에 대해서는 한번만 보고한다.        
+                        }
+                    }, false);
+                // 등록된 앱이 아닙니다. 앱 재설치시에도 휴대폰 번호 인증이 필요합니다.
+                window.plugins.sim.getSimInfo(function(info){
+                    console.log("ios: sim-info:"+JSON.stringify(info));
+                    console.log("mobileProvider:"+gShopPage.storageProvider.mobileProvider);
+                    console.log("authCarrier:"+authCarrier);
+                    if(info.carrierName[0] != authCarrier[0] || info.carrierName[1] != authCarrier[1]){ // 앞에 두자리만 비교한다.
+                        let alert = gShopPage.alertCtrl.create({
+                            title: "등록된 휴대폰 통신사와 일치하지 않습니다.",
+                            subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                            buttons: ['OK']
+                        });
+                        alert.present();
+                    }else{
+                            JsBarcode( gShopPage.barcode.nativeElement, barCode, {displayValue: false});
+                            gShopPage.storageProvider.barCodeShown=true;
+                            gShopPage.updateMyShoplist();                           
+                    }
+                }, function(error){
+                    console.log("info-error:"+JSON.stringify(error));
+                    let alert = gShopPage.alertCtrl.create({
+                        title: "휴대폰 통신사 확인에 실패했습니다.-API오류",
+                        subTitle:JSON.stringify(error),
+                        buttons: ['OK']
+                    });
+                    alert.present();
+                });
+
+            }else{
+                let alert = this.alertCtrl.create({
+                    title: "앱이 정상실행되지 않았습니다.",
+                    subTitle:"안드로이드와 iOS에서 실행해 주시기 바랍니다.",
+                    buttons: ['OK']
+                });
+                alert.present();
+                return;
+            }   
+        });        
+        }
+    }
   }
 
   configureButtonColor(i){
@@ -602,6 +884,17 @@ export class ShopPage {
             this.lastOrderId=-1;
             this.getReviews(this.lastOrderId);
         }
-        
+    }
+
+    generateBarcodeAgain(){
+            this.getBarcodeInfo().then((info:any)=>{
+                let authPhone=info.phone;
+                let authCode=info.code; 
+
+                let barCode=authCode +authPhone; // 향후 상점 정보도 바코드에 추가하자. 정보가 많아지면 QR로 변경하는것이 맞겠다. 
+                console.log("barCode:"+barCode);
+
+                JsBarcode( gShopPage.barcode.nativeElement,barCode, {displayValue: false});
+            });
     }
 }

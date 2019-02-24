@@ -49,6 +49,8 @@ export class StorageProvider {
     public email:string="";
     public name:string="";
     public phone:string="";
+    public mobileProvider:string="";
+
     public couponList=[];
     public emailLogin:boolean=false;
 
@@ -62,6 +64,7 @@ export class StorageProvider {
     public receiptId:string;
     public receiptType:string="IncomeDeduction";  
 
+    public barCodeShown:boolean=false; //  바코드가 화면에 보이는지 여부를 확인한다. iOS의 화면 캡처를 확인하기 위해 추가함.
     //public taxIssueCompanyName:string;
     //public taxIssueEmail:string;
     /////////////////////////////////////
@@ -178,6 +181,10 @@ cardColorlist=[
 
 defaultCardColor ="#33B9C6";            
 
+  simInfo; //voucher가 사용될때만 필요하다. "carrierName":"LG U+"
+  vouchers:any=[]; //사용자 식비 카드 정보
+  organizations=[]; // 식비카드 제공 전체 단체목록
+
   constructor(private configProvider:ConfigProvider,
               private sqlite: SQLite,
               private nativeStorage: NativeStorage,
@@ -223,6 +230,8 @@ defaultCardColor ="#33B9C6";
         this.email=userInfo.email;
         this.name=userInfo.name;
         this.phone=userInfo.phone;
+        this.mobileProvider=userInfo.mobileProvider;
+
         this.couponList=JSON.parse(userInfo.couponList); ///userInfo의 couponList
         if(userInfo.receiptIssue=="1"){
             this.receiptIssue=true;
@@ -339,10 +348,11 @@ defaultCardColor ="#33B9C6";
         console.log("shoplistSet:"+JSON.stringify(shoplistValue));    
     }
 
-    userInfoSet(email,name,phone,receiptIssue,receiptId,receiptType,recommends){
+    userInfoSet(email,name,phone,mobileProvider,receiptIssue,receiptId,receiptType,recommends){
         this.email=email;
         this.name=name;
         this.phone=phone;
+        this.mobileProvider=mobileProvider;
         this.tourMode=false;
         if(receiptIssue=="1"){
             this.receiptIssue=true;

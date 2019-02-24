@@ -74,6 +74,9 @@ import {SubShopPageModule} from '../pages/sub-shop/sub-shop.module';
 import{CashListPageModule} from '../pages/cash-list/cash-list.module';
 import {Geolocation} from '@ionic-native/geolocation';
 import {NoticePageModule} from '../pages/notice/notice.module';
+import { Sim } from '@ionic-native/sim';
+import { Device } from '@ionic-native/device';
+import {VoucherSubscribePageModule} from '../pages/voucher-subscribe/voucher-subscribe.module';
 
 @NgModule({
   declarations: [
@@ -125,6 +128,7 @@ import {NoticePageModule} from '../pages/notice/notice.module';
     StoreSearchPageModule,
     SubShopPageModule,
     NoticePageModule,
+    VoucherSubscribePageModule,
     IonicModule.forRoot(MyApp,{mode:'ios'/*, animate: false*/ })
   ],
   bootstrap: [IonicApp],
@@ -154,6 +158,8 @@ import {NoticePageModule} from '../pages/notice/notice.module';
     CardProvider,
     CartProvider,
     WebIntent,
+    Sim,
+    Device
   ]
 })
 export class AppModule {}

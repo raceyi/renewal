@@ -12,6 +12,7 @@ import {TossTransferPage} from '../toss-transfer/toss-transfer';
 import { WebIntent } from '@ionic-native/web-intent';
 import {CashListPage} from '../cash-list/cash-list';
 import {FaqPage} from '../faq/faq';
+import {VoucherSubscribePage} from '../voucher-subscribe/voucher-subscribe';
 
 import * as moment from 'moment';
 
@@ -30,6 +31,8 @@ declare var window:any;
 })
 export class WalletPage {
 
+  section="cash";
+  cards=[];
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -41,7 +44,11 @@ export class WalletPage {
               public modalCtrl: ModalController,
               private events:Events,        
               private webIntent: WebIntent,      
-              private cardProvider: CardProvider) {    
+              private cardProvider: CardProvider) { 
+
+       //this.cards.push({type:"voucher",name:"성결대 식비카드",valid:true ,amount:"75000"});  
+       //this.cards.push({type:"voucher",name:"성결대 식비카드",valid:false}); 
+
        events.subscribe('cashUpdate', (param) =>{
         console.log("cashUpdate comes at WalletPage "+JSON.stringify(param));
         if(param!=undefined && param.cashListNoUpdate){
@@ -61,7 +68,7 @@ export class WalletPage {
     console.log('ionViewWillEnter WalletPage');
 
     // cash정보가 업데이트 되지 않는 경우가 있다. 이경우 보안책으로 다른 탭으로 이동했다 다시왔을때라도 보여주자.
-            if(this.storageProvider.cashId!=undefined && this.storageProvider.cashId.length>=5){
+        if(this.storageProvider.cashId!=undefined && this.storageProvider.cashId.length>=5){
             let body = {cashId:this.storageProvider.cashId};
 
             this.serverProvider.post(this.storageProvider.serverAddress+"/getBalanceCash",body).then((res:any)=>{
@@ -77,7 +84,21 @@ export class WalletPage {
                 }
             });
         }
-
+    //voucher정보를 업데이트해야만 한다. 매번하기에는 overhead가 너무 많지는 않을까? ㅜㅜ
+    if(this.section=="card"){
+        this.serverProvider.post(this.storageProvider.serverAddress+"/getUserVouchers",{}).then((res:any)=>{
+                console.log("getUserVouchers res:"+JSON.stringify(res));
+                if(res.result=="success"){
+                    this.storageProvider.vouchers=res.vouchers;
+                }else{
+                    let alert = this.alertController.create({
+                        title: "식비 카드 목록을 가져오지 못했습니다.",
+                        buttons: ['OK']
+                    });
+                    alert.present();
+                }
+        });
+    }
   }
 
  
@@ -89,6 +110,7 @@ export class WalletPage {
     this.app.getRootNavs()[0].push(CashChargePage,{class:"CashChargePage"});
   }
 
+  /*
   addCard(){
         if(this.storageProvider.tourMode){
             let alert = this.alertController.create({
@@ -101,7 +123,7 @@ export class WalletPage {
 
     this.cardProvider.addCard();
   }
-
+  
   removeCard(i){
     let alert = this.alertController.create({
         title: this.storageProvider.payInfo[i].info.name+"를 삭제하시겠습니까?",
@@ -124,6 +146,7 @@ export class WalletPage {
     alert.present();
   
   }
+*/
 
   exitTourMode(){
     console.log("exit Tour Mode");
@@ -178,4 +201,49 @@ export class WalletPage {
      this.app.getRootNav().push(CashListPage);
  }
   ////////////////////////////////////////////////////////////////
+  changeSegment(){
+    if(!this.storageProvider.tourMode){ // 식비 카드 목록을 가져온다.         
+      console.log("changeSegment "+this.section);
+      this.serverProvider.post(this.storageProvider.serverAddress+"/getUserVouchers",{}).then((res:any)=>{
+        console.log("getUserVouchers res:"+JSON.stringify(res));
+        if(res.result=="success"){
+            this.storageProvider.vouchers=res.vouchers;
+        }else{
+            let alert = this.alertController.create({
+                title: "식비 카드 목록을 가져오지 못했습니다.",
+                buttons: ['OK']
+            });
+            alert.present();
+        }
+      });
+    }
+  }
+
+  addCard(){
+    /*  
+    if(this.storageProvider.tourMode){
+        let alert = this.alertController.create({
+            title: '둘러보기 모드입니다.',
+            buttons: ['OK']
+        });
+        alert.present()
+        return;
+    }
+    */
+    if(!this.storageProvider.tourMode){ // 식비 카드 목록을 가져온다.         
+        this.app.getRootNavs()[0].push(VoucherSubscribePage);
+    }else{
+        let alert = this.alertController.create({
+            title:"둘러보기 모드입니다.",
+            subTitle: '로그인후 실행해 주세요.',
+            buttons: ['OK']
+        });
+        alert.present();                 
+        return;
+    }
+  }
+
+  removeVoucherCard(cardInfo){
+    //userInfo에서 삭제한다.
+  }
 }

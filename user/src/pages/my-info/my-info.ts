@@ -16,6 +16,7 @@ import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
 import {ServerProvider} from '../../providers/server/server';
 import {InputCouponPage} from '../input-coupon/input-coupon';
 import {NoticePage} from '../notice/notice';
+import { Device } from '@ionic-native/device';
 
 /**
  * Generated class for the MyInfoPage page.
@@ -41,6 +42,7 @@ export class MyInfoPage {
                 private cartProvider:CartProvider,
                 private serverProvider:ServerProvider,
                 private iab: InAppBrowser,
+                private device: Device,
                 private app: App,public storageProvider:StorageProvider) {
 
   }
@@ -102,10 +104,14 @@ export class MyInfoPage {
                     name:this.storageProvider.name,
                     receiptIssue:this.storageProvider.receiptIssue?1:0,
                     receiptId:this.storageProvider.receiptId,
-                    receiptType:this.storageProvider.receiptType
+                    receiptType:this.storageProvider.receiptType,
+                    mobileProvider:res.provider                    
         };              
         this.serverProvider.post(this.storageProvider.serverAddress+"/modifyUserInfo",body).then((res:any)=>{
             console.log("res:"+JSON.stringify(res));
+            //update storageProvider정보 
+            this.storageProvider.phone=res.userPhone;
+            this.storageProvider.mobileProvider=res.provider;
             if(res.result=="success"){
                     let alert = this.alertCtrl.create({
                         title: "휴대폰 번호가 변경되었습니다.",
@@ -120,7 +126,16 @@ export class MyInfoPage {
                     });
                     alert.present();
         });
-
+        
+        this.serverProvider.post(this.storageProvider.serverAddress+"/modifyUUID",{uuid:this.device.uuid}).then((res:any)=>{
+            console.log("modifyUUID success "+this.device.uuid);
+        },(err)=>{
+                    let alert = this.alertCtrl.create({
+                        title: "앱의 고유번호(UUID)를 등록하지못했습니다.",
+                        buttons: ['OK']
+                    });
+                    alert.present();
+        })
   },(err)=>{
       console.log("[phoneAuth] err:"+JSON.stringify(err));
   });  

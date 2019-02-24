@@ -48,6 +48,13 @@ export class SignupPage {
   sex:string;
   birthYear:string;
   browserRef;
+  mobileProvider:string; //mobile provider
+                   /*   SK 텔레콤 – SKT
+                        LG U+ - LGT
+                        KT – KTF
+                        SKT의 알뜰폰 – SKM 
+                        LG U+의 알뜰폰 – LGM 
+                        KT의 알뜰폰 - KTM*/
 
   country:string="82"; // So far, only Korea is available.
   
@@ -233,6 +240,7 @@ phoneAuth(){
       this.sex=res.userSex;
       this.birthYear=res.userAge;
       this.name=res.userName;
+      this.mobileProvider=res.provider;
       console.log("sex:"+this.sex+"birthYear:"+this.birthYear+"name:"+this.name+" phone:"+this.phone);
   },(err)=>{
       console.log("[phoneAuth] err:"+JSON.stringify(err));
@@ -316,7 +324,7 @@ phoneAuth(){
      if(this.loginMethod=="facebook" || this.loginMethod=="kakao"){
                 console.log("call serverSignup");
                 this.signupInProgress=true;
-                this.loginProvider.serverSignup(this.refId,this.name,this.email,this.country,this.phone,this.sex,this.birthYear,false,"","IncomeDeduction").then(
+                this.loginProvider.serverSignup(this.refId,this.name,this.email,this.country,this.phone,this.sex,this.birthYear,this.mobileProvider,false,"","IncomeDeduction").then(
                 (result:any)=>{
                     // move into home page.  
                     console.log("result..:"+JSON.stringify(result));
@@ -333,7 +341,7 @@ phoneAuth(){
                         var encrypted:string=this.storageProvider.encryptValue('id',this.loginMethod);// save facebook id 
                         this.nativeStorage.setItem('id',encodeURI(encrypted));
                         this.storageProvider.shopList=[];
-                        this.storageProvider.userInfoSet(this.email,this.name,this.phone,false,"","IncomeDeduction",result.recommends);
+                        this.storageProvider.userInfoSet(this.email,this.name,this.phone,this.mobileProvider,false,"","IncomeDeduction",result.recommends);
                         this.navCtrl.setRoot(SignupPaymentPage,{email:this.email,name:this.name,phone:this.phone});
                     }else  if(serverCode=="duplication"){ // result.result=="exist"
                         let alert = this.alertCtrl.create({
@@ -356,7 +364,7 @@ phoneAuth(){
                 });
      }else if(this.loginMethod=="email"){
             this.signupInProgress=true;
-            this.loginProvider.emailServerSignup(this.password,this.name,this.email,this.country,this.phone,this.sex,this.birthYear,false,"","IncomeDeduction").then( 
+            this.loginProvider.emailServerSignup(this.password,this.name,this.email,this.country,this.phone,this.sex,this.birthYear,this.mobileProvider,false,"","IncomeDeduction").then( 
             (result:any)=>{
                     if(parseFloat(result.version)>parseFloat(this.storageProvider.version)){
                             let alert = this.alertCtrl.create({
@@ -375,7 +383,7 @@ phoneAuth(){
                         this.nativeStorage.setItem('password',encodeURI(encrypted));
                         this.storageProvider.shopList=[];
                         this.storageProvider.emailLogin=true;
-                        this.storageProvider.userInfoSet(this.email,this.name,this.phone,false,"","IncomeDeduction",result.recommends);
+                        this.storageProvider.userInfoSet(this.email,this.name,this.phone,this.mobileProvider,false,"","IncomeDeduction",result.recommends);
                         this.navCtrl.setRoot(SignupPaymentPage,{email:this.email,name:this.name,phone:this.phone,password:this.password});
                     }else if(output == "duplication"){ // result.result=="exist"
                         let alert = this.alertCtrl.create({

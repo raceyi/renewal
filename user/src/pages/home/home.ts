@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController,App,AlertController ,Events,LoadingController} from 'ionic-angular';
+import { NavController,App,AlertController ,Platform, Events,LoadingController} from 'ionic-angular';
 import { ShopPage} from '../shop/shop';
 import {SearchPage} from '../search/search';
 import { StorageProvider } from '../../providers/storage/storage';
@@ -7,6 +7,11 @@ import {ServerProvider} from '../../providers/server/server';
 import {CartPage} from '../cart/cart';
 import {MenuPage} from '../menu/menu';
 import {LoginMainPage} from '../login-main/login-main';
+import { Sim } from '@ionic-native/sim';
+import {Geolocation} from '@ionic-native/geolocation';
+
+declare var window:any;
+var gHomePage;
 
 @Component({
   selector: 'page-home',
@@ -21,15 +26,61 @@ export class HomePage {
   shops=[];
   promotions=[];
   shopList=[];
+  coord:any={};
 
   //shopSelected:boolean=false;
 
   constructor(public navCtrl: NavController,private app: App
+              ,private sim: Sim
+              ,public platform: Platform
               ,public storageProvider:StorageProvider
               ,private alertController:AlertController 
               ,public loadingCtrl: LoadingController                                          
-              ,private events:Events                                                       
+              ,private events:Events
+              ,private geolocation: Geolocation                                                       
               ,public serverProvider:ServerProvider) {
+
+    gHomePage=this;
+
+    if(!this.storageProvider.tourMode){ // 식비 카드 목록을 가져온다. 
+    this.serverProvider.post(this.storageProvider.serverAddress+"/getUserVouchers",{}).then((res:any)=>{
+        console.log("getUserVouchers res:"+JSON.stringify(res));
+        if(res.result=="success"){
+            this.storageProvider.vouchers=res.vouchers;
+        }else{
+            let alert = this.alertController.create({
+                title: "식비 카드 목록을 가져오지 못했습니다.",
+                buttons: ['OK']
+            });
+            alert.present();
+        }
+      });
+    }
+    this.platform.ready().then(() => {        
+        this.geolocation.getCurrentPosition().then((resp) => {
+            // resp.coords.latitude
+            // resp.coords.longitude
+            console.log("resp.coord.longitude:"+resp.coords.longitude);
+            console.log("resp.coord.latitude:"+resp.coords.latitude);
+            this.coord={longitude:resp.coords.longitude,latitude:resp.coords.latitude}; 
+            
+            let locationBody=this.coord;
+            
+            this.serverProvider.post(this.storageProvider.serverAddress+"/getPromotions",locationBody).then((res:any)=>{
+              console.log("getPromotions res:"+JSON.stringify(res));
+              if(res.result=="success"){
+                  this.promotions=res.promotions;
+              }else{
+                  let alert = this.alertController.create({
+                      title: "서버로 부터 추천 상점 정보를 가져오지 못했습니다.",
+                      buttons: ['OK']
+                  });
+                  alert.present();
+              }
+             }); 
+        });
+    });
+
 /*
     this.storageProvider.messageEmitter.subscribe((param)=>{ 
         console.log("messageEmitter comes");
@@ -38,12 +89,19 @@ export class HomePage {
 */
 
     events.subscribe('orderUpdate', (param) =>{
+        console.log("[home.ts]orderUpdate comes");
         this.getInfos();        
     });
-    
+
+    events.subscribe('updateShopList', (param) =>{
+        console.log("[home.ts]updateShopList comes");
+        this.getInfos();        
+    });
+
+    this.serverProvider.reportSavedBarCodeCheat();
  }
 
- ionViewWillEnter(){
+ ionViewWillEnter(){ //단순히 위에 화면이 없어지면 업데이트가 진행되지 않는다.
      this.getInfos();
   }
 
@@ -78,13 +136,16 @@ export class HomePage {
         });
         alert.present();
       });
-      this.serverProvider.post(this.storageProvider.serverAddress+"/getPromotions",body).then((res:any)=>{
+      /////////////////////////////////////////////////////////////
+      let locationBody=this.coord;
+      
+      this.serverProvider.post(this.storageProvider.serverAddress+"/getPromotions",locationBody).then((res:any)=>{
         console.log("getPromotions res:"+JSON.stringify(res));
         if(res.result=="success"){
             this.promotions=res.promotions;
         }else{
             let alert = this.alertController.create({
-                title: "서버로 부터 정보를 가져오지 못했습니다.",
+                title: "서버로 부터 추천 상점 정보를 가져오지 못했습니다.",
                 buttons: ['OK']
             });
             alert.present();

@@ -10,7 +10,17 @@ page-wallet {
     ion-title{
         font-size:4.8vw;
     }
-    
+
+    .slides{
+        height:158px;
+        width:375px;
+        background-color:white;
+       // button.each-img{
+       //   width:100%;
+       //   height:104px;
+       // }
+    }
+
 .search-img{
     margin-top:20px;
     margin-left:160px;
@@ -165,6 +175,69 @@ page-wallet {
     font-size: 5vw !important;
     padding: 10px;
     border-radius: 50%;
+}
+
+.plus-card-outline{
+    height: 100px;
+    width:70%;
+  }
+  .card-outline{
+    height: 80px;    
+    margin-left: 70px;
+    margin-right: 70px;
+    border-radius: 5px;
+  }
+
+  .valid-card-outline{
+    height: 100px;    
+    margin-left: 70px;
+    margin-right: 70px;
+    border-radius: 5px;
+  }
+
+.swiper-pagination-bullet-active {
+    background: #ff7f39;//#b071ff;
+    opacity: 1;
+}
+
+.voucher-amount{
+    font-family: Barlow;
+    font-size: 40px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: -3.9px;
+    color: #ffffff;
+}
+.voucher-amount-won{
+    width: 12px;
+    height: 17px;
+    font-family: AppleSDGothicNeo;
+    font-size: 14px;
+    font-weight: 800;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: -0.7px;
+    color: #ffffff;
+}
+
+.voucher-name{
+    font-family: AppleSDGothicNeo;
+    font-size: 14px;
+    font-weight: 800;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: -0.7px;
+    color: #ffffff;  
+}
+
+.multiline-button{
+    .button-inner {
+        flex-flow: column;
+      }    
 }
 
 }

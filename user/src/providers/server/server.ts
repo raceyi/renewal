@@ -340,13 +340,23 @@ saveOrderCart(body){
                                 var userName=userSexStrs[0];
                                 var userAgeStrs=userSexStrs[1].split("userAge=");
                                 var userSex=userAgeStrs[0];
-                                var userAge=userAgeStrs[1];
-                                console.log("userPhone:"+userPhone+" userName:"+userName+" userSex:"+userSex+" userAge:"+userAge);
+                                var userAge,userProvider;
+                                //현재 코드에서 동작여부 확인하기. 반드시 앱스토어에 올린이후에 서버를 변경해야만 한다 ㅜㅜ
+                                if(userAgeStrs[1].includes("userProvider")){
+                                    var userProviderStrs=userAgeStrs[1].split("userProvider=");
+                                    userAge=userProviderStrs[0];
+                                    userProvider=userProviderStrs[1];
+                                }else{
+                                    userAge=userAgeStrs[1];
+                                }
+                                console.log("userPhone:"+userPhone+" userName:"+userName+" userSex:"+userSex+" userAge:"+userAge+" userProvider:"+userProvider);
                                 let body = {userPhone:userPhone,userName:userName,userSex:userSex,userAge:userAge};
                                 this.post(this.storageProvider.serverAddress+"/getUserInfo",body).then((res:any)=>{
                                     console.log("/getUserInfo res:"+JSON.stringify(res));
                                     if(res.result=="success"){
-                                        resolve(res);
+                                        let info=res;
+                                        info.provider=userProvider;
+                                        resolve(info);
                                     }else{
                                         // change user info
                                         //    
@@ -400,6 +410,44 @@ saveOrderCart(body){
                 });
             }            
         }    
+  }
+
+  reportServerBarCodeCheat(number){
+      this.nativeStorage.setItem("barCodeCheat",number);
+      let body={number:number}; // 서버에 값(현재값에 add하여)을 저장한다.
+      this.post(this.storageProvider.serverAddress+"/reportBarCodeCheat",body).then((res)=>{
+        this.nativeStorage.setItem("barCodeCheat","0");
+      },err=>{
+
+      });
+  };
+
+  reportSavedBarCodeCheat(){  // 이전에 오류로 전송못한 report를 서버에 report한다.
+    let number=0;
+    this.nativeStorage.getItem("barCodeCheat").then((value:string)=>{
+        console.log("value:"+value);
+        if(value!=null){
+            number=parseInt(value);
+            if(number>0)
+                this.reportServerBarCodeCheat(number);
+        }
+    },(err)=>{
+
+    });
+  }
+
+  reportBarCodeCheat(){
+    let number=1;
+    this.nativeStorage.getItem("barCodeCheat").then((value:string)=>{
+        console.log("value:"+value);
+        if(value!=null){
+            number=parseInt(value);
+            number=number+1;
+            this.reportServerBarCodeCheat(number);
+        }
+    },(err)=>{
+        this.reportServerBarCodeCheat(number);        
+    });
   }
 
  updateCash(){

@@ -277,7 +277,7 @@ export class LoginProvider {
        
   }
 
-  serverSignup(refid,name,email,country,phone,sex,birthYear,receiptIssue,receiptId,receiptType){    
+  serverSignup(refid,name,email,country,phone,sex,birthYear,provider,receiptIssue,receiptId,receiptType){    
     return new Promise((resolve, reject)=>{
               console.log("serverSignup !!!");
               let receiptIssueVal;
@@ -293,6 +293,7 @@ export class LoginProvider {
                                             phone:phone,
                                             sex:sex, 
                                             birthYear:birthYear,
+                                            provider:provider,
                                             receiptIssue:receiptIssueVal,
                                             receiptId:receiptId,
                                             receiptType:receiptType,
@@ -311,7 +312,7 @@ export class LoginProvider {
   }
 
 
-  emailServerSignup(password,name,email,country,phone,sex,birthYear,receiptIssue,receiptId,receiptType){
+  emailServerSignup(password,name,email,country,phone,sex,birthYear,provider,receiptIssue,receiptId,receiptType){
       return new Promise((resolve, reject)=>{
               console.log("emailServerSignup "+phone);
               let receiptIssueVal;
@@ -322,6 +323,7 @@ export class LoginProvider {
               }
               let body = {referenceId:"email_"+email,password:password,name:name,
                                             email:email,country:country,phone:phone,
+                                            provider:provider,
                                             receiptIssue:receiptIssueVal,receiptId:receiptId,receiptType:receiptType,
                                             sex:sex, birthYear:birthYear,
                                             version:this.storageProvider.version};

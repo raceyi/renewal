@@ -45,6 +45,8 @@
                             <span  *ngIf="shop.paymethod.cash!=undefined">캐시</span><span *ngIf="shop.paymethod.cash!=undefined && shop.paymethod.cash!='0%'">{{shop.paymethod.cash}}</span>
                             <div *ngIf="shop.paymethod.card!=undefined" class="dot"> </div> 
                             <span  *ngIf="shop.paymethod.card!=undefined">카드</span><span *ngIf="shop.paymethod.card!=undefined && shop.paymethod.card!='0%'">{{shop.paymethod.card}}</span>
+                            <div *ngIf="shop.paymethod.voucher!=undefined && (shop.paymethod.cash!=undefined || shop.paymethod.card!=undefined)" class="dot"> </div> 
+                            <span *ngIf="shop.paymethod.voucher!=undefined">{{shop.paymethod.voucher[0]}}</span>
                         </div>
                         <div class="shop-location"><ion-icon ios="ios-pin-outline" md="md-pin"></ion-icon>&nbsp;{{shop.name_sub}}</div>                        
                     </div>    
@@ -81,6 +83,8 @@
                         <span  *ngIf="shop.paymethod.cash!=undefined">캐시</span><span *ngIf="shop.paymethod.cash!=undefined && shop.paymethod.cash!='0%'">{{shop.paymethod.cash}}</span>
                         <div *ngIf="shop.paymethod.card!=undefined" class="dot"> </div> 
                         <span  *ngIf="shop.paymethod.card!=undefined">카드</span><span *ngIf="shop.paymethod.card!=undefined && shop.paymethod.card!='0%'">{{shop.paymethod.card}}</span>
+                        <div *ngIf="shop.paymethod.voucher!=undefined && (shop.paymethod.cash!=undefined || shop.paymethod.card!=undefined)" class="dot"> </div> 
+                        <span *ngIf="shop.paymethod.voucher!=undefined">{{shop.paymethod.voucher[0]}}</span>
                     </div>
                     <div class="shop-location"><ion-icon ios="ios-pin-outline" md="md-pin"></ion-icon>&nbsp;{{shop.name_sub}}</div>                        
                 </div>    

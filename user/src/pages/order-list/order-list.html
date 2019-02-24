@@ -56,38 +56,56 @@
 
 <ion-content *ngIf="storageProvider.shopList.length!=0">
 <div class="history" *ngFor="let order of orders">
-  <ion-row class="order-first-line">
-   <ion-col> {{order.orderName}}
-    <span *ngIf="order.takeout==1">-포장</span>
-    <span *ngIf="order.takeout==2">-배달</span>
-   </ion-col>
-   <ion-col *ngIf="!order.total" text-right>  <amount-display [amount]="order.amount" ></amount-display>원</ion-col>
-   <ion-col *ngIf="order.total" text-right>  <amount-display [amount]="order.total" ></amount-display>원</ion-col>
-  </ion-row>
-  <ion-row class="order-second-line">
-    <ion-col>
-    {{order.name_main}} {{order.name_sub}}
+  <div *ngIf="order.barCode && order.barCode=='1'">
+      <ion-row class="order-first-line">
+          <ion-col>{{order.name_main}} {{order.name_sub}}
+          </ion-col>
+          <ion-col *ngIf="order.amount" text-right>  <amount-display [amount]="order.amount" ></amount-display>원</ion-col>
+      </ion-row>
+      <ion-row class="order-second-line">
+          <ion-col>
+          </ion-col>
+          <ion-col style="color: #bdbdbd;" text-right> {{order.orderedTimeString}}
+          </ion-col>
+        </ion-row>
+  </div>
+
+  <div *ngIf="!order.barCode || order.barCode=='0'">
+    <ion-row class="order-first-line">
+    <ion-col> {{order.orderName}}
+      <span *ngIf="order.takeout==1">-포장</span>
+      <span *ngIf="order.takeout==2">-배달</span>
     </ion-col>
-    <ion-col style="color: #bdbdbd;" text-right> {{order.orderedTimeString}}
-    </ion-col>
-  </ion-row>
-  <ion-row class="order-third-line">
-    <ion-col col-7 style="padding-right:0px;">
-      <span style="color:#bdbdbd;" *ngIf="order.orderStatus!='pickup'">주문상태:</span>
-      <span *ngIf="order.orderStatus!='pickup'" style="color:#bdbdbd;">{{order.orderStatusString}}</span>
-      <span *ngIf="order.orderStatus=='pickup'" style="color:#FF5F3A;">{{order.orderStatusString}}</span>
-    </ion-col>
-    <ion-col style="padding-top:0px;" no-margin col-2 text-right>
-      <button (click)="orderDetail(order)" full no-padding no-margin ion-button>주문상세</button>
-    </ion-col>  
-    <ion-col style="padding-top:0px;" no-margin col-3 text-right>
-      <button full no-padding no-margin *ngIf="order.orderStatus=='paid'" (click)="cancelOrder(order)" ion-button>주문취소</button>
-      <button *ngIf="(order.orderStatus=='pickup' || order.orderStatus=='completed') && order.payInfo && order.payInfo!=null" (click)="orderAgain(order)" full no-padding no-margin  ion-button>다시주문</button>
-      <!--
-      <button (click)="inputReview(order)" full no-padding no-margin *ngIf="order.orderStatus=='pickup' && order.review==null" ion-button>후기작성</button>
-      -->
-    </ion-col>  
-  </ion-row>
+    <ion-col *ngIf="!order.total" text-right>  <amount-display [amount]="order.amount" ></amount-display>원</ion-col>
+    <ion-col *ngIf="order.total" text-right>  <amount-display [amount]="order.total" ></amount-display>원</ion-col>
+    </ion-row>
+    <ion-row class="order-second-line">
+      <ion-col>
+      {{order.name_main}} {{order.name_sub}}
+      </ion-col>
+      <ion-col style="color: #bdbdbd;" text-right> {{order.orderedTimeString}}
+      </ion-col>
+    </ion-row>
+    <ion-row class="order-third-line">
+      <ion-col col-7 style="padding-right:0px;">
+        <span style="color:#bdbdbd;" *ngIf="order.orderStatus!='pickup'">주문상태:</span>
+        <span *ngIf="order.orderStatus!='pickup'" style="color:#bdbdbd;">{{order.orderStatusString}}</span>
+        <span *ngIf="order.orderStatus=='pickup'" style="color:#FF5F3A;">{{order.orderStatusString}}</span>
+      </ion-col>
+      <ion-col style="padding-top:0px;" no-margin col-2 text-right>
+        <button full no-padding no-margin *ngIf="order.orderStatus=='paid'" (click)="cancelOrder(order)" ion-button>주문취소</button>
+        <!--
+        <button *ngIf="(order.orderStatus=='pickup' || order.orderStatus=='completed') && order.payInfo && order.payInfo!=null" (click)="orderAgain(order)" full no-padding no-margin  ion-button>다시주문</button>
+        -->
+        <!--
+        <button (click)="inputReview(order)" full no-padding no-margin *ngIf="order.orderStatus=='pickup' && order.review==null" ion-button>후기작성</button>
+        -->
+      </ion-col>  
+      <ion-col style="padding-top:0px;" no-margin col-3 text-right>
+          <button (click)="orderDetail(order)" full no-padding no-margin ion-button>주문상세</button>
+      </ion-col>  
+    </ion-row>
+  </div>
 </div>
 
  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
