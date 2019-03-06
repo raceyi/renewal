@@ -1,5 +1,5 @@
-import { Component ,NgZone} from '@angular/core';
-import { IonicPage, NavController, NavParams ,AlertController} from 'ionic-angular';
+import { Component ,NgZone,ViewChild,ElementRef} from '@angular/core';
+import { IonicPage, NavController, NavParams ,AlertController,TextInput} from 'ionic-angular';
 import {CashPasswordPage} from '../cash-password/cash-password';
 import {TabsPage} from '../tabs/tabs';
 import {StorageProvider} from '../../providers/storage/storage';
@@ -20,6 +20,8 @@ import { NativeStorage } from '@ionic-native/native-storage';
   templateUrl: 'signup-payment.html',
 })
 export class SignupPaymentPage {
+  @ViewChild('cashIdInput') cashIdInputElement: ElementRef;
+    
   cashId:string="";
   receiptType:string="IncomeDeduction";
   email:string;
@@ -66,7 +68,13 @@ export class SignupPaymentPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SignupPaymentPage');
-    this.receiptType="IncomeDeduction"; //Please initialize receiptType here not constructor    
+    this.receiptType="IncomeDeduction"; //Please initialize receiptType here not constructor  
+    
+    // set focus please here!!!
+    //this.cashIdInputElement.setFocus(); 동작하지 않음 ㅜㅜ
+
+    console.log("call native setFocus()"); 
+    this.cashIdInputElement.nativeElement.setFocus();
   }
 
   back(){
@@ -116,6 +124,15 @@ export class SignupPaymentPage {
             alert.present();       
             return false;
         }
+        if(!this.cashIdPassword || this.cashIdPassword.length==0){
+            let alert = this.alertCtrl.create({
+                title: '결제 비밀번호를 입력해주세요.',
+                buttons: ['OK']
+            });
+            alert.present();       
+            return false;
+        }
+
         if(this.cashIdPassword!=this.cashIdPasswordConfirm){
             let alert = this.alertCtrl.create({
                         title: '결제 비밀번호가 일치하지 않습니다.',

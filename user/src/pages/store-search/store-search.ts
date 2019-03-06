@@ -182,7 +182,7 @@ enterShop(shop){
                 content: "진행중입니다.",
                 duration: 10*1000 //10 seconds
             });
-            progressBarLoader.present();
+
             this.serverProvider.getShopInfo(shop.takitId).then((res:any)=>{
                 this.storageProvider.shopResponse=res;
                 console.log("this.storageProvider.shopResponse: "+JSON.stringify(this.storageProvider.shopResponse));

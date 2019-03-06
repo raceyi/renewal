@@ -437,6 +437,7 @@ saveOrderCart(body){
   }
 
   reportBarCodeCheat(){
+    console.log("----------- reportBarCodeCheat");  
     let number=1;
     this.nativeStorage.getItem("barCodeCheat").then((value:string)=>{
         console.log("value:"+value);

@@ -35,7 +35,14 @@
     <div *ngIf="cashList.length==0 && !periodSearch">
     <div text-center>
         <ion-row text-center><ion-col style="padding-top:30px;font-size:4vw;">거래내역이 없습니다.</ion-col></ion-row>
-        <ion-row text-center><ion-col><button ion-button clear style="color: #33b9c6;" (click)="cashTutorial()">캐쉬 충전 알아보기</button></ion-col></ion-row>
+        <ion-row text-center>
+            <ion-col>
+                <a  ion-button clear style="color: #33b9c6;" href="https://youtu.be/4-B9h-D9WOM">캐시 충전 방법 알아보기 &nbsp;></a>
+<!--            
+            <button ion-button clear style="color: #33b9c6;" (click)="cashTutorial()">캐쉬 충전 알아보기</button>
+-->
+            </ion-col>
+        </ion-row>
     </div>
     </div>
     

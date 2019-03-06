@@ -1,0 +1,83 @@
+page-voucher-subscribe {
+    ion-navbar{
+        height:30px;
+        .toolbar-background-ios {
+            background: white;
+        }
+    }
+    .header-ios .toolbar-background-ios, .footer-ios .toolbar-background-ios {
+        border-style: none;
+   }
+
+   .searchbar-ios .searchbar-input {
+        color:black !important;
+        background-color:transparent;
+    }
+
+    .searchbar-ios .searchbar-search-icon {
+        display:none;
+        width:0;
+        height:0;
+    }
+
+    .searchbar-ios.searchbar-left-aligned .searchbar-input {
+        padding-left: 0px;
+    }
+
+    .organization{
+        font-size:4vw;
+        button{
+            margin-left:38px;
+            width:290px;
+            span{
+                justify-content: left;
+            }
+            color: black;
+            border-bottom: solid 1px #888888;
+            border-radius:0px;
+            padding-left: 0px;
+        }
+    }
+
+    .keyword-input{
+            margin-left: 27px;
+            width: 327px;
+            background-color: #f7f7f9;
+    }
+
+    .organ-label{
+        margin-left:28px;
+        font-family: AppleSDGothicNeo;
+        font-size: 13px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: -0.2px;
+        color: #6f7078;      
+    }
+
+    .notice-section{
+        color: #4a4a4a;
+
+        font-family: AppleSDGothicNeo;
+        font-size: 14px;
+        font-weight: normal;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: 1.57;
+        letter-spacing: -0.3px;
+        color: #6f7078;
+      
+        padding-top:10px;
+        padding-bottom:10px;
+        padding-left:20px;
+        padding-right:20px;
+    }
+
+    .agreement{
+        button{
+            border-bottom: solid white 1px;
+        }
+    }
+}

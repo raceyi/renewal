@@ -82,7 +82,7 @@
                             </ion-col>
                         </ion-row>  
                   </div>      
-                  <div class="classification" *ngIf="section=='info' && shop.shopInfo.categoryLevel!='1'">
+                  <div class="classification" *ngIf="section=='info' && shop.shopInfo.categoryLevel!='1' && (categories && categories.length>1)">
                     {{shop.shopInfo.classification}}
                   </div>                  
                   <div *ngIf="section=='review' && shop.shopInfo.categoryLevel!='1' && (shop.shopInfo.downVoteCount!='0' || shop.shopInfo.upVoteCount!='0')">
@@ -252,39 +252,10 @@
                                 <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
                                         <ion-infinite-scroll-content></ion-infinite-scroll-content>
                                 </ion-infinite-scroll>
-<!--                                
-                                <div style="border-bottom:solid 1px lightgray;padding: 15px;">
-                                        <ion-row>
-                                                <ion-col col-1 text-center>
-                                                        <img style="width:15px;height:15px;" src="assets/imgs/review-input/iconmonstr-frown-thin-240.png">                                            
-                                                </ion-col>
-                                           <ion-col text-left align-self-center>
-                                                **주
-                                           </ion-col>
-                                           <ion-col text-right align-self-center>
-                                                18.11.11
-                                           </ion-col>
-                                        </ion-row>
-                                        <ion-row>
-                                            <ion-col text-left>
-                                                    하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다. 하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다.
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row>
-                                            <ion-col col-1>
-                
-                                            </ion-col>
-                                                <ion-col style="background-color:#d8d8d8;" text-left>
-                                                    사장님 답글<br><br>
-                                                        하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다. 하였으며, 품고 내려온 가진 같지 그들을 뿐이다. 청춘을 만물은 기관과 사막이다. 노래하며 것은 천자만홍이 것이다.
-                                                </ion-col>
-                                        </ion-row>
-                                </div>
--->                                
                                 <!-- Review -end -->            
       </div>
       <div *ngIf="section=='info'" style="background-color:#f7f7f9;">
-            <div class="classification" *ngIf="section=='info' && shop.shopInfo.categoryLevel=='1'">
+            <div class="classification" *ngIf="section=='info' && (shop.shopInfo.categoryLevel=='1' || (categories && categories.length==1))">
                     {{shop.shopInfo.classification}}
             </div>                  
             <ion-slides class="slides" pager="true" *ngIf="shop.shopInfo.promotions!=null">
@@ -296,8 +267,8 @@
                     <ion-col no-padding class="shop-text-info">
                     <label class="label">주문시간</label>  <span class="value">{{storageProvider.shopResponse.shopInfo.TodayBusinessTime}}</span>
                     </ion-col>
-                    <ion-col no-padding  class="shop-text-info" *ngIf="storageProvider.shopResponse.shopInfo.breakTime!=null">
-                    <label class="label">브레이크</label>  <span class="value"> {{storageProvider.shopResponse.shopInfo.breakTime}} </span>
+                    <ion-col no-padding  class="shop-text-info" *ngIf="todayBreakTimes">
+                    <label class="label" style="margin-left:0px;">브레이크</label>  <span class="value"> {{todayBreakTimes}} </span>
                     </ion-col>
                     </ion-row>
                     <ion-row>
@@ -305,7 +276,7 @@
                     <label class="label">전화번호</label>  <span class="value">{{shopPhone}} </span>
                     </ion-col>
                     <ion-col no-padding  class="shop-text-info" *ngIf="regularOff!=undefined && regularOff.length>0">
-                    <label class="label">휴무요일</label>  <span class="value"> {{regularOff}} </span>
+                    <label class="label" style="margin-left:0px;">휴무요일</label>  <span class="value"> {{regularOff}} </span>
                     </ion-col>
                     </ion-row>
                     <div class="shop-text-info">

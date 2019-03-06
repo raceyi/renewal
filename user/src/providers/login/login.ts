@@ -7,6 +7,7 @@ import { AppAvailability } from '@ionic-native/app-availability';
 import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
 import { NativeStorage } from '@ionic-native/native-storage';
 import { HttpClient ,HttpHeaders} from '@angular/common/http';
+import { Device } from '@ionic-native/device';
 
 declare var KakaoTalk:any;
 
@@ -26,7 +27,8 @@ export class LoginProvider {
       ,public storageProvider:StorageProvider,
       private nativeStorage: NativeStorage,
       private appAvailability: AppAvailability,
-      private alertCtrl:AlertController
+      private alertCtrl:AlertController,
+      private device: Device
       ,private iab: InAppBrowser,private httpClient: HttpClient) {
     console.log('Hello LoginProvider Provider');
       platform.ready().then(() => {
@@ -314,7 +316,7 @@ export class LoginProvider {
 
   emailServerSignup(password,name,email,country,phone,sex,birthYear,provider,receiptIssue,receiptId,receiptType){
       return new Promise((resolve, reject)=>{
-              console.log("emailServerSignup "+phone);
+              console.log("emailServerSignup "+provider);
               let receiptIssueVal;
               if(receiptIssue){
                     receiptIssueVal=1;
@@ -323,11 +325,13 @@ export class LoginProvider {
               }
               let body = {referenceId:"email_"+email,password:password,name:name,
                                             email:email,country:country,phone:phone,
-                                            provider:provider,
+                                            mobileProvider:provider,
                                             receiptIssue:receiptIssueVal,receiptId:receiptId,receiptType:receiptType,
                                             sex:sex, birthYear:birthYear,
-                                            version:this.storageProvider.version};
-              console.log("server:"+ this.storageProvider.serverAddress+" body:"+body);
+                                            version:this.storageProvider.version,
+                                            uuid:this.device.uuid 
+                                        };
+              console.log("server:"+ this.storageProvider.serverAddress+" body:"+JSON.stringify(body));
              this.httpClient.post(this.storageProvider.serverAddress+"/signup",body).subscribe((res)=>{
                  //var result:string=res.result;
                     resolve(res); // 'success'(move into home page) or 'invalidId'(move into signup page)

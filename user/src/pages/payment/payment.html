@@ -163,22 +163,38 @@
         </ion-scroll>
 </div>
 -->
-<div class="scroll-div">
-        <ion-scroll scrollX="true" class="scroll-latest">
-            <ion-row class="scroll-row-latest">
-                <ion-col class="cash-card card-unselect-border scroll-col-latest" text-center no-padding >
-                  <ion-row style="border:0px;" >
-                  <button no-margin no-padding   class="cash-label" ion-button full (click)="cashSelect()" style="font-size:4.5vw;"> <b><custom-icon set="tabs" name="coin"></custom-icon>웨이티 캐시</b></button>
-                  </ion-row>
-                  <ion-row  class="cash-value-row"  style="border:0px;"> 
-                  <button no-margin no-padding  ion-button class="cash-value"  full  (click)="cashSelect()" style="font-size:4vw;"> 잔액: <amount-display [amount]="storageProvider.cashAmount"></amount-display>원</button>
-                  </ion-row>
-                  <ion-row>
-                    <button class="cash-charge" style="color:white;" (click)="moveChargePage()" no-padding no-margin full clear ion-button>충전</button>
-                  </ion-row>
-                </ion-col>
-            </ion-row>
-        </ion-scroll>
+<div class="scroll-div" *ngIf="voucherAvailable">
+    <ion-slides #slides class="slides" pager="true" (ionSlideDidChange)="slideChanged()">
+        <ion-slide  *ngFor="let card of storageProvider.vouchers">
+                <div *ngIf="card.valid" style="display:flex;flex-direction:column;">
+                        <button class="multiline-button valid-card-outline" text-center style="background-color:#00bea1;">
+                                        <span class="voucher-name">{{card.name}}</span><br>
+                                        <amount-display class="voucher-amount" [amount]="card.available"></amount-display>
+                        </button>
+                        </div>        
+        </ion-slide>
+        <ion-slide>
+            <div style="display:flex;flex-direction:column;">
+                <button class="multiline-button valid-card-outline" text-center style="background-color:#FF5F3A;">
+                    <span class="voucher-name">웨이티 캐시</span><br>
+                    <amount-display class="voucher-amount" [amount]="storageProvider.cashAmount"></amount-display>
+                </button>
+            </div>
+        </ion-slide> 
+      </ion-slides>
+</div>
+
+<div class="scroll-div" *ngIf="!voucherAvailable">
+    <ion-slides class="slides" pager="true">
+        <ion-slide>
+            <div style="display:flex;flex-direction:column;">
+                <button class="multiline-button valid-card-outline" text-center style="background-color:#FF5F3A;">
+                    <span class="voucher-name">웨이티 캐시</span><br>
+                    <amount-display class="voucher-amount" [amount]="storageProvider.cashAmount"></amount-display>
+                </button>
+            </div>
+        </ion-slide> 
+      </ion-slides>
 </div>
 </div>
 
@@ -186,7 +202,7 @@
 <ion-row *ngIf="paymentSelection=='cash'">
   현금영수증 발행을 원하시면 나의 정보에서 설정해주시기 바랍니다
 </ion-row>  
-<ion-row [hidden]="!storageProvider.receiptIssue">
+<ion-row *ngIf="paymentSelection=='cash'" [hidden]="!storageProvider.receiptIssue">
   <ion-col style="padding-left:0px">현금영수증 발행 </ion-col>
   <ion-col>{{storageProvider.receiptId}}</ion-col>
   <ion-col *ngIf="storageProvider.receiptType=='IncomeDeduction'">소득공제</ion-col>

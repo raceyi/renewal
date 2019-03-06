@@ -64,6 +64,10 @@ export class ShopPage {
   authPhone;
   authResult:boolean=false; // 모든 조건을 통과하여 바코드가 생성되면 true가 된다. 이후 다시 발급받기가 가능해진다. 
 
+  authCarrier;
+
+  todayBreakTimes:string;
+
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public serverProvider:ServerProvider,private app:App,
               public loadingCtrl: LoadingController,   private ngZone:NgZone, 
@@ -104,6 +108,21 @@ export class ShopPage {
               this.regularOff+=" "+this.getDayString(index);
           }
       }
+      if(this.shop.shopInfo.breakTimeInfo!=null){
+        this.shop.shopInfo.breakTimesObj=JSON.parse(this.shop.shopInfo.breakTimeInfo);
+        this.shop.shopInfo.TodayBreakTimeObjs=this.shop.shopInfo.breakTimesObj[date.getDay()];
+        console.log("TodayBreakTime:.."+JSON.stringify(this.shop.shopInfo.TodayBreakTimeObjs));
+        this.todayBreakTimes="";
+        for(var i=0;i<this.shop.shopInfo.TodayBreakTimeObjs.length;i++){
+            //console.log("from:"+this.shop.shopInfo.TodayBreakTimeObjs[i].fromMins+"to:"+this.shop.shopInfo.TodayBreakTimeObjs[i].toMins);
+            let fromHour=(this.shop.shopInfo.TodayBreakTimeObjs[i].fromMins-this.shop.shopInfo.TodayBreakTimeObjs[i].fromMins%60)/60;
+            let fromMin= this.shop.shopInfo.TodayBreakTimeObjs[i].fromMins%60;
+            let toHour=(this.shop.shopInfo.TodayBreakTimeObjs[i].toMins-this.shop.shopInfo.TodayBreakTimeObjs[i].toMins%60)/60;
+            let toMin= this.shop.shopInfo.TodayBreakTimeObjs[i].toMins%60;
+            this.todayBreakTimes+=fromHour+"시 "+ fromMin+"분~"+toHour+"시 "+ toMin+"분";
+        }
+      }
+
       if(typeof storageProvider.shopResponse.shopInfo.paymethod ==="string")
         storageProvider.shopResponse.shopInfo.paymethod=JSON.parse(storageProvider.shopResponse.shopInfo.paymethod);
       console.log("paymethod:"+ storageProvider.shopResponse.shopInfo.paymethod.card);
@@ -228,7 +247,7 @@ export class ShopPage {
         window.plugins.sim.getSimInfo(function(info){
             console.log("android-sim-info:"+JSON.stringify(info));
             console.log("getSimInfo:"+info.cards[0].phoneNumber);
-            resolve();
+            resolve(info.cards[0].phoneNumber);
         }, function(error){
             console.log("info:"+JSON.stringify(error));
             let alert = gShopPage.alertCtrl.create({
@@ -244,8 +263,8 @@ export class ShopPage {
 
   getBarcodeInfo(){
     return new Promise((resolve,reject)=>{
-        this.serverProvider.post(this.storageProvider.serverAddress+"/getBarcodeInfo",{takitId:this.takitId}).then((res:any)=>{
-            console.log("info:["+JSON.stringify(res)+"]");
+        this.serverProvider.post(this.storageProvider.serverAddress+"/getBarcodeInfo",{}).then((res:any)=>{
+            console.log("getBarcodeInfo:["+JSON.stringify(res)+"]");
             if(res.result=="success"){
                 resolve(res.info);                
             }else{
@@ -347,7 +366,17 @@ export class ShopPage {
 
             let authPhone=info.phone;
             let authUUID=info.uuid;
-            let authCarrier=info.mobileProvider;
+            this.authCarrier=info.mobileProvider;
+            console.log("authCarrier:"+this.authCarrier)
+            if(this.authCarrier==null){
+                let alert = this.alertCtrl.create({
+                    title: "휴대폰 본인인증을 수행해 주시기바랍니다.",
+                    subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                    buttons: ['OK']
+                });
+                alert.present();    
+                return;
+            }
             let authCode=info.code; //
 
             this.authPhone=info.phone; // 사용자의 휴대폰 인증된 폰번호
@@ -378,16 +407,26 @@ export class ShopPage {
                    window.plugins.sim.hasReadPermission(function(info){
                        console.log("hasReadPermission:"+JSON.stringify(info)); 
                        if(info){
-                            gShopPage.checkSimInfo().then(()=>{
-                                JsBarcode( gShopPage.barcode.nativeElement,barCode, {displayValue: false});
-                                gShopPage.updateMyShoplist();
+                            gShopPage.checkSimInfo().then((phone)=>{
+
+                                if(gShopPage.authPhone==phone){
+                                    JsBarcode( gShopPage.barcode.nativeElement, barCode, {displayValue: false});
+                                    gShopPage.updateMyShoplist();
+                                }else{
+                                    let alert = gShopPage.alertCtrl.create({
+                                        title: "등록된 휴대폰 번호와 일치하지 않습니다.",
+                                        subTitle:"나의정보->휴대폰 번호->변경하기를 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
+                                        buttons: ['OK']
+                                    });
+                                    alert.present();
+                                }
                             });
                        }else{
                             window.plugins.sim.requestReadPermission(function(info){
                                 console.log("requestReadPermission-info:"+JSON.stringify(info)); 
                                 if(info){
                                     gShopPage.checkSimInfo().then((phone)=>{
-                                        if(authPhone==phone){
+                                        if(gShopPage.authPhone==phone){
                                             JsBarcode( gShopPage.barcode.nativeElement, barCode, {displayValue: false});
                                             gShopPage.updateMyShoplist();
                                         }else{
@@ -446,8 +485,8 @@ export class ShopPage {
                 window.plugins.sim.getSimInfo(function(info){
                     console.log("ios: sim-info:"+JSON.stringify(info));
                     console.log("mobileProvider:"+gShopPage.storageProvider.mobileProvider);
-                    console.log("authCarrier:"+authCarrier);
-                    if(info.carrierName[0] != authCarrier[0] || info.carrierName[1] != authCarrier[1]){ // 앞에 두자리만 비교한다.
+                    console.log("authCarrier:"+gShopPage.authCarrier);
+                    if(info.carrierName[0] != gShopPage.authCarrier[0] || info.carrierName[1] != gShopPage.authCarrier[1]){ // 앞에 두자리만 비교한다.
                         let alert = gShopPage.alertCtrl.create({
                             title: "등록된 휴대폰 통신사와 일치하지 않습니다.",
                             subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
@@ -894,6 +933,7 @@ export class ShopPage {
                 let barCode=authCode +authPhone; // 향후 상점 정보도 바코드에 추가하자. 정보가 많아지면 QR로 변경하는것이 맞겠다. 
                 console.log("barCode:"+barCode);
 
+                gShopPage.storageProvider.barCodeShown=true;
                 JsBarcode( gShopPage.barcode.nativeElement,barCode, {displayValue: false});
             });
     }

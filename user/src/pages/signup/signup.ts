@@ -241,7 +241,7 @@ phoneAuth(){
       this.birthYear=res.userAge;
       this.name=res.userName;
       this.mobileProvider=res.provider;
-      console.log("sex:"+this.sex+"birthYear:"+this.birthYear+"name:"+this.name+" phone:"+this.phone);
+      console.log("sex:"+this.sex+"birthYear:"+this.birthYear+"name:"+this.name+" mobileProvider:"+this.mobileProvider);
   },(err)=>{
       console.log("[phoneAuth] err:"+JSON.stringify(err));
   });  

@@ -245,5 +245,40 @@ export class WalletPage {
 
   removeVoucherCard(cardInfo){
     //userInfo에서 삭제한다.
+    let body={voucherName:cardInfo.name}; 
+          this.serverProvider.post(this.storageProvider.serverAddress+"/unregisterVoucher",body).then((res:any)=>{
+            console.log("unregisterVoucher res:"+JSON.stringify(res));
+            if(res.result=="success"){
+                  //update voucher info
+                  this.serverProvider.post(this.storageProvider.serverAddress+"/getUserVouchers",{}).then((res:any)=>{
+                    console.log("getUserVouchers res:"+JSON.stringify(res));
+                    if(res.result=="success"){
+                        this.storageProvider.vouchers=res.vouchers;
+                        this.navCtrl.pop();                                    
+                      }else{
+                        let alert = this.alertController.create({
+                            title: "식비 카드 목록을 업데이트하지 못했습니다.",
+                            buttons: ['OK']
+                        });
+                        alert.present();
+                        this.navCtrl.pop();                                    
+                    }
+                  },error=>{
+                        let alert = this.alertController.create({
+                          title: "식비 카드 목록을 업데이트하지 못했습니다.",
+                          buttons: ['OK']
+                      });
+                      alert.present();          
+                      this.navCtrl.pop();                                
+                  });
+            }else{
+                let alert = this.alertController.create({
+                    title: "바우처 삭제에 실패했습니다.",
+                    subTitle:"네트웍 상태를 확인해주세요",
+                    buttons: ['OK']
+                });
+                alert.present();
+            }
+          });    
   }
 }

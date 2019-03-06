@@ -1,11 +1,15 @@
 import { Component,NgZone ,ViewChild} from '@angular/core';
-import { IonicPage, NavController, NavParams ,AlertController,Slides} from 'ionic-angular';
+import { IonicPage, NavController, NavParams ,AlertController,Slides,Platform} from 'ionic-angular';
 import {OrderDetailPage} from '../order-detail/order-detail';
 import {CashChargePage} from '../cash-charge/cash-charge';
 import {StorageProvider} from '../../providers/storage/storage';
 import { CardProvider } from '../../providers/card/card';
 import {ServerProvider} from '../../providers/server/server';
 import {CashPasswordPage} from '../cash-password/cash-password';
+import { Device } from '@ionic-native/device';
+
+declare var window:any;
+var gPaymentPage;
 
 /**
  * Generated class for the PaymentPage page.
@@ -76,14 +80,24 @@ export class PaymentPage {
   voucherAvailable:boolean=false;
   voucherName:string;
 
+  authPhone;
+
+  authCarrier;
+
   constructor(public navCtrl: NavController, 
               private ngZone:NgZone,
               public navParams: NavParams,
               private cardProvider: CardProvider,
               private alertController:AlertController,              
               public storageProvider:StorageProvider,
+              public platform:Platform,
+              private device: Device, 
               public serverProvider:ServerProvider) {
     console.log("!!!!!payments constructor!!!!!");
+   // cash 값을 다시 서버로 부터 받아온다.
+    this.updateCash();
+
+    gPaymentPage=this;
 
     let param=JSON.parse(navParams.get('order'));
     console.log("param:"+JSON.stringify(param));
@@ -189,7 +203,24 @@ export class PaymentPage {
     });    
   }
 
+  updateCash(){
+  if(this.storageProvider.cashId!=undefined && this.storageProvider.cashId.length>=5){
+    let body = {cashId:this.storageProvider.cashId};
 
+    this.serverProvider.post(this.storageProvider.serverAddress+"/getBalanceCash",body).then((res:any)=>{
+        console.log("getBalanceCash res:"+JSON.stringify(res));
+        if(res.result=="success"){
+            this.storageProvider.cashAmount=res.balance;
+        }else{
+            let alert = this.alertController.create({
+                title: "캐시정보를 가져오지 못했습니다.",
+                buttons: ['OK']
+            });
+            alert.present();
+        }
+    });
+    }
+  }
  checkStamp(){
 
        return new Promise((resolve,reject)=>{     
@@ -655,6 +686,7 @@ export class PaymentPage {
                     receiptType:this.storageProvider.receiptType,
                 };
     }else if(this.paymentSelection=="voucher"){  
+        //check validity of this app -end
         let carts=this.carts;
         this.carts.forEach((order)=>{
           delete order.freeDelivery;
@@ -706,10 +738,47 @@ export class PaymentPage {
         body.total= body.amount;
     
     console.log("body.total:"+body.total);
-    this.navCtrl.push(CashPasswordPage,{body:body,trigger:this.trigger,
+
+    if(this.paymentSelection=="voucher"){
+        //check validity of this app -begin
+        this.checkValidVoucherApp().then(()=>{
+            this.navCtrl.push(CashPasswordPage,{body:body,trigger:this.trigger,
+                title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
+                class:"CashPasswordPage"});
+        });
+    }else
+        this.navCtrl.push(CashPasswordPage,{body:body,trigger:this.trigger,
                                          title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
                                          class:"CashPasswordPage"});
   }
+
+  getBarcodeInfo(){
+    return new Promise((resolve,reject)=>{
+        this.serverProvider.post(this.storageProvider.serverAddress+"/getBarcodeInfo",{}).then((res:any)=>{
+            console.log("info:["+JSON.stringify(res)+"]");
+            if(res.result=="success"){
+                resolve(res.info);                
+            }else{
+                let alert = this.alertController.create({
+                    title: "식비카드 인증 정보를 가져오지 못했습니다.",
+                    subTitle:"@웨이티로 문의 바랍니다.",
+                    buttons: ['OK']
+                });
+                alert.present();
+                reject();                    
+            }
+        },err=>{
+            let alert = this.alertController.create({
+                title: "식비카드 인증 정보를 가져오지 못했습니다.",
+                subTitle:"네트웍상태를 확인해주세요.",
+                buttons: ['OK']
+            });
+            alert.present();
+            reject();
+        })
+    });
+  }
+
 
   cashSelect(){
       this.paymentSelection="cash";
@@ -841,21 +910,158 @@ export class PaymentPage {
         }
       }
   }
-/*
-  checkValidVouchers(){
-      console.log("checkValidVouchers");
-    for(let j=0;j<this.carts[j].length;j++){ // [주의]현재 cart의 길이는 1이다. 그러므로 아래 코드가 동작한다. 
-        let cart=this.carts[j];
-        console.log("cart.paymethod:"+JSON.stringify(cart.paymethod));
-        if(cart.paymethod.voucher){
-            let voucherNames=cart.paymethod.voucher[0].split(" ");
-            if(!(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 && voucherNames[0]==this.storageProvider.vouchers[0].name && this.storageProvider.vouchers[0].valid)){ // 내가 가진 식비 카드가 아닐 경우
-                return false;
-            }else
-                return true;
-        }
-    }
-    return false;
+
+  checkSimInfo(){ // android 일경우만 동작함.
+    return new Promise((resolve,reject)=>{
+       window.plugins.sim.getSimInfo(function(info){
+           console.log("android-sim-info:"+JSON.stringify(info));
+           console.log("getSimInfo:"+info.cards[0].phoneNumber);
+           resolve(info.cards[0].phoneNumber);
+       }, function(error){
+           console.log("info:"+JSON.stringify(error));
+           let alert = gPaymentPage.alertController.create({
+               title: "휴대폰 번호 확인에 실패했습니다.-API오류",
+               subTitle:JSON.stringify(error),
+               buttons: ['OK']
+           });
+           alert.present();
+           reject();            
+       });
+   });
+ }
+
+
+  checkValidVoucherApp(){
+    return new Promise((resolve,reject)=>{
+          this.getBarcodeInfo().then((info:any)=>{
+                        let authPhone=info.phone;
+                        let authUUID=info.uuid;
+                        this.authCarrier=info.mobileProvider;
+                        let authCode=info.code; //
+                        this.authPhone=info.phone; // 사용자의 휴대폰 인증된 폰번호
+                        if(this.authCarrier==null){
+                            let alert = this.alertController.create({
+                                title: "휴대폰 본인인증을 수행해 주시기바랍니다.",
+                                subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                                buttons: ['OK']
+                            });
+                            alert.present();    
+                            return;
+                        }
+
+                        if(authUUID==null || authUUID!=this.device.uuid){
+                            let alert = this.alertController.create({
+                                title: "등록된 휴대폰 앱이 아닙니다.",
+                                subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                                buttons: ['OK']
+                            });
+                            alert.present();    
+                            return;
+                       }            
+                        if(this.platform.is("android")){ //android platform 이라면 phone번호를 확인
+                            this.platform.ready().then(() => {
+                               window.plugins.sim.hasReadPermission(function(info){
+                                   console.log("hasReadPermission:"+JSON.stringify(info)); 
+                                   if(info){
+                                        gPaymentPage.checkSimInfo().then((phone)=>{
+                                            if(gPaymentPage.authPhone==phone){
+                                                resolve();
+                                            }else{
+                                                let alert = gPaymentPage.alertController.create({
+                                                    title: "등록된 휴대폰 번호와 일치하지 않습니다.",
+                                                    subTitle:"나의정보->휴대폰 번호->변경하기를 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
+                                                    buttons: ['OK']
+                                                });
+                                                alert.present();
+                                                reject();
+                                            }
+                                        });
+                                   }else{
+                                        window.plugins.sim.requestReadPermission(function(info){
+                                            console.log("requestReadPermission-info:"+JSON.stringify(info)); 
+                                            if(info){
+                                                gPaymentPage.checkSimInfo().then((phone)=>{
+                                                    if(gPaymentPage.authPhone==phone){
+                                                        resolve();
+                                                    }else{
+                                                        let alert = gPaymentPage.alertController.create({
+                                                            title: "등록된 휴대폰 번호와 일치하지 않습니다.",
+                                                            subTitle:"나의정보->휴대폰 번호->변경하기를 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
+                                                            buttons: ['OK']
+                                                        });
+                                                        alert.present();
+                                                        reject();
+                                                    }
+                                                });
+                                            } else{ // 실제로는 error로 return 됨. 방어코드로 추가함.
+                                                let alert = gPaymentPage.alertController.create({
+                                                    title: "휴대폰 번호 권한 요청에 실패했습니다.",
+                                                    subTitle:"상점을 나갔다 다시 들어오신후 권한을 반드시 승인해주세요.",
+                                                    buttons: ['OK']
+                                                });
+                                                alert.present();  
+                                                reject();          
+                                            }
+                                        }, function(err){
+                                            console.log("info:"+JSON.stringify(err));
+                                            let alert = gPaymentPage.alertController.create({
+                                                title: "휴대폰 번호 권한 요청에 실패했습니다-API오류"+JSON.stringify(err),
+                                                subTitle:"상점을 나갔다 다시 들어오신후 권한을 반드시 승인해주세요.",
+                                                buttons: ['OK']
+                                            });
+                                            alert.present();  
+                                            reject();      
+                                        });                   
+                                   }
+                               }, function(err){
+                                    console.log("hasReadPermission:"+JSON.stringify(err));
+                                    let alert = gPaymentPage.alertController.create({
+                                        title: "휴대폰 번호 권한 확인에 실패했습니다.-API오류",
+                                        subTitle:JSON.stringify(err),
+                                        buttons: ['OK']
+                                    });
+                                    alert.present();
+                                    reject();
+                               });
+                            });
+                        }else if(this.platform.is("ios")){
+                            window.plugins.sim.getSimInfo(function(info){
+                                console.log("ios: sim-info:"+JSON.stringify(info));
+                                console.log("mobileProvider:"+gPaymentPage.storageProvider.mobileProvider);
+                                console.log("authCarrier:"+gPaymentPage.authCarrier);
+                                if(info.carrierName[0] != gPaymentPage.authCarrier[0] || info.carrierName[1] != gPaymentPage.authCarrier[1]){ // 앞에 두자리만 비교한다.
+                                    let alert = gPaymentPage.alertController.create({
+                                        title: "등록된 휴대폰 통신사와 일치하지 않습니다.",
+                                        subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                                        buttons: ['OK']
+                                    });
+                                    alert.present();
+                                    reject();
+                                }else{
+                                    resolve();
+                                }
+                            }, function(error){
+                                console.log("info-error:"+JSON.stringify(error));
+                                let alert = gPaymentPage.alertController.create({
+                                    title: "휴대폰 통신사 확인에 실패했습니다.-API오류",
+                                    subTitle:JSON.stringify(error),
+                                    buttons: ['OK']
+                                });
+                                alert.present();
+                                reject();
+                            });
+            
+                        }else{
+                            let alert = gPaymentPage.alertController.create({
+                                title: "앱이 정상실행되지 않았습니다.",
+                                subTitle:"안드로이드와 iOS에서 실행해 주시기 바랍니다.",
+                                buttons: ['OK']
+                            });
+                            alert.present();
+                            reject();
+                        }   
+                    }); 
+                });  
   }
-*/  
+
 }

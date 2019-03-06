@@ -197,8 +197,8 @@ export class OrderDetailPage {
    if(this.order.manualStore=='1' && this.order.orderStatus=="checked"){
         //request shopInfo to get shopPhone. 나중에 db구조를 바꿔야 할까...order정보에 넣어 놓기에는 고민이 필요하다.
         this.serverProvider.getShopMetaInfo(this.order.takitId).then((res:any)=>{
-            console.log("res.shopPhone:"+res.shopPhone);
-            this.shopPhoneHref="tel:"+res.shopPhone;
+            console.log("res.shopPhone:"+res.shopInfo.shopPhone);
+            this.shopPhoneHref="tel:"+res.shopInfo.shopPhone;
         });
    }
 }
