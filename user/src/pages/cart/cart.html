@@ -36,10 +36,12 @@
         </button>
     </ion-col>
     </ion-row>
+    <!--
     <ion-row class="info-label" [hidden]="cart.shopHidden">
         <span class="label-width"> 결제 수단</span> &nbsp;<span class="pay-border" *ngIf="cart.paymethod.cash!=undefined">캐쉬 <b *ngIf="cart.paymethod.cash!='0%'">{{cart.paymethod.cash}}</b></span>&nbsp;
                      <span class="pay-border" *ngIf="cart.paymethod.card!=undefined">카드<b *ngIf="cart.paymethod.card!='0%'">{{cart.paymethod.card}}</b></span>
     </ion-row>
+    -->
     <ion-row class="info-label" [hidden]="cart.shopHidden">
        <span class="label-width"> 주소</span> &nbsp;<span class="address"> {{cart.address}}</span>
     </ion-row>

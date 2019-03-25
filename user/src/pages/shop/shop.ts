@@ -119,7 +119,7 @@ export class ShopPage {
             let fromMin= this.shop.shopInfo.TodayBreakTimeObjs[i].fromMins%60;
             let toHour=(this.shop.shopInfo.TodayBreakTimeObjs[i].toMins-this.shop.shopInfo.TodayBreakTimeObjs[i].toMins%60)/60;
             let toMin= this.shop.shopInfo.TodayBreakTimeObjs[i].toMins%60;
-            this.todayBreakTimes+=fromHour+"시 "+ fromMin+"분~"+toHour+"시 "+ toMin+"분";
+            this.todayBreakTimes+=fromHour+"시 "+ fromMin+"분~"+toHour+"시 "+ toMin+"분 ";
         }
       }
 
@@ -148,18 +148,6 @@ export class ShopPage {
             this.shop.shopInfo.foodOrigin=this.shop.shopInfo.foodOrigin.replace(new RegExp('\n','g'), '<br>');
             console.log("foodOrigin:"+this.shop.shopInfo.foodOrigin);
       }   
-/*
-      if(this.platform.is("android")){ //android platform 이라면 phone번호를 확인 , Just for testing
-        this.platform.ready().then(() => {
-           // 화면 캡처를 불가능하게 만든다.
-           window.plugins.preventscreenshot.disable(function(){
-                console.log("success prevent screenshop");
-           }, function(err){
-                console.log("fail prevent screenshop");
-           });
-        });
-    }
-*/
   }
 
  autoHypenPhone(str) {
@@ -354,7 +342,7 @@ export class ShopPage {
             });
             alert.present();
             this.navCtrl.pop();
-        }else{
+        }else if(this.storageProvider.shopResponse.shopInfo.barCode!=null && this.storageProvider.shopResponse.shopInfo.barCode==1){
             console.log("Generate barcode!!!");
             //server로 부터 생성 정보를 가져온다.
             //1.phone 번호 가져오기(voucherUsers테이블값). 
@@ -371,7 +359,7 @@ export class ShopPage {
             if(this.authCarrier==null){
                 let alert = this.alertCtrl.create({
                     title: "휴대폰 본인인증을 수행해 주시기바랍니다.",
-                    subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                    subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하여 주시기 바랍니다.",
                     buttons: ['OK']
                 });
                 alert.present();    
@@ -387,7 +375,7 @@ export class ShopPage {
             if(authUUID==null || authUUID!=this.device.uuid){
                 let alert = this.alertCtrl.create({
                     title: "등록된 휴대폰 앱이 아닙니다.",
-                    subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                    subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하여 주시기 바랍니다.",
                     buttons: ['OK']
                 });
                 alert.present();    
@@ -408,14 +396,18 @@ export class ShopPage {
                        console.log("hasReadPermission:"+JSON.stringify(info)); 
                        if(info){
                             gShopPage.checkSimInfo().then((phone)=>{
-
-                                if(gShopPage.authPhone==phone){
+                                //authPhone: 01032256467  phone: +821032256467
+                                let authPhoneCommon=gShopPage.authPhone.substr(1);
+                                let phoneCommon= phone.substr(phone.length-authPhoneCommon.length);
+                                console.log("authPhoneCommon: "+authPhoneCommon+" phoneCommon:"+phoneCommon);
+                                //if(gShopPage.authPhone==phone){
+                                if(authPhoneCommon==phoneCommon){
                                     JsBarcode( gShopPage.barcode.nativeElement, barCode, {displayValue: false});
                                     gShopPage.updateMyShoplist();
                                 }else{
                                     let alert = gShopPage.alertCtrl.create({
                                         title: "등록된 휴대폰 번호와 일치하지 않습니다.",
-                                        subTitle:"나의정보->휴대폰 번호->변경하기를 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
+                                        subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
                                         buttons: ['OK']
                                     });
                                     alert.present();
@@ -426,13 +418,17 @@ export class ShopPage {
                                 console.log("requestReadPermission-info:"+JSON.stringify(info)); 
                                 if(info){
                                     gShopPage.checkSimInfo().then((phone)=>{
-                                        if(gShopPage.authPhone==phone){
+                                        let authPhoneCommon=gShopPage.authPhone.substr(1);
+                                        let phoneCommon= phone.substr(phone.length-authPhoneCommon.length);
+                                        console.log("authPhoneCommon: "+authPhoneCommon+" phoneCommon:"+phoneCommon);
+                                        //if(gShopPage.authPhone==phone){
+                                        if(authPhoneCommon==phoneCommon){
                                             JsBarcode( gShopPage.barcode.nativeElement, barCode, {displayValue: false});
                                             gShopPage.updateMyShoplist();
                                         }else{
                                             let alert = gShopPage.alertCtrl.create({
                                                 title: "등록된 휴대폰 번호와 일치하지 않습니다.",
-                                                subTitle:"나의정보->휴대폰 번호->변경하기를 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
+                                                subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
                                                 buttons: ['OK']
                                             });
                                             alert.present();

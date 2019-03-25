@@ -10,7 +10,7 @@
           <button style="background-color:white;color:black;" (click)="back()" ><ion-icon style="font-size:4.8vw;" name="ios-arrow-back"></ion-icon></button>
         </ion-buttons>
         <ion-title>  {{shopName}} &nbsp;
-                    <a *ngIf="storageProvider.shopResponse.shopInfo.contactPhone" [href]="shopPhoneHref"><ion-icon color="black" name="call"></ion-icon></a>
+                    <a *ngIf="storageProvider.shopResponse.shopInfo.contactPhone && shopPhoneHref!=null" [href]="shopPhoneHref"><ion-icon color="black" name="call"></ion-icon></a>
         </ion-title>
         <ion-buttons end>
               <button ion-button (click)="search()" style="background-color:white;color:#000000;">
@@ -131,7 +131,7 @@
             </ion-row>
       </div>
 
-      <div [hidden]="section!='menu' || shop.shopInfo.categoryLevel=='1' || !(categories && categories.length==1 && categories[0].menus.length==1)">
+      <div [hidden]="section!='menu' || shop.shopInfo.categoryLevel=='1' || !(shop.shopInfo.barCode==1)">
           <ion-row style="padding-top:80px;">
               <ion-col text-center style="font-size:4.5vw;">
                   바코드 인식을 위해 스마트폰의 밝기를 높여주세요.
@@ -154,7 +154,7 @@
             </ion-row>
 
       </div>
-      <div *ngIf="section=='menu' && shop.shopInfo.categoryLevel!='1' && !(categories && categories.length==1 && categories[0].menus.length==1)">
+      <div *ngIf="section=='menu' && shop.shopInfo.categoryLevel!='1' && !(shop.shopInfo.barCode==1)">
                           <ion-row *ngFor="let menu of menus" no-padding no-margin>
                               <ion-col class="col-menus" no-padding text-center>
                               <button color="white" (click)="selectMenu(menu[0])"ion-button full no-padding no-margin>

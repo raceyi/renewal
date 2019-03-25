@@ -1,5 +1,5 @@
 import { Component,NgZone ,ViewChild} from '@angular/core';
-import { IonicPage, NavController, NavParams ,AlertController,Slides,Platform} from 'ionic-angular';
+import { ViewController,IonicPage, NavController, NavParams ,AlertController,Slides,Platform} from 'ionic-angular';
 import {OrderDetailPage} from '../order-detail/order-detail';
 import {CashChargePage} from '../cash-charge/cash-charge';
 import {StorageProvider} from '../../providers/storage/storage';
@@ -7,6 +7,8 @@ import { CardProvider } from '../../providers/card/card';
 import {ServerProvider} from '../../providers/server/server';
 import {CashPasswordPage} from '../cash-password/cash-password';
 import { Device } from '@ionic-native/device';
+import {Geolocation} from '@ionic-native/geolocation';
+import {WarningPage} from '../warning/warning';
 
 declare var window:any;
 var gPaymentPage;
@@ -83,6 +85,9 @@ export class PaymentPage {
   authPhone;
 
   authCarrier;
+  voucherConstraint=false; // voucherConstraint를 만족하는지 확인이 필요하다.
+  shopDistance;
+  checkConstraintDone:boolean=false;
 
   constructor(public navCtrl: NavController, 
               private ngZone:NgZone,
@@ -92,6 +97,7 @@ export class PaymentPage {
               public storageProvider:StorageProvider,
               public platform:Platform,
               private device: Device, 
+              private geolocation: Geolocation,
               public serverProvider:ServerProvider) {
     console.log("!!!!!payments constructor!!!!!");
    // cash 값을 다시 서버로 부터 받아온다.
@@ -201,6 +207,122 @@ export class PaymentPage {
                      console.log("Hum...getPayMethod-HttpError");
                  }
     });    
+    this.checkConstraint();
+  }
+
+  //'K' is kilometers
+   distance(lat1, lon1, lat2, lon2, unit) {
+	if ((lat1 == lat2) && (lon1 == lon2)) {
+		return 0;
+	}
+	else {
+		var radlat1 = Math.PI * lat1/180;
+		var radlat2 = Math.PI * lat2/180;
+		var theta = lon1-lon2;
+		var radtheta = Math.PI * theta/180;
+		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+		if (dist > 1) {
+			dist = 1;
+		}
+		dist = Math.acos(dist);
+		dist = dist * 180/Math.PI;
+		dist = dist * 60 * 1.1515;
+		if (unit=="K") { dist = dist * 1.609344 }
+		if (unit=="N") { dist = dist * 0.8684 }
+		return dist;
+	}
+}
+
+   computeMenusNum(){
+       let num=0;
+       for(let i=0;i<this.carts[0].orderList.menus.length;i++){
+            num+=this.carts[0].orderList.menus[i].quantity;        
+       }
+       console.log("computeMenusNum:"+num);    
+       return num;    
+   }
+
+   checkCategoryPickup(){
+    for(var i=0;i<this.carts.length;i++){
+        let menuNO=this.carts[i].orderList.menus[0].menuNO;
+        for(var j=1;j<this.carts[i].orderList.menus.length;j++){
+            if(menuNO!=this.carts[i].orderList.menus[j].menuNO)
+                return false;
+        }
+    }
+    return true;          
+  }
+
+   checkConstraint(){
+    // 위치가 먼거리는 아닌지 voucher일경우 voucher constraint 를 만족하는지 확인하다.
+    //check location & voucher constraint! 
+    // payment페이지로 들어올때 확인하는것이 맞다 ㅜㅜ
+    console.log("takitId:"+this.carts[0].takitId);
+    this.serverProvider.getShopMetaInfo( this.carts[0].takitId).then((res:any)=>{
+        if(res.shopInfo.voucherConstraint!=null){
+            this.voucherConstraint=true;
+            let voucherConstraint=JSON.parse(res.shopInfo.voucherConstraint);
+            if(voucherConstraint.maxCount 
+                && (this.carts[0].orderList.menus.length > voucherConstraint.maxCount
+                   || this.computeMenusNum() > voucherConstraint.maxCount)){
+                this.voucherConstraint=false;
+                this.paymentSelection="cash";
+                console.log("correct paymentSelection!!!");
+            }
+            /* price의 계산이 끝나기전에는 알수가 없다 ㅜㅜ 나중에처리하자.
+            if(res.shopInfo.voucherConstraint.maxAmount){
+
+            }
+            */
+        }else{
+            this.voucherConstraint=true;
+        }
+
+        console.log("categoryPickup:"+ res.shopInfo.categoryPickup);
+
+        if(res.shopInfo.categoryPickup && res.shopInfo.categoryPickup!=null && res.shopInfo.categoryPickup=='1'){
+            if(!this.checkCategoryPickup()){ // 해당 상점은 동일한 분류의 메뉴에대해서만 장바구니 주문이 가능합니다.
+                let alert = this.alertController.create({
+                    title: "장바구니에서 다른 분류의 메뉴를 삭제후 다시 주문해주세요",
+                    subTitle:  this.carts[0].shopName+'은 동일한 분류의 메뉴만 장바구니 주문이 가능합니',
+                    buttons: ['OK']
+                });
+                alert.present().then(()=>{
+                    console.log("alert done");
+                    this.navCtrl.pop();
+                });
+                return;
+            }  
+        } 
+        this.geolocation.getCurrentPosition().then((resp) => {
+            console.log("resp.coord.longitude:"+resp.coords.longitude);
+            console.log("resp.coord.latitude:"+resp.coords.latitude);
+            this.shopDistance=this.distance(res.shopInfo.latitude,res.shopInfo.longitude,resp.coords.latitude,resp.coords.longitude,'K');
+            this.shopDistance=Math.round(this.shopDistance * 100) / 100;
+            this.checkConstraintDone=true;
+        },err=>{
+            console.log("geolocation.getCurrentPosition() error "+JSON.stringify(err));
+            if(this.platform.is("android")){  // 오류가 들어오지 않는다 ㅜㅜ
+                let alert = this.alertController.create({
+                    title: "장거리 상점 주문 오류를 막기위해 위치정보가 반드시 필요합니다.",
+                    subTitle: "스마트폰의 위치정보를 키신후 다시 주문바랍니다. 또는 나의정보->환경설정->위치정보확인을 꺼주시기바랍니다.",
+                    buttons: ['OK']
+                });
+                alert.present().then(()=>{
+                    this.navCtrl.pop();
+                });
+            }else{  //iOS
+                let alert = this.alertController.create({
+                    title: "장거리 상점 주문 오류를 막기위해 위치정보가 필요합니다.",
+                    subTitle:  '설정->웨이티->위치->\'앱을 사용하는 동안\'으로 설정후 다시 주문바랍니다.또는 나의정보->환경설정->위치정보확인을 꺼주시기바랍니다.',
+                    buttons: ['OK']
+                });
+                alert.present().then(()=>{
+                    this.navCtrl.pop();
+                });
+            }
+        });
+    });
   }
 
   updateCash(){
@@ -220,7 +342,22 @@ export class PaymentPage {
         }
     });
     }
+    if(this.storageProvider.vouchers.length>0){ // 바우처 값도 업데이트가 필요하다.
+        this.serverProvider.post(this.storageProvider.serverAddress+"/getUserVouchers",{}).then((res:any)=>{
+            console.log("getUserVouchers res:"+JSON.stringify(res));
+            if(res.result=="success"){
+                this.storageProvider.vouchers=res.vouchers;
+            }else{
+                let alert = this.alertController.create({
+                    title: "식비 카드 목록을 가져오지 못했습니다.",
+                    buttons: ['OK']
+                });
+                alert.present();
+            }
+    });
+    }
   }
+
  checkStamp(){
 
        return new Promise((resolve,reject)=>{     
@@ -572,16 +709,31 @@ export class PaymentPage {
   }
 
   pay(){
+    if(!this.voucherAvailable || !this.voucherConstraint){
+        this.paymentSelection="cash";  // correct paymentSelection.
+    }  
+
     console.log("carts:"+JSON.stringify(this.carts));
     if(!this.computePayAmountDone){
             let alert = this.alertController.create({
                 title: '결제 금액 계산이 완료되지 않았습니다.',
-                subTitle:'잠시 기다려 주십시요.',
+                subTitle:'잠시 기다려 주십시요. 반복 오류시 네트웍 상태 확인후 앱을 다시실행해 주시기 바랍니다.',
                 buttons: ['OK']
             });
             alert.present();
             return;
     }
+    
+    if(this.storageProvider.locationInfoCheck && !this.checkConstraintDone){
+        let alert = this.alertController.create({
+            title: '상점과의 거리 계산이 완료되지 않았습니다. 위치정보가 반드시 켜있어야만 합니다.',
+            subTitle:'위치정보가 켜있다면 잠시 기다려 주십시요. 상점거리 확인을 제외하시려면 나의정보->위치정보확인을 해제해주세요.',
+            buttons: ['OK']
+        });
+        alert.present();
+        return;
+    }
+
     if(this.storageProvider.tourMode){
             let alert = this.alertController.create({
                 title: '둘러보기모드입니다.',
@@ -636,8 +788,8 @@ export class PaymentPage {
           this.serverProvider.checkTossExistence().then(()=>{
                 let amount=this.payAmount-this.storageProvider.cashAmount;
                 let alert = this.alertController.create({
-                    title:'캐시 잔액이 부족합니다.',
-                    subTitle: amount+'원을 토스로 충전합니다.',
+                    title:'캐시 잔액이 부족합니다.'+amount+'원을 토스로 이체합니다.',
+                    subTitle:  '토스 이체시 보낸이에 '+ this.storageProvider.cashId+'을 반드시 입력해주세요! 충전확인후 주문가능합니다.',
                     buttons: [
                                 {
                                     text: 'Toss로 입금',
@@ -739,27 +891,84 @@ export class PaymentPage {
     
     console.log("body.total:"+body.total);
 
-    if(this.paymentSelection=="voucher"){
-        //check validity of this app -begin
-        this.checkValidVoucherApp().then(()=>{
+    if(this.shopDistance>1 && this.takeout!=2/* !delivery */){
+        this.navCtrl.push(WarningPage,{class:"WarningPage",
+                                        shopDistance:this.shopDistance,
+                                        callback: this.moveIntoCashPasswordPage,
+                                        body:body,
+                                        takitId:this.carts[0].orderList.takitId,
+                                        payment:this.paymentSelection});
+    }else{
+        if(this.paymentSelection=="voucher"){
+            //check validity of this app -begin
+            this.checkValidVoucherApp().then(()=>{
+                this.navCtrl.push(CashPasswordPage,{body:body,trigger:this.trigger,
+                    title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
+                    class:"CashPasswordPage"});
+            });
+        }else
             this.navCtrl.push(CashPasswordPage,{body:body,trigger:this.trigger,
-                title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
-                class:"CashPasswordPage"});
-        });
-    }else
-        this.navCtrl.push(CashPasswordPage,{body:body,trigger:this.trigger,
-                                         title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
-                                         class:"CashPasswordPage"});
+                                            title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
+                                            class:"CashPasswordPage"});
+    }
+  }
+
+  moveIntoCashPasswordPage(payment,body){
+    return new Promise((resolve,reject)=>{
+        console.log("moveIntoCashPasswordPage-payment:"+payment);  
+        if(payment=="voucher"){
+            //check validity of this app -begin
+            console.log("call checkValidVoucherApp");
+            gPaymentPage.checkValidVoucherApp().then(()=>{
+                gPaymentPage.navCtrl.push(CashPasswordPage,{body:body,trigger:gPaymentPage.trigger,
+                    title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
+                    class:"CashPasswordPage"});
+                //remove WarningPage from window stack
+                let  views:ViewController[]; 
+                views=gPaymentPage.navCtrl.getViews();
+                views.forEach(view=>{
+                    if(view.getNavParams().get("class")!=undefined){
+                        console.log("class:"+view.getNavParams().get("class"));
+                        if(view.getNavParams().get("class")=="WarningPage")  {
+                                console.log("remove "+view.getNavParams().get("class"));
+                                gPaymentPage.navCtrl.removeView(view);
+                            }             
+                    }
+                })
+                resolve();
+            },err=>{
+                reject("invalid Voucher");
+            });
+        }else{
+            gPaymentPage.navCtrl.push(CashPasswordPage,{body:body,trigger:gPaymentPage.trigger,
+                                            title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
+                                            class:"CashPasswordPage"});
+            //remove WarningPage from window stack
+            let  views:ViewController[]; 
+            views=gPaymentPage.navCtrl.getViews();
+            views.forEach(view=>{
+                if(view.getNavParams().get("class")!=undefined){
+                    console.log("class:"+view.getNavParams().get("class"));
+                    if(view.getNavParams().get("class")=="WarningPage")  {
+                            console.log("remove "+view.getNavParams().get("class"));
+                            gPaymentPage.navCtrl.removeView(view);
+                        }             
+                }
+            })
+            resolve();
+        }
+    });
   }
 
   getBarcodeInfo(){
     return new Promise((resolve,reject)=>{
-        this.serverProvider.post(this.storageProvider.serverAddress+"/getBarcodeInfo",{}).then((res:any)=>{
-            console.log("info:["+JSON.stringify(res)+"]");
+        console.log("call getBarcodeInfo");
+        gPaymentPage.serverProvider.post(this.storageProvider.serverAddress+"/getBarcodeInfo",{}).then((res:any)=>{
+            console.log("getBarcodeInfo-info:["+JSON.stringify(res)+"]");
             if(res.result=="success"){
                 resolve(res.info);                
             }else{
-                let alert = this.alertController.create({
+                let alert = gPaymentPage.alertController.create({
                     title: "식비카드 인증 정보를 가져오지 못했습니다.",
                     subTitle:"@웨이티로 문의 바랍니다.",
                     buttons: ['OK']
@@ -768,7 +977,7 @@ export class PaymentPage {
                 reject();                    
             }
         },err=>{
-            let alert = this.alertController.create({
+            let alert = gPaymentPage.alertController.create({
                 title: "식비카드 인증 정보를 가져오지 못했습니다.",
                 subTitle:"네트웍상태를 확인해주세요.",
                 buttons: ['OK']
@@ -933,7 +1142,9 @@ export class PaymentPage {
 
   checkValidVoucherApp(){
     return new Promise((resolve,reject)=>{
+          console.log("call getBarcoeInfo ");
           this.getBarcodeInfo().then((info:any)=>{
+                        console.log("getBarcodeInfo returns:"+JSON.stringify(info));
                         let authPhone=info.phone;
                         let authUUID=info.uuid;
                         this.authCarrier=info.mobileProvider;
@@ -942,7 +1153,7 @@ export class PaymentPage {
                         if(this.authCarrier==null){
                             let alert = this.alertController.create({
                                 title: "휴대폰 본인인증을 수행해 주시기바랍니다.",
-                                subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                                subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하여 주시기 바랍니다.",
                                 buttons: ['OK']
                             });
                             alert.present();    
@@ -952,7 +1163,7 @@ export class PaymentPage {
                         if(authUUID==null || authUUID!=this.device.uuid){
                             let alert = this.alertController.create({
                                 title: "등록된 휴대폰 앱이 아닙니다.",
-                                subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                                subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하여 주시기 바랍니다.",
                                 buttons: ['OK']
                             });
                             alert.present();    
@@ -963,13 +1174,17 @@ export class PaymentPage {
                                window.plugins.sim.hasReadPermission(function(info){
                                    console.log("hasReadPermission:"+JSON.stringify(info)); 
                                    if(info){
-                                        gPaymentPage.checkSimInfo().then((phone)=>{
-                                            if(gPaymentPage.authPhone==phone){
+                                        gPaymentPage.checkSimInfo().then((phone)=>{                                            
+                                            let authPhoneCommon=gPaymentPage.authPhone.substr(1);
+                                            let phoneCommon= phone.substr(phone.length-authPhoneCommon.length);
+                                            console.log("authPhoneCommon: "+authPhoneCommon+" phoneCommon:"+phoneCommon);
+                                            if(authPhoneCommon==phoneCommon){
+                                            //if(gPaymentPage.authPhone==phone){
                                                 resolve();
                                             }else{
                                                 let alert = gPaymentPage.alertController.create({
                                                     title: "등록된 휴대폰 번호와 일치하지 않습니다.",
-                                                    subTitle:"나의정보->휴대폰 번호->변경하기를 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
+                                                    subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
                                                     buttons: ['OK']
                                                 });
                                                 alert.present();
@@ -981,12 +1196,16 @@ export class PaymentPage {
                                             console.log("requestReadPermission-info:"+JSON.stringify(info)); 
                                             if(info){
                                                 gPaymentPage.checkSimInfo().then((phone)=>{
-                                                    if(gPaymentPage.authPhone==phone){
+                                                    let authPhoneCommon=gPaymentPage.authPhone.substr(1);
+                                                    let phoneCommon= phone.substr(phone.length-authPhoneCommon.length);
+                                                    console.log("authPhoneCommon: "+authPhoneCommon+" phoneCommon:"+phoneCommon);  
+                                                    if(authPhoneCommon==phoneCommon){      
+                                                    //if(gPaymentPage.authPhone==phone){
                                                         resolve();
                                                     }else{
                                                         let alert = gPaymentPage.alertController.create({
                                                             title: "등록된 휴대폰 번호와 일치하지 않습니다.",
-                                                            subTitle:"나의정보->휴대폰 번호->변경하기를 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
+                                                            subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
                                                             buttons: ['OK']
                                                         });
                                                         alert.present();
@@ -1032,7 +1251,7 @@ export class PaymentPage {
                                 if(info.carrierName[0] != gPaymentPage.authCarrier[0] || info.carrierName[1] != gPaymentPage.authCarrier[1]){ // 앞에 두자리만 비교한다.
                                     let alert = gPaymentPage.alertController.create({
                                         title: "등록된 휴대폰 통신사와 일치하지 않습니다.",
-                                        subTitle:"나의정보->휴대폰 번호->변경하기를 수행하여 주시기 바랍니다.",
+                                        subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하여 주시기 바랍니다.",
                                         buttons: ['OK']
                                     });
                                     alert.present();

@@ -291,4 +291,35 @@ export class MyInfoPage {
   enterCoupon(){
     this.app.getRootNav().push(InputCouponPage);  
   }
+
+  updateLocationInfoCheck(){
+    if(!this.storageProvider.locationInfoCheck){
+      let confirm = this.alertCtrl.create({
+        title: '주문시 상점과 고객님의 거리를 확인하지 않습니다.',
+        message: '장거리 상점 주문 오류시 고객님이 직접 상점과 연락하여 취소하셔야만 합니다.',
+        buttons: [
+          {
+            text: '아니오',
+            handler: () => {
+              console.log('Disagree clicked');
+              this.storageProvider.locationInfoCheck=true;
+              return;
+            }
+          },
+          {
+            text: '네',
+            handler: () => {
+              console.log('Agree clicked');
+              //save it into native storage
+              this.nativeStorage.setItem("locationInfoCheck","false");
+            }
+          }
+        ]
+      });
+      confirm.present();
+    }else{
+        //save it into native storage
+        this.nativeStorage.setItem("locationInfoCheck","true");
+    }
+  }
 }

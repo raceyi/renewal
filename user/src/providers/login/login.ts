@@ -299,7 +299,8 @@ export class LoginProvider {
                                             receiptIssue:receiptIssueVal,
                                             receiptId:receiptId,
                                             receiptType:receiptType,
-                                            version:this.storageProvider.version};
+                                            version:this.storageProvider.version,
+                                            uuid:this.device.uuid };
               let headers = new Headers();
               headers.append('Content-Type', 'application/json');
               console.log("server: "+ this.storageProvider.serverAddress+ " body:"+body);

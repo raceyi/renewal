@@ -392,6 +392,13 @@ export class CashPasswordPage {
                                 buttons: ['OK']
                             });
                             alert.present();
+                        }else if(error=="invalid orderedTime"){
+                            let alert = this.alertController.create({
+                                title: '식비카드로 결재가 불가능합니다.',
+                                subTitle:'마지막 주문이후 재주문이 불가능한 시간입니다.',
+                                buttons: ['OK']
+                            });
+                            alert.present();
                         }else{
                             let alert = this.alertController.create({
                                     title: '주문에 실패했습니다.',

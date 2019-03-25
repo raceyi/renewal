@@ -49,7 +49,7 @@ export class MenuSearchPage {
         let body = {keyword:val}
         console.log("searchMenu");
         for(let i=0;i<this.menuList.length;i++){
-            if(this.checkInclude(this.menuList[i].menuName,val)){
+            if(this.checkInclude(this.menuList[i].menuName,val) && this.menuList[i].deactive==0){
                 this.menus.push(this.menuList[i]);
             }
         }

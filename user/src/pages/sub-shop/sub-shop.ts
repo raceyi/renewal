@@ -81,6 +81,7 @@ export class SubShopPage {
                 paymethod:this.shop.shopInfo.paymethod,
                 deliveryFee:this.shop.shopInfo.deliveryFee,
                 themeColor:this.shop.shopInfo.themeColor,
+                categoryPickup:this.shop.shopInfo.categoryPickup,
                 memoEnable:this.shop.shopInfo.memoEnable};
     
     this.navCtrl.push(MenuPage, {menu:JSON.stringify(menu),

@@ -89,6 +89,8 @@ export class StorageProvider {
 
     stampCount=[];
 
+    locationInfoCheck=true;  // default로 켜놓는다. 주문시 위치정보를 확인하는지 여부를 나타냄
+
     banklist=[  {name:"국민",value:"004"},
                 {name:"기업",value:"003"},
                 {name:"농협",value:"011"},

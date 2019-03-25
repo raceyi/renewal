@@ -17,6 +17,7 @@ import { LoginProvider } from '../providers/login/login';
 import {StoreSearchPage} from '../pages/store-search/store-search';
 
 declare var cordova:any;
+declare var window:any;
 
 @Component({
   templateUrl: 'app.html'
@@ -34,7 +35,21 @@ export class MyApp {
              private alertCtrl:AlertController,
              private network: Network) {
     platform.ready().then(() => {
-
+            if(this.storageProvider.device){
+                window.plugins.preventscreenshot.enable(function(){
+                        console.log("[MyApp]success enable screenshot");
+                }, function(err){
+                        console.log("[MyApp]fail enable screenshot");
+                });
+                this.nativeStorage.getItem("locationInfoCheck").then((value:string)=>{
+                    console.log("locationInfoCheck is "+value+" in storage");
+                    if(value==null || value==undefined){
+            
+                    }else{
+                        this.storageProvider.locationInfoCheck = value.toLowerCase() == 'true' ? true : false; 
+                    }                
+                });            
+            }
             this.disconnectSubscription = this.network.onDisconnect().subscribe(() => { 
                 console.log('network was disconnected :-( ');
                 console.log("rootPage:"+JSON.stringify(this.rootPage));

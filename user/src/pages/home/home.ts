@@ -78,6 +78,26 @@ export class HomePage {
                   alert.present();
               }
              }); 
+        },err=>{
+            console.log("home.ts getCurrentPosition-err"+JSON.stringify(err));
+            if(this.platform.is("android")){
+                let alert = this.alertController.create({
+                    title: "근거리 상점정보를 가져오기 위해 위치정보가 필요합니다.",
+                    subTitle: "설정->위치정보를 키신후 다시 주문바랍니다. 안드로이드 폰마다 상이합니다.",
+                    buttons: ['OK']
+                });
+                alert.present().then(()=>{
+                    this.navCtrl.pop();
+                });
+            }else{  //iOS
+                let alert = this.alertController.create({
+                    title: "근거리 상점정보를 가져오기 위해 위치정보가 필요합니다.",
+                    subTitle:  '설정->웨이티->위치->\'앱을 사용하는 동안\'으로 설정바랍니다',
+                    buttons: ['OK']
+                });
+                alert.present().then(()=>{
+                });
+            }
         });
     });
 

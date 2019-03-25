@@ -36,7 +36,7 @@
             </p>
             
         </div>
-        <button ion-button clear no-padding no-margin (click)="selectMenu(menu)"><img src="assets/imgs/home/order.png"></button>
+        <button *ngIf="menu.deactive==0" ion-button clear no-padding no-margin (click)="selectMenu(menu)"><img src="assets/imgs/home/order.png"></button>
     </div>
 </div>
 <div *ngIf="storageProvider.shopList!=null && storageProvider.shopList!=undefined && storageProvider.shopList.length!=0 && checkMoreMenus()" class="more" text-right>

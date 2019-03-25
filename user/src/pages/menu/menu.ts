@@ -50,6 +50,9 @@ export class MenuPage {
                 
     this.menu=JSON.parse(navParams.get('menu'));
     this.shopInfo=JSON.parse(navParams.get('shopInfo'));
+    
+    console.log("shopInfo:"+JSON.stringify(this.shopInfo));
+
     let loading:Loading=navParams.get('loading');
     if(loading){
         loading.dismiss();
@@ -410,8 +413,11 @@ export class MenuPage {
         cart.shopName=this.shopInfo.shopName;
         cart.price=this.amount;
         cart.orderName=orderName;
+        cart.categoryPickup=this.shopInfo.categoryPickup;
         let carts=[];
         carts.push(cart);
+
+        console.log("carts.push with "+JSON.stringify(cart));
 
         let param;
         if(command==='order'){
@@ -419,24 +425,47 @@ export class MenuPage {
             this.navCtrl.push(PaymentPage,{order: JSON.stringify(param) ,class:"PaymentPage" });
         }else{
             this.cartProvider.addMenuIntoCart(cart).then((res)=>{
-                    let confirm = this.alertController.create({
-                    title: '장바구니로 이동하시겠습니까?',
-                    buttons: [
-                        {
-                            text: '아니오',
-                            handler: () => {
-                                console.log('Disagree clicked');
+                let confirm;
+                if(cart.categoryPickup && cart.categoryPickup!=null && cart.categoryPickup=='1'){
+                        confirm = this.alertController.create({
+                        title: '장바구니로 이동하시겠습니까?',
+                        subTitle: '동일 분류의 메뉴만 장바구니 주문이 가능한 매장입니다.',
+                        buttons: [
+                            {
+                                text: '아니오',
+                                handler: () => {
+                                    console.log('Disagree clicked');
+                                }
+                            },
+                            {
+                                text: '네',
+                                handler: () => {
+                                    console.log('Agree clicked');
+                                    this.navCtrl.push(CartPage,{class:"CartPage"});
+                                }
                             }
-                        },
-                        {
-                            text: '네',
-                            handler: () => {
-                                console.log('Agree clicked');
-                                this.navCtrl.push(CartPage,{class:"CartPage"});
+                        ]
+                        });
+                }else{
+                        confirm = this.alertController.create({
+                        title: '장바구니로 이동하시겠습니까?',
+                        buttons: [
+                            {
+                                text: '아니오',
+                                handler: () => {
+                                    console.log('Disagree clicked');
+                                }
+                            },
+                            {
+                                text: '네',
+                                handler: () => {
+                                    console.log('Agree clicked');
+                                    this.navCtrl.push(CartPage,{class:"CartPage"});
+                                }
                             }
-                        }
-                    ]
-                    });
+                        ]
+                        });
+                }
                     confirm.present();
             },(err)=>{
                         let alert = this.alertController.create({

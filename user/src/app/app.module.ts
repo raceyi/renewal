@@ -77,6 +77,8 @@ import {NoticePageModule} from '../pages/notice/notice.module';
 import { Sim } from '@ionic-native/sim';
 import { Device } from '@ionic-native/device';
 import {VoucherSubscribePageModule} from '../pages/voucher-subscribe/voucher-subscribe.module';
+import {WarningPageModule} from '../pages/warning/warning.module';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 @NgModule({
   declarations: [
@@ -129,6 +131,7 @@ import {VoucherSubscribePageModule} from '../pages/voucher-subscribe/voucher-sub
     SubShopPageModule,
     NoticePageModule,
     VoucherSubscribePageModule,
+    WarningPageModule,
     IonicModule.forRoot(MyApp,{mode:'ios'/*, animate: false*/ })
   ],
   bootstrap: [IonicApp],
@@ -159,7 +162,8 @@ import {VoucherSubscribePageModule} from '../pages/voucher-subscribe/voucher-sub
     CartProvider,
     WebIntent,
     Sim,
-    Device
+    Device,
+    AndroidPermissions
   ]
 })
 export class AppModule {}

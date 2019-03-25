@@ -220,7 +220,7 @@ export class CartPage {
                 console.log("alert done");
             });
             return;           
-        }
+        } 
         let param;
         param={carts:this.carts, trigger:'cart' }
         console.log("param...:"+JSON.stringify(param));

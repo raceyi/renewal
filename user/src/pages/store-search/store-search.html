@@ -19,11 +19,11 @@
 
 <ion-content style="background-color:#f7f7f9;">
 
-<div style="padding-top:17px;" >
+<div style="padding-top:17px;" *ngIf="newStores.length>0">
         <span class="section-title">신규가맹점</span>
 </div>
 
-<ion-slides no-margin no-padding class="slides" pager="true">
+<ion-slides  *ngIf="newStores.length>0" no-margin no-padding class="slides" pager="true">
     <ion-slide no-margin no-padding *ngFor="let shop of newStores">
         <button no-margin no-padding class="shop"  (click)="enterShop(shop)" ion-button>
             <div style="display:flex">

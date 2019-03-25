@@ -7,6 +7,10 @@ import { ShopPage} from '../shop/shop';
 import {CartPage} from '../cart/cart';
 import {LoginMainPage} from '../login-main/login-main';
 import {Geolocation} from '@ionic-native/geolocation';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
+
+declare var cordova;
+var gStoreSearchPage;
 
 /**
  * Generated class for the StoreSearchPage page.
@@ -35,8 +39,10 @@ export class StoreSearchPage {
               public loadingCtrl: LoadingController,                                                        
               public navParams: NavParams,
               public platform:Platform,
-              private geolocation: Geolocation) {
-
+              private geolocation: Geolocation,
+              private androidPermissions:AndroidPermissions
+            ) {
+        gStoreSearchPage=this;
         this.getNewStores();
 
         this.platform.ready().then(() => {
@@ -44,13 +50,29 @@ export class StoreSearchPage {
                 console.log("call searchNearStores-1 ");
                 this.searchNearStores();
             }
+            /* app's location permission is true, but android device's location is disabled.
+            this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
+                result => console.log('Has permission? '+result.hasPermission),
+                err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION)
+              );
+            */  
+
+           /* 
+           minSDK version is more than 26. ㅜㅜ
+            cordova.plugins.diagnostic.isLocationAvailable(function(available){
+                console.log("Location is " + (available ? "available" : "not available"));
+            }, function(error){
+                console.error("The following error occurred: "+error);
+            });
+            */
         });
         
-        console.log("call searchNearStores-2 ");
-        this.searchNearStores(); // platform.ready가 안되어 오류가 나면 무시됨.
+        //console.log("call searchNearStores-2 ");
+        //this.searchNearStores(); // platform.ready가 안되어 오류가 나면 무시됨.
 }
 
 searchNearStores(){
+    console.log("searchNearStores");
     this.geolocation.getCurrentPosition().then((resp) => {
         // resp.coords.latitude
         // resp.coords.longitude
@@ -85,18 +107,33 @@ searchNearStores(){
             alert.present();
         });
     },err=>{
-        let alert = this.alertController.create({
-            title: "위치정보를 가져오지 못했습니다.",
-            buttons: ['OK']
-        });
-        alert.present();    
+        console.log("store-search getCurrentPosition-err"+JSON.stringify(err));
+        if(this.platform.is("android")){  // error doesn't come ㅜㅜ. It doesn't work. 
+                let alert = this.alertController.create({
+                    title: "근거리 상점을 검색하기 위해 위치정보가 필요합니다.",
+                    subTitle: "설정->위치정보를 켜주시기 바랍니다. 안드로이드 폰마다 상이합니다.",
+                    buttons: ['OK']
+                });
+                alert.present().then(()=>{
+                    this.navCtrl.pop();
+                });
+        }else{  //iOS
+            let alert = this.alertController.create({
+                title: "근거리 상점을 검색하기 위해 위치정보가 필요합니다.",
+                subTitle:  '설정->웨이티->위치->\'앱을 사용하는 동안\'으로 설정바랍니다',
+                buttons: ['OK']
+            });
+            alert.present().then(()=>{
+            });
+        }
     });
 }
 
 getNewStores(){
     this.serverProvider.post(this.storageProvider.serverAddress+"/getNewStores",{}).then((res:any)=>{
         console.log("getNewStores-res:"+JSON.stringify(res));
-        this.newStores=res.stores;
+        if(res.stores){
+            this.newStores=res.stores;
             for(let i=0;i<this.newStores.length;i++){
                 let element=this.newStores[i];
                 let strs=element.takitId.split("@");
@@ -107,6 +144,9 @@ getNewStores(){
                     let num:number=element.rate;
                     element.rate=num.toFixed(1);
                 }
+            }
+        }else{
+            this.newStores=[];
         }
     },err=>{
         let alert = this.alertController.create({
