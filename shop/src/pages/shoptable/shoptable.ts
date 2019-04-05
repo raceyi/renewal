@@ -1557,8 +1557,9 @@ export class ShopTablePage {
     }
 
     checkPaidOrder(order){ // manualStore의 경우 checked일 경우 음성 알림이 떠야 한다.
+        console.log("order.autoCheckStore:"+order.autoCheckStore);
         if(this.storageProvider.categoryNotification && this.storageProvider.saveCategoryNOs && this.storageProvider.saveCategoryNOs.length>0){              // 각 분류별로 주문을 전달받는 상점의 경우             
-            return this.checkCategoryNoti(order) && ( order.orderStatus=="paid" ||(order.manualStore=='1' && order.orderStatus=='checked'));
+            return this.checkCategoryNoti(order) && ( order.orderStatus=="paid" ||(order.manualStore=='1' && order.orderStatus=='checked') ||(order.autoCheckStore=='1' && order.orderStatus=='checked'));
         }else if(order.orderStatus=="paid" ||(order.manualStore=='1' && order.orderStatus=='checked')){
             return true;
         }

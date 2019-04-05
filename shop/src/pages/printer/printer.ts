@@ -14,7 +14,7 @@ import { Events } from 'ionic-angular';
 
 export class PrinterPage {
     printerlist=[];
-    //printerStatus;  
+    printerStatus;  
     printerEmitterSubscription;
     printOn;
     printerNames=[];
@@ -126,7 +126,7 @@ export class PrinterPage {
   connectPrinter(){
        if(this.platform.is('android')){
                 this.printerProvider.connectPrinter().then(()=>{
-
+                    
                 },(err)=>{
                             console.log("fail to connect");
                                 let alert = this.alertController.create({

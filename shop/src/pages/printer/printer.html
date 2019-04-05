@@ -52,9 +52,6 @@
             <ion-option *ngFor="let one of printerlist" [value]="one">{{one.name}}</ion-option>
           </ion-select>
         </ion-item>
-        <ion-item *ngIf="printerProvider.printer==undefined">
-          {{printerProvider.printer.name}}
-        </ion-item>
       </ion-list>
       <button ion-button *ngIf="printerProvider.printerStatus!='connected'" (click)="connectPrinter()">연결</button>
       <button ion-button *ngIf="printerProvider.printerStatus=='connected'" (click)="testPrinter()">테스트</button>

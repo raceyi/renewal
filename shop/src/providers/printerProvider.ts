@@ -21,7 +21,7 @@ export class PrinterProvider{
         console.log("printerProvider constructor"); 
         gPrinterProvider=this;
       platform.ready().then(() => {
-          if(this.storageProvider.device && this.storageProvider.printerType=='bluetooth'){
+          if(this.storageProvider.device){
                 cordova.plugins.BtPrinter.listen((status)=>{
                 console.log("status:"+status);
                 this.printerStatus=status;
@@ -106,10 +106,13 @@ export class PrinterProvider{
 
     connectPrinter(){  //BtPrinter일경우만 connect이 호출된다.
          return new Promise((resolve,reject)=>{
+                console.log("printerPovider-connectPrinter:"+this.printer.address);            
                 cordova.plugins.BtPrinter.connect(this.printer.address,(result)=>{
                     console.log("result:"+JSON.stringify(result));
+                    resolve(result);
                 },err=>{
-
+                    console.log("err:"+JSON.stringify(err));
+                    reject(err);
                 })
        });
   }
