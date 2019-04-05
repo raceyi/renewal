@@ -2391,7 +2391,26 @@ export class ShopTablePage {
         return;
       }
       if(this.storageProvider.inputCancelReason==false){
-
+        let confirm = this.alertController.create({
+            title: '주문을 취소하시겠습니까?',
+            buttons: [
+              {
+                text: '아니오',
+                handler: () => {
+                  console.log('Disagree clicked');
+                  return;
+                }
+              },
+              {
+                text: '네',
+                handler: () => {
+                  console.log('Agree clicked');
+                  this.myCallbackFunction(order,"혼잡시간"); 
+                }
+              }
+            ]
+          });
+          confirm.present();
           return;
       }else{
             console.log("order cancel comes");
