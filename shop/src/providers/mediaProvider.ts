@@ -28,6 +28,8 @@ export class MediaProvider {
   shopOpenWarning:MediaObject;
   shopOpenWarningPlayback:boolean=false;
 
+  onetime:MediaObject;
+
   constructor(public http: Http,private platform:Platform,
               private media: Media,private storageProvider:StorageProvider,) {
     console.log('Hello MediaProvider Provider');
@@ -48,6 +50,17 @@ export class MediaProvider {
             
           });
           this.file.onError.subscribe(error => console.log('Error! '+JSON.stringify(error)));
+          //////////////////////////////////////////////////////////
+          if(this.platform.is('android'))
+            this.onetime = this.media.create('file:///android_asset/www/assets/ordersound.mp3');
+          else{
+            this.onetime = this.media.create('assets/ordersound.mp3');
+          }
+          this.onetime.onStatusUpdate.subscribe(status => console.log(status)); // fires when file status changes
+          this.onetime.onSuccess.subscribe(() => {
+            console.log('Action is successful');
+          });
+          this.onetime.onError.subscribe(error => console.log('Error! '+JSON.stringify(error)));
           //////////////////////////////////////////////////////////
           if(this.platform.is('android'))
             this.shopOpenWarning = this.media.create('file:///android_asset/www/assets/shopOpenWarning.mp3');
@@ -110,6 +123,13 @@ export class MediaProvider {
   stopShopOpen(){
     this.shopOpenWarning.stop();
     this.shopOpenWarningPlayback=false;
+  }
+
+  playOneTime(){
+    this.volumeControl.setVolume(this.storageProvider.volume/100);
+    // play the file
+    console.log("play onetime");
+    this.onetime.play();      
   }
 
   play(){

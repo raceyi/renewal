@@ -2,7 +2,9 @@ import {Injectable,EventEmitter} from '@angular/core';
 import {Platform,Events} from 'ionic-angular';
 import {StorageProvider} from './storageProvider';
 import { NativeStorage } from '@ionic-native/native-storage';
+import { AlertController } from 'ionic-angular';
 
+var gPrinterProvider;
 declare var cordova:any;
 
 @Injectable()
@@ -14,12 +16,12 @@ export class PrinterProvider{
     constructor(public storageProvider:StorageProvider,
     public events: Events,
     private platform:Platform,
-    private nativeStorage: NativeStorage){
+    private nativeStorage: NativeStorage,
+    private alertController:AlertController){
         console.log("printerProvider constructor"); 
-       // this.printer=this.storageProvider.printer;
-
+        gPrinterProvider=this;
       platform.ready().then(() => {
-          if(this.storageProvider.device){
+          if(this.storageProvider.device && this.storageProvider.printerType=='bluetooth'){
                 cordova.plugins.BtPrinter.listen((status)=>{
                 console.log("status:"+status);
                 this.printerStatus=status;
@@ -41,9 +43,39 @@ export class PrinterProvider{
                     this.storageProvider.printOn=false;
                     console.log("getItem printer returns error");         
                 });
-          }
+          }/* else if(this.storageProvider.device && this.storageProvider.printerType=='wifi'){
+            for(let i=0;i<this.storageProvider.printerIPAddresses.length;i++){
+                this.wifiPrinterProvider.connectPrinter(this.storageProvider.printerIPAddresses[i]).then(()=>{
+
+                },error=>{
+                    let alert = this.alertController.create({
+                        title: this.storageProvider.printerIPAddresses[i]+' 연결에 실패했습니다.',
+                        buttons: ['OK']
+                    });
+                    alert.present();
+                   return;
+                })
+            }
+          }*/
       })
     }
+
+    /*
+    connectWifiPrinter(){
+        for(let i=0;i<this.storageProvider.printerIPAddresses.length;i++){
+            this.wifiPrinterProvider.connectPrinter(this.storageProvider.printerIPAddresses[i]).then(()=>{
+
+            },error=>{
+                let alert = this.alertController.create({
+                    title: this.storageProvider.printerIPAddresses[i]+' 연결에 실패했습니다.',
+                    buttons: ['OK']
+                });
+                alert.present();
+               return;
+            })
+        }
+    }
+    */
 
     setPrinter(printer){
         console.log("setPrinter:"+JSON.stringify(printer));
@@ -72,24 +104,13 @@ export class PrinterProvider{
     }
 
 
-    connectPrinter(){
+    connectPrinter(){  //BtPrinter일경우만 connect이 호출된다.
          return new Promise((resolve,reject)=>{
-             if(!this.printer || !this.printer.address){
-                    if(!this.printer){
-                        this.printer=this.printerlist[0];
-                        cordova.plugins.BtPrinter.connect(this.printer.address,(result)=>{
-                            console.log("result:"+JSON.stringify(result));
-                        },err=>{
-
-                        })
-                    }
-             }else{    
                 cordova.plugins.BtPrinter.connect(this.printer.address,(result)=>{
                     console.log("result:"+JSON.stringify(result));
                 },err=>{
 
                 })
-             }
        });
   }
 
@@ -108,6 +129,9 @@ export class PrinterProvider{
   }
 
     print(title,message){
+        console.log("print-"+this.storageProvider.printerType);
+
+        //if(this.storageProvider.printerType=='bluetooth'){
         console.log("print-message:"+message);
          return new Promise((resolve,reject)=>{
             if(this.printerStatus=="connected"){
@@ -146,8 +170,33 @@ export class PrinterProvider{
                 }
             }
          });
+        //}
   }
 
+  dummyNext(err,index,title,message){
+    return new Promise((resolve,reject)=>{        
+      if(err){
+            reject(err)
+      }else{
+            resolve();
+      }
+    });
+  }
+
+  printerNext(err,index,title,message){
+    if(err){
+        let alert = gPrinterProvider.alertController.create({
+            title: '주문 프린터('+index +')를 확인해 주시기 바랍니다.',
+            buttons: ['OK']
+        });
+        alert.present();
+    }else if(index>=gPrinterProvider.storageProvider.printerIPAddresses.length){
+        console.log("printing All done");
+        return;
+    }else{
+        gPrinterProvider.wifiPrinterProvider.print(index,title,message,gPrinterProvider.printerNext);
+    }
+  }
 }
 
 

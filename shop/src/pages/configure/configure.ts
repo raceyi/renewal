@@ -12,6 +12,7 @@ import { Clipboard } from '@ionic-native/clipboard';
  * Ionic pages and navigation.
  */
 declare var cordova:any;
+var gConfigurePage;
 
 @IonicPage()
 @Component({
@@ -31,6 +32,10 @@ export class ConfigurePage {
   mins=[0,5,10,15,20,25,30,35,40,45,50,55];
 
   foodOrigin;
+  
+  categories=[];
+  categoryNotifyCategories=[];
+  categoryNotifyCategoryInput:string;
 
   //////////////////////////////////////////////////////////////////////////////
   // 1. poll을 설정 가능하도록 하자. 테더링해서 사용할 경우를 생각해서.
@@ -49,6 +54,8 @@ export class ConfigurePage {
               private ngZone:NgZone,
               private clipboard: Clipboard,
               private platform:Platform, private mediaProvider:MediaProvider) {
+    gConfigurePage=this;            
+    this.loadShopInfo();
     platform.ready().then(() => {
       if(this.storageProvider.device){  
           this.volumeControl = cordova.plugins.VolumeControl;
@@ -69,8 +76,9 @@ export class ConfigurePage {
               this.foodOrigin=text; 
           })
     });
-    */
-    this.clipboard.paste().then(  
+    
+    this.clipboard.paste().then(  => 오류 원인 확인하여 삭제하자.
+                                    Attempt to invoke virual method android.content.ClipDescription.hasMimeType(java.lang.String) on a null object reference. => clipboard plugin에 문제가 있다.  
       (resolve: string) => {
          alert(resolve);
        },
@@ -78,7 +86,7 @@ export class ConfigurePage {
          alert('Error: ' + reject);
        }
      );
-   
+   */
     if(this.storageProvider.myshop.GCMNoti=="off"){
       this.notiColor="gray";
     }else if(this.storageProvider.myshop.GCMNoti=="on"){
@@ -137,6 +145,15 @@ export class ConfigurePage {
     this.storageProvider.savepollingInterval(this.pollingInterval);
     console.log("this.pollingInterval:"+this.pollingInterval);
     this.storageProvider.saveIPAddress(this.storageProvider.IPAddress);
+
+    // 나중에 상점 meta data를 다시 불러오도록 하자 ㅜㅜ 
+    // shop table에서 불러온 이후 변경되었을 때 반영이 안된다.
+    let alert = this.alertController.create({
+        title: '변경사항 확인을 위해 앱을 다시 실행해 주시기 바랍니다.',
+        buttons: ['OK']
+    });
+    alert.present();
+
   }
 
   configureStore(){
@@ -468,7 +485,7 @@ export class ConfigurePage {
                               });
                       alertConfirm.present();
         })
-    }
+    }  
 
 removeSpecialCharacters(str){
       var pattern = /^[a-zA-Zㄱ-힣0-9(),|s]*$/;
@@ -514,4 +531,123 @@ removeSpecialCharacters(str){
               alertConfirm.present();
           });
     }
+
+    updateCategoryNotification(){
+      this.storageProvider.saveCategoryNotify(this.storageProvider.categoryNotification).then(()=>{
+                    let alertConfirm = this.alertController.create({
+                                title: '분류 전달 알림 설정에 성공했습니다.',
+                                buttons: ['OK']
+                            });
+                    alertConfirm.present();
+      },err=>{
+                    let alertConfirm = this.alertController.create({
+                                title: '분류 전달 알림 설정에 실패했습니다. ',
+                                buttons: ['OK']
+                            });
+                    alertConfirm.present();
+      })
+  }
+
+  loadShopInfo(){
+    this.serverProvider.getShopInfoAll(this.storageProvider.myshop.takitId).then((res:any)=>{
+          console.log("shopInfo:"+JSON.stringify(res));
+          this.categories = res.categories;
+          
+          console.log("this.storageProvider.categoryNOs: "+JSON.stringify(this.storageProvider.categoryNOs));
+
+          for(let i=0;i<this.storageProvider.categoryNOs.length;i++){
+              let categoryNO:string=this.storageProvider.categoryNOs[i];
+              let substrs=categoryNO.split(";");
+              if(substrs.length==2){
+                let NO=parseInt(substrs[1]);          
+                console.log("NO:"+NO);      
+                let index=this.categories.findIndex(function(category){
+                    if(category.categoryNO==NO){
+                      return true;
+                    }
+                    return false;
+                })
+                console.log("index:"+index);
+                if(index>=0){
+                  this.ngZone.run(()=>{
+                      this.categoryNotifyCategories.push(this.categories[index].categoryName);
+                  });
+                }
+              }        
+          }
+          console.log("this.categoryNotifyCategories: "+JSON.stringify(this.categoryNotifyCategories));
+      });
+  }
+
+  modifyCategories(){
+      console.log("modifyCategories:"+this.categoryNotifyCategoryInput);
+      //this.storageProvider.categoryNOs=[];
+          let index=this.categoryNotifyCategories.findIndex(function(category){
+              if(gConfigurePage.categoryNotifyCategoryInput == category)
+                  return true;
+              return false;    
+          })
+          if(index<0){// 중복되지 않는다면
+
+              this.categoryNotifyCategories.push(this.categoryNotifyCategoryInput);
+              //동일한 이름 categoryNO를 찾아서 추가한다.
+              let categoryIndex=this.categories.findIndex(function(category){
+                if(category.categoryName==gConfigurePage.categoryNotifyCategoryInput){
+                    return true; 
+                }
+                return false;
+              })
+              this.storageProvider.categoryNOs.push( this.storageProvider.myshop.takitId+";"+this.categories[categoryIndex].categoryNO);
+          }      
+      console.log("storageProvider.categoryNOs:"+JSON.stringify(this.storageProvider.categoryNOs));
+      this.storageProvider.saveCategoryNOs(this.storageProvider.categoryNOs).then(()=>{
+            let alertConfirm = this.alertController.create({
+              title: '분류 전달 설정에 성공했습니다.',
+              buttons: ['OK']
+          });
+          alertConfirm.present();
+      },err=>{
+            let alertConfirm = this.alertController.create({
+              title: '분류 전달 설정에 실패했습니다. ',
+              buttons: ['OK']
+          });
+          alertConfirm.present();
+      })
+  }
+
+
+  updateInputCancelReason(){
+    this.storageProvider.saveInputCancelReason(this.storageProvider.inputCancelReason).then(()=>{
+          let alertConfirm = this.alertController.create({
+                      title: '취소사유입력 설정에 성공했습니다.',
+                      buttons: ['OK']
+                  });
+          alertConfirm.present();
+    },err=>{
+          let alertConfirm = this.alertController.create({
+                      title: '취소사유입력 설정에 실패했습니다. ',
+                      buttons: ['OK']
+                  });
+          alertConfirm.present();
+    })
+  }
+
+  removeNotifyCategory(category,i){
+      console.log("removeNotifyCategory");
+     this.storageProvider.categoryNOs.splice(i,1);
+     this.categoryNotifyCategories.splice(i,1);
+     this.storageProvider.saveCategoryNOs(this.storageProvider.categoryNOs).then(()=>{
+            let alertConfirm = this.alertController.create({
+              title: '분류 전달 설정에 성공했습니다.',
+              buttons: ['OK']
+          });
+          alertConfirm.present();
+      },err=>{
+            let alertConfirm = this.alertController.create({
+              title: '분류 전달 설정에 실패했습니다. ',
+              buttons: ['OK']
+          });
+          alertConfirm.present();
+      })
+  }
 }

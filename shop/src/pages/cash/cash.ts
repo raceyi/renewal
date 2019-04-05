@@ -150,12 +150,14 @@ export class CashPage {
   }
 
   doInfinite(infiniteScroll){
+
       if(this.storageProvider.tourMode){
                 infiniteScroll.complete();
                 return;
       }      
       let lastWithdNO=this.transactions[this.transactions.length-1].withdNO;
-
+      console.log("call this.getWithdrawalList ");
+      
       this.getWithdrawalList(lastWithdNO).then((withdrawalList:any)=>{
           console.log("withdrawalList: "+JSON.stringify(withdrawalList));
         if(withdrawalList='0'){

@@ -3,7 +3,8 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-row>
+
+    <ion-row *ngIf="!storageProvider.barCode">
        <ion-col [hidden]="storageProvider.isTestServer"  class="title">
         <span *ngIf="storageProvider.shopInfo!=undefined" ><b> {{storageProvider.shopInfo.shopName}}</b></span>
        </ion-col>
@@ -13,11 +14,6 @@
        <ion-col col-4 style="color:white;" align-self-center>
            {{storageProvider.lastPollResponseTime}}
        </ion-col>
-       <!--
-       <ion-col text-center *ngIf="storageProvider.pollingInterval && storageProvider.pollingInterval>0" style="color:white;" align-self-center>
-         {{storageProvider.pollingInterval}}분
-       </ion-col>
-      -->
        <ion-col text-center>
             &nbsp;
             <ion-icon class="store-status" [style.color]="storeColor" name="bulb" (click)="configureStore()"></ion-icon>
@@ -25,19 +21,30 @@
       <ion-col text-center *ngIf="storageProvider.kiosk==true && storageProvider.kioskNotify==true">
             <ion-icon class="store-status" name="md-desktop" [style.color]="kioskNotifyColor" (click)="showIPAddress()" ></ion-icon>
       </ion-col>
-
       <ion-col text-center>
-            <ion-icon class="store-status" name="print" [style.color]="printColor" (click)="testPrint()"></ion-icon>
+      <ion-icon class="store-status" name="print" [style.color]="printColor" (click)="testPrint()"></ion-icon>
       </ion-col>
       <ion-col text-center>
             <b *ngIf="socket.ioSocket.connected" ><ion-icon class="store-status" name="refresh" style="color:#33b9c6;" (click)="update()"></ion-icon></b>
             <b *ngIf="!socket.ioSocket.connected" ><ion-icon class="store-status" name="refresh" style="color:#ff0000;" (click)="update()"></ion-icon></b>
       </ion-col>
     </ion-row>
+    <ion-row *ngIf="storageProvider.barCode">
+          <ion-col [hidden]="storageProvider.isTestServer"  class="title">
+            <span *ngIf="storageProvider.shopInfo!=undefined" ><b> {{storageProvider.shopInfo.shopName}}</b></span>
+           </ion-col>
+          <ion-col [hidden]="!storageProvider.isTestServer" class="title">
+            검증 
+          </ion-col>
+          <ion-col text-right>
+            <ion-icon class="store-status" name="refresh" style="color:#33b9c6;" (click)="refreshVoucherStat()"></ion-icon>
+          </ion-col>
+    </ion-row>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
+<div>  
     <ion-segment [(ngModel)]="Option" (ionChange)="changeValue(Option)">
       <ion-segment-button  value="today">
       오늘
@@ -67,7 +74,18 @@
  </div> 
   <ion-list class="phone" *ngIf="column==1">
   <ion-item *ngFor="let order of orders">
-    <div *ngIf="order.type && order.type=='kiosk'">
+    <div *ngIf="order.orderList==null">
+      <ion-row>
+        <ion-col  class="display-time">
+            {{order.localOrderedTimeString}}            
+        </ion-col>
+        <ion-col style="font-size:3.4vw;">
+            {{order.amount}}원            
+        </ion-col>
+      </ion-row>
+    </div>
+    
+    <div *ngIf="order.orderList!=null && order.type && order.type=='kiosk'">
                <ion-row>
                  <ion-col text-center col-2 >
                    <ion-row class="order-number">
@@ -202,11 +220,8 @@
                     고객  취소 알림 보내기 
                 </button> 
               </ion-row>      
-
-
-
     </div>
-    <div *ngIf="!order.type" [ngClass]="waiteeBackgroundColor">
+    <div *ngIf="order.orderList!=null && !order.type" [ngClass]="waiteeBackgroundColor">
                <ion-row>
                  <ion-col text-center col-2 >
                    <ion-row class="order-number">
@@ -260,6 +275,7 @@
                         <ion-icon (click)="toggleOrder(order)" name="ios-arrow-down"></ion-icon>
                      </ion-col>
                    </ion-row>
+
                    <ion-row class="display-time" *ngIf="order.orderStatus=='paid'">
                      주문시간:{{order.localOrderedTime}}
                    </ion-row>
@@ -273,6 +289,9 @@
                  <ion-col no-padding no-margin text-left>
                    <div *ngIf="order.orderStatus=='pickup' ||(order.manualStore=='1' && order.orderStatus=='completed')">
                               <ion-row>
+                                  <ion-col text-right col-4 *ngIf="order.orderStatus=='completed' && order.manualStore=='1'">
+                                      <button ion-button clear no-padding no-margin class="cancel-button" style="font-size:4vw;" (click)="modifyOrderInfo(order)">변경하기</button>
+                                   </ion-col> 
                                 <ion-col text-right>
                                   <button ion-button clear no-padding no-margin class="cancel-button" style="font-size:4vw;" [hidden]="hideCancelOrder(order)" (click)="cancel(order)">취소하기</button>                                              
                                 </ion-col>  
@@ -417,4 +436,5 @@
  <ion-infinite-scroll (ionInfinite)="doInfinite($event)" [hidden]="orders.length==0">
    <ion-infinite-scroll-content></ion-infinite-scroll-content>
  </ion-infinite-scroll>
+</div>
 </ion-content>

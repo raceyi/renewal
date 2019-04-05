@@ -18,6 +18,7 @@ export class PrinterPage {
     printerEmitterSubscription;
     printOn;
     printerNames=[];
+    printerIPAddress;
 
   constructor(private navController: NavController, private navParams: NavParams,public printerProvider:PrinterProvider,
                 private alertController:AlertController,private ngZone:NgZone,private nativeStorage: NativeStorage,
@@ -213,4 +214,35 @@ export class PrinterPage {
       console.log("save printOn as "+this.storageProvider.printOn.toString());
       this.nativeStorage.setItem("printOn",this.storageProvider.printOn.toString());
   }
+
+  changePrinterType(){
+    this.nativeStorage.setItem('printerType',this.storageProvider.printerType);
+  }
+
+  ValidateIPaddress(ipaddress) {  
+    if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
+      return (true);  
+    }  
+    return (false);  
+  }  
+  
+  addIpPrinter(printerIPAddress){
+        // storage.printerIPAddresses에 저장한다.
+        if(!printerIPAddress ||  printerIPAddress.trim().length==0 || !this.ValidateIPaddress(printerIPAddress)){
+            let alert = this.alertController.create({
+                title: '프린터 IP를 정확히 입력해주세요.',
+                buttons: ['OK']
+            });
+            alert.present();
+            return;
+        }
+        this.storageProvider.printerIPAddresses.push(printerIPAddress);
+        this.nativeStorage.setItem("printerIPAddresses",JSON.stringify(this.storageProvider.printerIPAddresses));
+  }
+
+  removeIpPrinter(i,ipAddress){
+        this.storageProvider.printerIPAddresses.splice(i,1);
+        this.nativeStorage.setItem("printerIPAddresses",JSON.stringify(this.storageProvider.printerIPAddresses));
+  }
+
 }

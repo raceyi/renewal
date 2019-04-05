@@ -43,6 +43,8 @@ export class SoldOutPage {
                 //console.log("menu.filename:"+menu.filename);
                 let menu_name=menu.menuName.toString();
                 //console.log("menu.name:"+menu_name);
+                
+                /*
                 if(navigator.language.startsWith("ko") && menu_name.indexOf("(")>0){
                     //console.log("name has (");
                     menu.menuName = menu_name.substr(0,menu_name.indexOf('('));
@@ -51,7 +53,8 @@ export class SoldOutPage {
                     menu.descriptionHide=false;
                 }else{
                     menu.descriptionHide=true;
-                }
+                }*/
+
                 console.log("menu:"+JSON.stringify(menu));
                 menus.push(menu);
             }

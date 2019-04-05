@@ -23,6 +23,9 @@ export class StorageProvider{
     public navController:NavController;
     public login:boolean=false;
     public printOn:boolean=false;
+    public printerType;
+    public printerIPAddresses=[]; //wifi model(?)
+    
     public amIGotNoti=false;
     public storeOpen=false;
 
@@ -91,6 +94,15 @@ export class StorageProvider{
     public myIPAddress;
     public port;
 
+    //voucher상점 중 barCode사용 상점
+    barCode=false;
+
+    // 해당 category의 주문만을 표기한다.
+    public categoryNotification=false;
+    public categoryNOs=[]; // string array
+
+    public inputCancelReason=true;
+
     constructor(private platform:Platform,private nativeStorage: NativeStorage,
                 public loadingCtrl: LoadingController, 
                 private alertController:AlertController,
@@ -114,6 +126,25 @@ export class StorageProvider{
                 }
             });
             console.log("printOn is "+this.printOn);
+
+            this.nativeStorage.getItem("printerType").then((value:string)=>{
+                console.log("PrinterType is "+value+" in storage");
+                if(value==null || value==undefined){
+                    this.printerType="bluetooth";
+                }else if(value=="wifi"){
+                    this.printerType=value;
+                    this.nativeStorage.getItem("printerIPAddresses").then((value:string)=>{
+                        console.log("printerIPAddresses is "+value+" in storage");
+                        if(value==null || value==undefined){
+                            this.printerIPAddresses=[];
+                        }else{
+                            this.printerIPAddresses= JSON.parse(value);
+                        }
+                    });
+                }else{
+                    this.printerType=value;
+                }
+            });
             /*
             if(this.printOn){
                 this.nativeStorage.getItem("print").then((value:string)=>{
@@ -224,6 +255,39 @@ export class StorageProvider{
         return new Promise((resolve,reject)=>{
             let stringValue=value?'true':'false';
             this.nativeStorage.setItem('kioskNotify',stringValue).then(()=>{
+                resolve();
+            },err=>{
+                reject();
+            })
+        });
+    }
+
+    saveCategoryNotify(value){
+        return new Promise((resolve,reject)=>{
+            let stringValue=value?'true':'false';
+            this.nativeStorage.setItem('categoryNotify',stringValue).then(()=>{
+                resolve();
+            },err=>{
+                reject();
+            })
+        });
+    }
+
+    saveInputCancelReason(value){
+        return new Promise((resolve,reject)=>{
+            let stringValue=value?'true':'false';
+            this.nativeStorage.setItem('inputCancelReason',stringValue).then(()=>{
+                resolve();
+            },err=>{
+                reject();
+            })
+        });        
+    }
+
+    saveCategoryNOs(value){
+        return new Promise((resolve,reject)=>{
+            let stringValue=JSON.stringify(value);
+            this.nativeStorage.setItem('categoryNOs',stringValue).then(()=>{
                 resolve();
             },err=>{
                 reject();

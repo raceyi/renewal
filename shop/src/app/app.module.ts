@@ -48,10 +48,13 @@ import {KioskSalesPageModule} from '../pages/kiosk-sales/kiosk-sales.module';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import {ResponseInputPageModule} from '../pages/response-input/response-input.module';
 import {OrderListPageModule} from '../pages/order-list/order-list.module';
+import {VoucherStatPageModule} from '../pages/voucher-stat/voucher-stat.module';
 import { Clipboard } from '@ionic-native/clipboard';
 
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
+import { CalendarModule } from 'ion2-calendar';
+
 const config: SocketIoConfig = { url: 'http://211.253.18.79:8500', options: {} }; 
 
 
@@ -85,7 +88,9 @@ const config: SocketIoConfig = { url: 'http://211.253.18.79:8500', options: {} }
     ConfigurePasswordPageModule,
     KioskSalesPageModule,
     OrderListPageModule,
-    ResponseInputPageModule
+    ResponseInputPageModule,
+    VoucherStatPageModule,
+    CalendarModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -121,6 +126,7 @@ const config: SocketIoConfig = { url: 'http://211.253.18.79:8500', options: {} }
     ServerProvider,
     TextToSpeech,
     Clipboard,
-    IosPrinterProvider]
+    IosPrinterProvider,
+  ]
 })
 export class AppModule {}

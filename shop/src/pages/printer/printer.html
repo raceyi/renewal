@@ -7,31 +7,62 @@
   </ion-navbar>
 </ion-header>
 <ion-content>
+<!--
+<ion-segment [(ngModel)]="storageProvider.printerType" (ionChange)="changePrinterType()">
+    <ion-segment-button  value="wifi">
+    wifi
+    </ion-segment-button>
+    <ion-segment-button  value="bluetooth">
+    bluetooth
+    </ion-segment-button>
+  </ion-segment>
 
-  <ion-item>
-  <ion-label> 자동연결 </ion-label>
-  <ion-toggle  [(ngModel)]="printOn" (ionChange)="printOnChange()"></ion-toggle>
-  </ion-item>
-
-<div *ngIf="printOn" >
-  <button ion-button (click)="scanPrinter()">프린터 검색하기</button>
-  <ion-list  *ngIf="printerlist.length>0">
+  <div *ngIf="storageProvider.printerType=='wifi'">
+  <ion-row>
+    <ion-col text-right>
+      <ion-input text-center type="text" placeholder="프린터 IP주소" [(ngModel)]="printerIPAddress"></ion-input>    
+    </ion-col>
+    <ion-col text-left>
+        <button ion-button (click)="addIpPrinter(printerIPAddress)" outline> 추가하기</button>        
+    </ion-col>
+  </ion-row>
+  <ion-row  *ngFor="let ipAddress of storageProvider.printerIPAddresses; let i=index">
+    <ion-col text-right align-self-center>
+        {{ipAddress}}
+    </ion-col>
+    <ion-col text-left align-self-center>
+        <button ion-button (click)="removeIpPrinter(i,ipAddress)" clear>삭제하기</button>
+    </ion-col>
+  </ion-row> 
+</div>
+<div *ngIf="storageProvider.printerType=='bluetooth'">
+-->
+<div>
     <ion-item>
-      <ion-label>BT프린터 선택</ion-label>
-      <ion-select [(ngModel)]="printerProvider.printer" (ionChange)="selectPrinter(printerProvider.printer)">
-        <ion-option *ngFor="let one of printerlist" [value]="one">{{one.name}}</ion-option>
-      </ion-select>
-    </ion-item>
-    <ion-item *ngIf="printerProvider.printer==undefined">
-      {{printerProvider.printer.name}}
-    </ion-item>
-  </ion-list>
-  <button ion-button *ngIf="printerProvider.printerStatus!='connected'" (click)="connectPrinter()">연결</button>
-  <button ion-button *ngIf="printerProvider.printerStatus=='connected'" (click)="testPrinter()">테스트</button>
-  <!--
-  <button ion-button *ngIf="printerProvider.printerStatus=='connected'" (click)="disconnectPrinter()"> 해제</button>
-  -->
-  <button ion-button *ngIf="printerProvider.printerStatus=='connected'" (click)="savePrinter()"> 저장</button>
-</div>  
+      <ion-label> 자동연결 </ion-label>
+      <ion-toggle  [(ngModel)]="printOn" (ionChange)="printOnChange()"></ion-toggle>
+      </ion-item>
+    
+    <div *ngIf="printOn" >
+      <button ion-button (click)="scanPrinter()">프린터 검색하기</button>
+      <ion-list  *ngIf="printerlist.length>0">
+        <ion-item>
+          <ion-label>BT프린터 선택</ion-label>
+          <ion-select [(ngModel)]="printerProvider.printer" (ionChange)="selectPrinter(printerProvider.printer)">
+            <ion-option *ngFor="let one of printerlist" [value]="one">{{one.name}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item *ngIf="printerProvider.printer==undefined">
+          {{printerProvider.printer.name}}
+        </ion-item>
+      </ion-list>
+      <button ion-button *ngIf="printerProvider.printerStatus!='connected'" (click)="connectPrinter()">연결</button>
+      <button ion-button *ngIf="printerProvider.printerStatus=='connected'" (click)="testPrinter()">테스트</button>
+      <!--
+      <button ion-button *ngIf="printerProvider.printerStatus=='connected'" (click)="disconnectPrinter()"> 해제</button>
+      -->
+      <button ion-button *ngIf="printerProvider.printerStatus=='connected'" (click)="savePrinter()"> 저장</button>
+    </div>  
+</div>
 
 </ion-content>

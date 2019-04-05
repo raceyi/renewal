@@ -35,6 +35,38 @@
       <ion-icon range-right name="ios-volume-up-outline"></ion-icon>
      </ion-range>
 </ion-item>
+<ion-row>
+  <ion-col>
+    <ion-item>
+        <ion-label>취소사유입력 </ion-label>
+        <ion-checkbox [(ngModel)]="storageProvider.inputCancelReason" (ionChange)="updateInputCancelReason()" ></ion-checkbox>
+    </ion-item>   
+  </ion-col>
+</ion-row>
+
+<ion-row>
+  <ion-col>
+    <ion-item>
+        <ion-label>분류 전달 알림 </ion-label>
+        <ion-checkbox [(ngModel)]="storageProvider.categoryNotification" (ionChange)="updateCategoryNotification()" ></ion-checkbox>
+    </ion-item>   
+  </ion-col>
+  <ion-col>
+    <ion-select placeholder="주문 전달을 받고 싶은 분류를 선택해 주세요." [(ngModel)]="categoryNotifyCategoryInput" style="max-width: 100%;" (ionChange)="modifyCategories()">  
+        <ion-option class="category-name"  style="width:40vw;" text-center [value]="category.categoryName" *ngFor="let category of categories;let i=index;">
+            <ion-label text-center style="width:100vw;text-align:center;"><div text-center>{{category.categoryName}}</div></ion-label>
+        </ion-option>
+    </ion-select>   
+  </ion-col>
+</ion-row>
+<ion-row  *ngFor="let category of categoryNotifyCategories; let i=index;" >
+  <ion-col text-right align-self-center>
+      {{category}}
+  </ion-col>
+  <ion-col text-left align-self-center>
+      <button ion-button clear (click)="removeNotifyCategory(category,i)">삭제</button>
+  </ion-col>
+</ion-row>
 
 <ion-row>
   <ion-col>
@@ -60,20 +92,6 @@
   </ion-item>    
   </ion-col>
 </ion-row>
-<!--
-<ion-row>
-  <ion-col>
-  <ion-item>
-  주문 알림 문자 수신
-  </ion-item>
-  </ion-col>
-  <ion-col>
-  <ion-item>
-      <ion-icon class="store-status" [style.color]="notiColor" name="person" (click)="configureGotNoti()" ></ion-icon>
-  </ion-item>
-  </ion-col>
-</ion-row>
--->
 <ion-row>
   <ion-col>
   <ion-item>

@@ -25,6 +25,7 @@ import { NativeStorage } from '@ionic-native/native-storage';
 import { Network } from '@ionic-native/network';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import {MediaProvider} from '../providers/mediaProvider';
+import {VoucherStatPage} from '../pages/voucher-stat/voucher-stat';
 
 declare var cordova:any;
 
@@ -50,9 +51,22 @@ export class MyApp {
     platform.ready().then(() => {
             console.log("KALEN-platform ready comes");
 
-            if(this.storageProvider.device)
-                this.storageProvider.openLogDB();
+            if(this.storageProvider.device){
+                this.storageProvider.openLogDB().then(()=>{
+                    //만약 프린터를 출력한다면 로그를 지우자.
+                    this.storageProvider.deleteLog().then(()=>{
+                
+                    },error=>{
+                        let alert = this.alertCtrl.create({
+                            title: "프린터 로그 삭제에 실패했습니다.",
+                            buttons: ['OK']                                
+                            });
+                            alert.present();      
+                    });
+                },err=>{
 
+                });
+            }
             this.disconnectSubscription = this.network.onDisconnect().subscribe(() => { // Why it doesn't work?
                 this.applicationRef.tick();
                 console.log('network was disconnected :-(');
@@ -205,7 +219,11 @@ export class MyApp {
         this.app.getRootNav().push(KioskSalesPage);
     }
 
-   openLogout(){
+    openVoucherSales(){
+        this.app.getRootNav().push(VoucherStatPage);
+    }
+
+    openLogout(){
       if(this.storageProvider.tourMode){
             let alert = this.alertCtrl.create({
                         title: '둘러보기 모드에서는 동작하지 않습니다.',
