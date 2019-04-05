@@ -49,6 +49,16 @@ export class MyApp {
                         this.storageProvider.locationInfoCheck = value.toLowerCase() == 'true' ? true : false; 
                     }                
                 });            
+
+                this.nativeStorage.getItem("slientMode").then((value:string)=>{
+                    console.log("slientMode is "+value+" in storage");
+                    if(value==null || value==undefined){
+            
+                    }else{
+                        this.storageProvider.slientMode = value.toLowerCase() == 'true' ? true : false; 
+                    }                
+                });            
+
             }
             this.disconnectSubscription = this.network.onDisconnect().subscribe(() => { 
                 console.log('network was disconnected :-( ');

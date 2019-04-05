@@ -46,8 +46,11 @@
       </p>  
     <p no-margin style="font-size:3.5vw;color:#4a4a4a;">상점 알림판에 주문번호가 표기되면 <br>식음료를 전달 받으시기 바랍니다.</p>
 </div>
+<div *ngIf="order.autoPickupStore=='1'&& order.autoCheckStore=='1' && order.orderStatus=='checked'"  style="margin-bottom:10px;" text-center align-self-center>
+    <p no-margin style="font-size:3.5vw;color:#4a4a4a;">상점 알림판에 주문번호가 표기되면 <br>식음료를 전달 받으시기 바랍니다. <br><br>주문취소는 상점관리자에게 직접 요청해주세요.</p>
+</div>
   
-<ion-row  class="order-status" *ngIf="order.manualStore!='1' && (order.orderStatus!='pickup' && order.orderStatus!='cancelled')">
+<ion-row  class="order-status" *ngIf="order.manualStore!='1' && (order.autoPickupStore!='1'|| order.autoCheckStore!='1') && (order.orderStatus!='pickup' && order.orderStatus!='cancelled')">
   <ion-col text-center> 
     <div class="invalid-status" *ngIf="order.orderStatus!='paid'">
       &nbsp;
@@ -73,7 +76,7 @@
     </div>    
   </ion-col>
 </ion-row>
-<ion-row  class="order-status" *ngIf="order.manualStore!='1' && (order.orderStatus!='pickup' && order.orderStatus!='cancelled')">
+<ion-row  class="order-status" *ngIf="order.manualStore!='1'  && (order.autoPickupStore!='1'|| order.autoCheckStore!='1') && (order.orderStatus!='pickup' && order.orderStatus!='cancelled')">
   <ion-col text-center> 
     <div style="color:#bdbdbd" *ngIf="order.orderStatus!='paid'">
       결제완료
@@ -120,34 +123,28 @@
 </div>
 
 <div class="detail-section">
-<ion-row class="logo" text-center>
+  <ion-row class="logo" text-center>
   <!--
     <img  src="assets/imgs/waitee-logo.png"/> 
 -->
+  </ion-row>
+<ion-row class="show-border" style="justify-content:center;font-size:4vw;" *ngIf="order.manualStore=='1' && (!order.manualOrderNO || order.manualOrderNO==null) && order.orderStatus=='checked'" text-center>
+    <ion-col  style="color:gray;" text-center align-self-center>
+        <ion-icon style="color:lightgray;" name="md-alert"></ion-icon> 고객님 주문 내역을 확인해주세요.
+    </ion-col>
 </ion-row>
-  <div class="time-area">
-    <ion-row *ngIf="order.localOrderedTimeString" >
-    <ion-col no-padding col-4 text-left>결제완료</ion-col>
-    <ion-col no-padding col-8 text-right>{{order.localOrderedTimeString}}</ion-col>    
-    </ion-row>
-    <ion-row *ngIf="order.localCheckedTimeString" >
-    <ion-col no-padding col-4 text-left>주문접수</ion-col>
-    <ion-col no-padding col-8 text-right>{{order.localCheckedTimeString}}</ion-col>    
-    </ion-row>
-    <ion-row *ngIf="order.localCompleteTimeString" >
-    <ion-col no-padding col-4 text-left>준비완료</ion-col>
-    <ion-col no-padding col-8 text-right>{{order.localCompleteTimeString}}</ion-col>    
-    </ion-row>
-    <ion-row *ngIf="order.localCancelledTimeString" >
-    <ion-col no-padding col-4 text-left>주문취소</ion-col>
-    <ion-col no-padding col-8 text-right>{{order.localCancelledTimeString}}</ion-col>    
-    </ion-row>
-  </div>
-<ion-row class="show-border" style="justify-content:center;font-size:4vw;" text-center>
-주문 사항
+<ion-row class="show-border" style="justify-content:center;font-size:4vw;" *ngIf="order.autoCheckStore=='1' && order.orderStatus=='checked'" text-center>
+    <ion-col  style="color:gray;" text-center align-self-center>
+        <ion-icon style="color:lightgray;" name="md-alert"></ion-icon> 고객님 주문 내역을 확인해주세요.
+    </ion-col>
+</ion-row>
+<ion-row class="show-border" style="justify-content:center;font-size:4vw;padding-bottom: 0px;" text-center>
+    <ion-col no-padding no-margin>
+        주문 내역
+    </ion-col>
 </ion-row>
 <div class="show-border" *ngFor="let menu of order.orderListObj.menus">
-  <ion-row>
+  <ion-row style="font-size:4vw;">
             <ion-col col-8 text-left><span class="status">{{menu.menuName}}({{menu.quantity}})</span></ion-col>
             <ion-col col-4 text-right><span class="status"><amount-display [amount]="menu.price"></amount-display>원</span></ion-col>
   </ion-row>          
@@ -169,7 +166,26 @@
               {{order.deliveryAddress}}
           </ion-col>
   </ion-row>   
-</div>         
+</div>     
+
+<div class="time-area">
+  <ion-row *ngIf="order.localOrderedTimeString" >
+  <ion-col no-padding col-4 text-left>결제완료</ion-col>
+  <ion-col no-padding col-8 text-right>{{order.localOrderedTimeString}}</ion-col>    
+  </ion-row>
+  <ion-row *ngIf="order.localCheckedTimeString" >
+  <ion-col no-padding col-4 text-left>주문접수</ion-col>
+  <ion-col no-padding col-8 text-right>{{order.localCheckedTimeString}}</ion-col>    
+  </ion-row>
+  <ion-row *ngIf="order.localCompleteTimeString" >
+  <ion-col no-padding col-4 text-left>준비완료</ion-col>
+  <ion-col no-padding col-8 text-right>{{order.localCompleteTimeString}}</ion-col>    
+  </ion-row>
+  <ion-row *ngIf="order.localCancelledTimeString" >
+  <ion-col no-padding col-4 text-left>주문취소</ion-col>
+  <ion-col no-padding col-8 text-right>{{order.localCancelledTimeString}}</ion-col>    
+  </ion-row>
+</div>
 
 <div [ngClass]="payClasses">
 <ion-row>

@@ -73,6 +73,7 @@ export class StoreSearchPage {
 
 searchNearStores(){
     console.log("searchNearStores");
+    if(this.storageProvider.locationInfoCheck){           
     this.geolocation.getCurrentPosition().then((resp) => {
         // resp.coords.latitude
         // resp.coords.longitude
@@ -127,6 +128,7 @@ searchNearStores(){
             });
         }
     });
+    }
 }
 
 getNewStores(){

@@ -311,6 +311,7 @@ export class MyInfoPage {
             handler: () => {
               console.log('Agree clicked');
               //save it into native storage
+              this.storageProvider.locationInfoCheck=false;
               this.nativeStorage.setItem("locationInfoCheck","false");
             }
           }
@@ -322,4 +323,15 @@ export class MyInfoPage {
         this.nativeStorage.setItem("locationInfoCheck","true");
     }
   }
+
+
+  updateSlientMode(){
+    if(!this.storageProvider.slientMode){
+              this.nativeStorage.setItem("slientMode","false");
+    }else{
+        //save it into native storage
+        this.nativeStorage.setItem("slientMode","true");
+    }
+  }
+
 }

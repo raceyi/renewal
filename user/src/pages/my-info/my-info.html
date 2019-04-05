@@ -77,6 +77,14 @@
     <ion-checkbox [(ngModel)]="storageProvider.locationInfoCheck" mode="md" (ionChange)="updateLocationInfoCheck()" ></ion-checkbox>    
   </ion-col>  
 </ion-row>
+<ion-row class="each-menu">
+  <ion-col col-6>
+    알림음끄기
+  </ion-col>
+  <ion-col col-6 text-right>
+    <ion-checkbox [(ngModel)]="storageProvider.slientMode" mode="md" (ionChange)="updateSlientMode()" ></ion-checkbox>    
+  </ion-col>  
+</ion-row>
 
 
   <ion-row class="group-title" style="background-color: #f7f7f7">

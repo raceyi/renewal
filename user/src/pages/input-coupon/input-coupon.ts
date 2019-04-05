@@ -54,16 +54,23 @@ export class InputCouponPage {
           progressBarLoader.dismiss();          
           console.log("registerCoupon res:"+JSON.stringify(res));
           if(res.result=="success"){
-            //this.app.getRootNav().insert(1,CashTutorialPage);
-            this.events.publish("cashUpdate",{cashListNoUpdate:true});
-            //this.app.getRootNav().parent.select(3); 
-            this.events.publish("myWalletPage");
-            let alert = this.alertCtrl.create({
-              title: '쿠폰이 등록되었습니다.',
-              //subTitle:"캐시 충전 가이드를 보신 이후 상단 X 버튼을 클릭하시면 지갑페이지로 이동합니다.",
-              buttons: ['확인']
-            });
+            let subTitle;
+            let alert; 
+            if(res.counter){
+              alert = this.alertCtrl.create({
+                title: '쿠폰이 등록되었습니다.',
+                subTitle:"고객님 "+res.counter+" 번째 쿠폰 등록고객이십니다.",
+                buttons: ['확인']
+              });
+            }else{
+              alert = this.alertCtrl.create({
+                title: '쿠폰이 등록되었습니다.',
+                buttons: ['확인']
+              });
+            }
             alert.present();
+            this.events.publish("cashUpdate",{cashListNoUpdate:true});
+            this.events.publish("myWalletPage");
             this.navCtrl.pop();
             return;
           }

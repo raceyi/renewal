@@ -234,8 +234,29 @@ export class ShopPage {
      return new Promise((resolve,reject)=>{
         window.plugins.sim.getSimInfo(function(info){
             console.log("android-sim-info:"+JSON.stringify(info));
-            console.log("getSimInfo:"+info.cards[0].phoneNumber);
-            resolve(info.cards[0].phoneNumber);
+            //console.log("getSimInfo:"+info.cards[0].phoneNumber);
+            if(info.cards==undefined){ // no way ㅜㅜ
+                    // carrierName도 없을 경우는 어떻게해야만 할까? 우선 넘어가자. ㅜㅜ 
+                    resolve(gShopPage.storageProvider.phone);
+            }else if(!info.cards[0].phoneNumber || info.cards[0].phoneNumber==undefined){
+                console.log("info.cards[0].phoneNumber is undefined ");
+                console.log("info.cards[0].carrierName:"+info.cards[0].carrierName);
+                if(info.cards[0].carrierName){  //iOS와 동일하게 처리함. 통신사만 보고 동일하지만 확임함. ㅜㅜ 
+                    if(info.cards[0].carrierName[0] != gShopPage.authCarrier[0] || info.cards[0].carrierName[1] != gShopPage.authCarrier[1]){ // 앞에 두자리만 비교한다.
+                        reject();
+                        return;
+                    }else{
+                        resolve(gShopPage.storageProvider.phone); 
+                        return;           
+                    }                                    
+                }else{
+                    // carrierName도 없을 경우는 어떻게해야만 할까? 우선 넘어가자. ㅜㅜ 
+                    resolve(gShopPage.storageProvider.phone);
+                    return;
+                }
+            }else/* if(info.cards[0].phoneNumber)*/{
+                resolve(info.cards[0].phoneNumber);                
+            }
         }, function(error){
             console.log("info:"+JSON.stringify(error));
             let alert = gShopPage.alertCtrl.create({
@@ -490,6 +511,8 @@ export class ShopPage {
                         });
                         alert.present();
                     }else{
+                            //JsBarcode( gShopPage.barcode.nativeElement, barCode, {displayValue: false});
+                            console.log("****show JsBarcode");
                             JsBarcode( gShopPage.barcode.nativeElement, barCode, {displayValue: false});
                             gShopPage.storageProvider.barCodeShown=true;
                             gShopPage.updateMyShoplist();                           

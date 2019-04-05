@@ -294,6 +294,7 @@ export class TabsPage {
 
             this.pushNotification.on('notification').subscribe((data:any)=>{
                 // 웨이티 음성파일 재생-begin
+                if(!this.storageProvider.slientMode){
                         let file;
                         if(this.platform.is('android'))
                             file = this.media.create('file:///android_asset/www/assets/takit.wav');
@@ -305,6 +306,7 @@ export class TabsPage {
                             console.log('Action is successful');
                         });
                         file.play();
+                }
                  // 웨이티 음성파일 재생-end
                 console.log("[tabs.ts]pushNotification.on-data:"+JSON.stringify(data));
                 console.log("[tabs.ts]pushNotification.on-data.title:"+JSON.stringify(data.title));

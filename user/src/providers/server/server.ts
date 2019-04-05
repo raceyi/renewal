@@ -156,8 +156,8 @@ loginAgain(){
 saveOrderCart(body){
       return new Promise((resolve,reject)=>{
 
-            let headers = new Headers();
-            headers.append('Content-Type', 'application/json');
+            //let headers = new Headers();
+            //headers.append('Content-Type', 'application/json');
             console.log("saveOrder:"+JSON.stringify(body));
 
             let progressBarLoader = this.loadingCtrl.create({

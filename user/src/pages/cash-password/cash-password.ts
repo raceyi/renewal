@@ -269,6 +269,12 @@ export class CashPasswordPage {
                                     buttons: ['OK']
                                 });
                                 alert.present();
+                        }else if(error=="deactive"){ 
+                            let alert = this.alertController.create({
+                                title: '현재 판매되지 않는 메뉴가 포함되어 있습니다.',
+                                buttons: ['OK']
+                            });
+                            alert.present();
                         }else if(error.startsWith("shop's off")){
                             let msg;
                             if(error.substr(10).length>2){

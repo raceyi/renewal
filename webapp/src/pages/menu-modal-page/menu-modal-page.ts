@@ -389,6 +389,10 @@ export class MenuModalPage {
                     delete this.menu.filter;
                 }
 
+                if(this.menu.deactive===true){
+                    this.menu.deactive = 1;
+                }
+                
                 this.serverProvider.modifyMenuInfo(this.menu)
                 .then((res:any)=>{
                     if(res.result === "success"){
@@ -536,6 +540,10 @@ export class MenuModalPage {
                     this.menu.takeout = 2;
                 }
 
+                if(this.menu.deactive===true){
+                    this.menu.deactive = 1;
+                }
+                
                 if(!this.isNull(this.menu.imagePath)){
                     this.menu.imagePath = this.storageProvider.myshop.takitId+"_"+this.menu.imagePath;
                 }

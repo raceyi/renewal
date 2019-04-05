@@ -295,7 +295,7 @@ export class LoginProvider {
                                             phone:phone,
                                             sex:sex, 
                                             birthYear:birthYear,
-                                            provider:provider,
+                                            mobileProvider:provider,
                                             receiptIssue:receiptIssueVal,
                                             receiptId:receiptId,
                                             receiptType:receiptType,

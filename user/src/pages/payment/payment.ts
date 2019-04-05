@@ -99,7 +99,7 @@ export class PaymentPage {
               private device: Device, 
               private geolocation: Geolocation,
               public serverProvider:ServerProvider) {
-    console.log("!!!!!payments constructor!!!!!");
+    console.log("!!!!!payments constructor!!!!!  locationInfoCheck:"+this.storageProvider.locationInfoCheck);
    // cash 값을 다시 서버로 부터 받아온다.
     this.updateCash();
 
@@ -294,34 +294,38 @@ export class PaymentPage {
                 return;
             }  
         } 
-        this.geolocation.getCurrentPosition().then((resp) => {
-            console.log("resp.coord.longitude:"+resp.coords.longitude);
-            console.log("resp.coord.latitude:"+resp.coords.latitude);
-            this.shopDistance=this.distance(res.shopInfo.latitude,res.shopInfo.longitude,resp.coords.latitude,resp.coords.longitude,'K');
-            this.shopDistance=Math.round(this.shopDistance * 100) / 100;
+        if(this.storageProvider.locationInfoCheck){
+            this.geolocation.getCurrentPosition().then((resp) => {
+                console.log("resp.coord.longitude:"+resp.coords.longitude);
+                console.log("resp.coord.latitude:"+resp.coords.latitude);
+                this.shopDistance=this.distance(res.shopInfo.latitude,res.shopInfo.longitude,resp.coords.latitude,resp.coords.longitude,'K');
+                this.shopDistance=Math.round(this.shopDistance * 100) / 100;
+                this.checkConstraintDone=true;
+            },err=>{
+                console.log("geolocation.getCurrentPosition() error "+JSON.stringify(err));
+                if(this.platform.is("android")){  // 오류가 들어오지 않는다 ㅜㅜ
+                    let alert = this.alertController.create({
+                        title: "장거리 상점 주문 오류를 막기위해 위치정보가 반드시 필요합니다.",
+                        subTitle: "스마트폰의 위치정보를 키신후 다시 주문바랍니다. 또는 나의정보->환경설정->위치정보확인을 꺼주시기바랍니다.",
+                        buttons: ['OK']
+                    });
+                    alert.present().then(()=>{
+                        this.navCtrl.pop();
+                    });
+                }else{  //iOS
+                    let alert = this.alertController.create({
+                        title: "장거리 상점 주문 오류를 막기위해 위치정보가 필요합니다.",
+                        subTitle:  '설정->웨이티->위치->\'앱을 사용하는 동안\'으로 설정후 다시 주문바랍니다.또는 나의정보->환경설정->위치정보확인을 꺼주시기바랍니다.',
+                        buttons: ['OK']
+                    });
+                    alert.present().then(()=>{
+                        this.navCtrl.pop();
+                    });
+                }
+            });
+        }else{
             this.checkConstraintDone=true;
-        },err=>{
-            console.log("geolocation.getCurrentPosition() error "+JSON.stringify(err));
-            if(this.platform.is("android")){  // 오류가 들어오지 않는다 ㅜㅜ
-                let alert = this.alertController.create({
-                    title: "장거리 상점 주문 오류를 막기위해 위치정보가 반드시 필요합니다.",
-                    subTitle: "스마트폰의 위치정보를 키신후 다시 주문바랍니다. 또는 나의정보->환경설정->위치정보확인을 꺼주시기바랍니다.",
-                    buttons: ['OK']
-                });
-                alert.present().then(()=>{
-                    this.navCtrl.pop();
-                });
-            }else{  //iOS
-                let alert = this.alertController.create({
-                    title: "장거리 상점 주문 오류를 막기위해 위치정보가 필요합니다.",
-                    subTitle:  '설정->웨이티->위치->\'앱을 사용하는 동안\'으로 설정후 다시 주문바랍니다.또는 나의정보->환경설정->위치정보확인을 꺼주시기바랍니다.',
-                    buttons: ['OK']
-                });
-                alert.present().then(()=>{
-                    this.navCtrl.pop();
-                });
-            }
-        });
+        }
     });
   }
 
