@@ -1157,9 +1157,7 @@ export class ShopTablePage {
 
        console.log("storageProvider.printOn:"+this.storageProvider.printOn);   
        console.log("storageProvider.printerIPAddresses.length:"+this.storageProvider.printerIPAddresses.length);      
-      if(this.storageProvider.printOn==false /* bluetooth printer */ 
-        && this.storageProvider.printerIPAddresses.length==0 
-        /*|| this.storageProvider.myshop.GCMNoti=="off"*/){
+      if(this.storageProvider.printOn==false){
             console.log("do not print out")
             resolve();
             return;
@@ -1173,6 +1171,12 @@ export class ShopTablePage {
 
       if(auto){ //이미 출력한 번호인지 확인한다. 세개가 한꺼번에 오는경우가 있다.
               this.storageProvider.saveLog(order.orderStatus,order.orderNO).then(()=>{
+                    // 적당한 위치는 아니지만 출력들어갈때 소리를 한번 내준다.자동 접수 매장의 경우
+                    if(this.storageProvider.shop.shopInfo.autoCheckStore &&
+                        this.storageProvider.shop.shopInfo.autoCheckStore!=null &&   
+                        this.storageProvider.shop.shopInfo.autoCheckStore=='1'){
+                       this.mediaProvider.playOneTime(); 
+                    }
                     this.printOrderJob(order).then(()=>{
                         loading.dismiss();
                         resolve();
@@ -1292,9 +1296,10 @@ export class ShopTablePage {
       var title="",message="";
       console.log("order:"+JSON.stringify(order));
       if(order.orderStatus=="paid" ||order.orderStatus=="checked"){
-          title+="\n"+this.timeUtil.getlocalTimeStringWithoutYear(order.orderedTime); 
+          title+="\n\n\n\n\n\n\n"+this.timeUtil.getlocalTimeStringWithoutYear(order.orderedTime)+"\n"; 
           if(this.platform.is('android')){
-              title+="웨이티-"+order.orderNO+"";
+              title=title+"주문번호 "+order.orderNO+"\n";
+              console.log("title: ...."+title);
               if(order.takeout=='1'){          
                 title+="\n\n\n포장";
               }else if(order.takeout=='2'){
@@ -1310,6 +1315,7 @@ export class ShopTablePage {
                 message="배달장소:"+order.deliveryAddress+"\n";
               }
           }
+          message+=title;
           message+=this.constructMenusPrint(order);
         
       }else if(order.orderStatus=="completed" || order.orderStatus=="pickup"){ //print receipt
@@ -1403,6 +1409,7 @@ export class ShopTablePage {
           message+="합계     -"+totalAmount+"원";          
       }
       if(this.platform.is('android')){
+            console.log("print out title:"+title);
             this.printerProvider.print(title,message).then(()=>{
                   console.log("print successfully");
                   resolve();
@@ -2391,27 +2398,27 @@ export class ShopTablePage {
         return;
       }
       if(this.storageProvider.inputCancelReason==false){
-        let confirm = this.alertController.create({
-            title: '주문을 취소하시겠습니까?',
-            buttons: [
-              {
-                text: '아니오',
-                handler: () => {
-                  console.log('Disagree clicked');
-                  return;
-                }
-              },
-              {
-                text: '네',
-                handler: () => {
-                  console.log('Agree clicked');
-                  this.myCallbackFunction(order,"혼잡시간"); 
-                }
-              }
-            ]
-          });
-          confirm.present();
-          return;
+            let confirm = this.alertController.create({
+                title: '주문을 취소하시겠습니까?',
+                buttons: [
+                  {
+                    text: '아니오',
+                    handler: () => {
+                      console.log('Disagree clicked');
+                      return;
+                    }
+                  },
+                  {
+                    text: '네',
+                    handler: () => {
+                      console.log('Agree clicked');
+                      this.myCallbackFunction(order,"혼잡시간"); 
+                    }
+                  }
+                ]
+              });
+              confirm.present();
+              return;
       }else{
             console.log("order cancel comes");
             // 7일 이전의 주문일경우 cancel화면 자체를 들어갈수 없도록 한다. 정산 완료로 처리함. 주문 상태중에 정산 완료를 추가하자. 
