@@ -72,6 +72,7 @@ export class StorageProvider{
 
     public accountMaskExceptFront=this.configProvider.getAccountMaskExceptFront();
     public accountMaskExceptEnd=this.configProvider.getAccountMaskExceptEnd();
+    public bixolon=this.configProvider.bixolon;
 
     public device=this.configProvider.device;
     
@@ -273,6 +274,28 @@ export class StorageProvider{
         });
     }
 
+    saveMyShopTakitId(value){
+        return new Promise((resolve,reject)=>{
+            this.nativeStorage.setItem('myShopTakitId',value).then(()=>{
+                resolve();
+            },err=>{
+                reject();
+            })
+        });        
+    }
+
+    saveSpecifyMyShopTakitId(value){
+        return new Promise((resolve,reject)=>{
+            let stringValue=value?'true':'false';
+            this.nativeStorage.setItem('specifyMyShopTakitId',stringValue).then(()=>{
+                resolve();
+            },err=>{
+                reject();
+            })
+        });        
+    }
+
+
     saveInputCancelReason(value){
         return new Promise((resolve,reject)=>{
             let stringValue=value?'true':'false';
@@ -408,7 +431,8 @@ export class StorageProvider{
                 resolve();
             }).catch(e => {
                 console.log("deleteLog error:"+JSON.stringify(e));
-                reject();
+                //error가 아닌데 error로 넘어온다 ㅜㅜ. 우선 resolve를 호출해준다.
+                resolve();
             });
         });   
     }

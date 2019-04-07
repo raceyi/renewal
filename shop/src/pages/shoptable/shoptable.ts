@@ -1150,79 +1150,124 @@ export class ShopTablePage {
 
     }
 
+    printOrderExecute(order){
+        return new Promise((resolve,reject)=>{ 
+            //이미 출력한 번호인지 확인한다. 세개가 한꺼번에 오는경우가 있다.   
+            this.storageProvider.saveLog(order.orderStatus,order.orderNO).then(()=>{
+                // 적당한 위치는 아니지만 출력들어갈때 소리를 한번 내준다.자동 접수 매장의 경우
+                if(this.storageProvider.shop.shopInfo.autoCheckStore &&
+                    this.storageProvider.shop.shopInfo.autoCheckStore!=null &&   
+                    this.storageProvider.shop.shopInfo.autoCheckStore=='1'){
+                this.mediaProvider.playOneTime(); 
+                }
+                this.printOrderJob(order).then(()=>{
+                    resolve();
+                },err=>{
+                    if(err=="printerUndefined"){
+                        let alert = this.alertController.create({
+                            title: '앱에서 프린터 설정을 수행해 주시기 바랍니다.',
+                            buttons: ['OK']
+                        });
+                        alert.present();
+                        reject();
+                    }else{
+                        let alert = this.alertController.create({
+                            title: '주문출력에 실패했습니다.',
+                            subTitle: '프린터상태를 확인해주시기바랍니다.',
+                            buttons: ['OK']
+                        });
+                        alert.present();
+                        reject();
+                    }
+
+                });
+        },err=>{ // 이미 출력한 경우로 아무작업도 수행하지 않는다.
+            if(err=="duplicated"){
+                        console.log("duplicated just ignore it");
+                        reject();
+            }else{
+                        let alert = this.alertController.create({
+                            title: '출력로그에 문제가 발생했습니다.',
+                            subTitle: '앱의 데이터를 제거후 앱을 다시 실행해주세요.',
+                            buttons: ['OK']
+                        });
+                        alert.present();
+                        reject();
+            }
+        });
+        });
+    }
+
     printOrder(order,auto){
         console.log("!!! printOrder coming!!!! auto:"+auto);
         return new Promise((resolve,reject)=>{
-       //잠시 막자 검증을 위해서....
+            console.log("storageProvider.printOn:"+this.storageProvider.printOn);   
+            if(this.storageProvider.printOn==false){
+                    console.log("do not print out")
+                    resolve();
+                    return;
+            }
+            let loading = this.loadingCtrl.create({
+                                content: "프린트 진행중입니다.",
+                                duration: 5 * 1000 //milliseconds
+                        });   
+            loading.present();  
 
-       console.log("storageProvider.printOn:"+this.storageProvider.printOn);   
-       console.log("storageProvider.printerIPAddresses.length:"+this.storageProvider.printerIPAddresses.length);      
-      if(this.storageProvider.printOn==false){
-            console.log("do not print out")
-            resolve();
-            return;
-      }
-
-        let loading = this.loadingCtrl.create({
-                            content: "프린트 진행중입니다.",
-                            duration: 5 * 1000 //milliseconds
-                    });   
-        loading.present();  
-
-      if(auto){ //이미 출력한 번호인지 확인한다. 세개가 한꺼번에 오는경우가 있다.
-              this.storageProvider.saveLog(order.orderStatus,order.orderNO).then(()=>{
-                    // 적당한 위치는 아니지만 출력들어갈때 소리를 한번 내준다.자동 접수 매장의 경우
-                    if(this.storageProvider.shop.shopInfo.autoCheckStore &&
-                        this.storageProvider.shop.shopInfo.autoCheckStore!=null &&   
-                        this.storageProvider.shop.shopInfo.autoCheckStore=='1'){
-                       this.mediaProvider.playOneTime(); 
-                    }
-                    this.printOrderJob(order).then(()=>{
+            if(auto){
+                    //마지막 출력한 값보다 작은 값이 온다면 로그를 삭제한후 작업한다.     
+                    this.nativeStorage.getItem("lastPrintedOrderNO").then((value)=>{ 
+                        let orderNO=parseInt(value);
+                        if(orderNO>order.orderNO){ // orderNO가 reset되었다.
+                            this.storageProvider.deleteLog().then(()=>{
+                                this.printOrderExecute(order).then(()=>{
+                                        loading.dismiss();
+                                        this.nativeStorage.setItem("lastPrintedOrderNO", order.orderNO.toString());
+                                        resolve();
+                                },err=>{
+                                        loading.dismiss();
+                                        reject();
+                                })  
+                            },err=>{
+                                //로그 삭제에 실패했습니다. 주문서가 출력되지 않을수 있습니다. 메뉴->서비스정보->로그삭제 후 앱을 다시 실행해 주세요.
+                                loading.dismiss();
+                                let alert = this.alertController.create({
+                                    title: '로그 삭제에 실패했습니다.메뉴->서비스정보->로그삭제 후 앱을 다시 실행해 주세요.',
+                                    subTitle: '지속적인 문제 발생시 앱의 데이터를 제거후 앱을 다시 실행해주세요.',
+                                    buttons: ['OK']
+                                });
+                                alert.present();
+                                reject();
+                            })
+                        }else{ //다음 주문 번호임.
+                            this.printOrderExecute(order).then(()=>{
+                                this.nativeStorage.setItem("lastPrintedOrderNO", order.orderNO.toString());
+                                loading.dismiss();
+                                resolve();
+                            },err=>{
+                                loading.dismiss();
+                                reject();
+                            })  
+                        }
+                    },err=>{
+                        this.printOrderExecute(order).then(()=>{
+                            this.nativeStorage.setItem("lastPrintedOrderNO", order.orderNO.toString());
+                            loading.dismiss();
+                            resolve();
+                        },err=>{
+                            loading.dismiss();
+                            reject();
+                        })  
+                    })
+            }else{
+                this.printOrderJob(order).then(()=>{
                         loading.dismiss();
                         resolve();
-                    },err=>{
-                        loading.dismiss();
-                        if(err=="printerUndefined"){
-                            let alert = this.alertController.create({
-                                title: '앱에서 프린터 설정을 수행해 주시기 바랍니다.',
-                                buttons: ['OK']
-                            });
-                            alert.present();
-                            reject();
-                        }else{
-                            let alert = this.alertController.create({
-                                title: '주문출력에 실패했습니다.',
-                                subTitle: '프린터상태를 확인해주시기바랍니다.',
-                                buttons: ['OK']
-                            });
-                            alert.present();
-                            reject();
-                        }
-
-                    });
-              },err=>{ // 이미 출력한 경우로 아무작업도 수행하지 않는다.
-                  loading.dismiss();
-                  if(err=="duplicated"){
-                             console.log("duplicated just ignore it");
-                             reject();
-                  }else{
-                            let alert = this.alertController.create({
-                                title: '출력로그에 문제가 발생했습니다.',
-                                subTitle: '앱의 데이터를 제거후 앱을 다시 실행해주세요.',
-                                buttons: ['OK']
-                            });
-                            alert.present();
-                            reject();
-                  }
-              });
-      }else{
-          this.printOrderJob(order).then(()=>{
-                resolve();
-          },err=>{
-              reject();
-          });
-      }
-    });
+                },err=>{
+                    loading.dismiss();
+                    reject();
+                });
+            }
+        });
     }
 
     constructMenusPrint(order){
@@ -1296,7 +1341,10 @@ export class ShopTablePage {
       var title="",message="";
       console.log("order:"+JSON.stringify(order));
       if(order.orderStatus=="paid" ||order.orderStatus=="checked"){
-          title+="\n\n\n\n\n\n\n"+this.timeUtil.getlocalTimeStringWithoutYear(order.orderedTime)+"\n"; 
+          if(this.storageProvider.bixolon)
+            title+=this.timeUtil.getlocalTimeStringWithoutYear(order.orderedTime)+"\n";             
+          else
+            title+="\n\n\n\n\n\n\n"+this.timeUtil.getlocalTimeStringWithoutYear(order.orderedTime)+"\n"; 
           if(this.platform.is('android')){
               title=title+"주문번호 "+order.orderNO+"\n";
               console.log("title: ...."+title);
@@ -1410,11 +1458,24 @@ export class ShopTablePage {
       }
       if(this.platform.is('android')){
             console.log("print out title:"+title);
+            // 중국 프린터가 문제라 title을 따로 보내지 안는다. ㅜㅜ
+            title="";
             this.printerProvider.print(title,message).then(()=>{
                   console.log("print successfully");
                   resolve();
             },(err)=>{
                 reject(err);
+                // print에 실패했습니다.
+                // printer를 확인해주세요. OK누르면 다시 connect하고 출력한다.(?) 
+                let options={
+                    text:order.orderNO+'번 출력에 실패했습니다'+order.orderNO+'번 출력에 실패했습니다'+order.orderNO+'번 출력에 실패했습니다',
+                    locale:'ko-KR',
+                    rate:0.7
+                }
+                //https://stackoverflow.com/questions/40894457/difference-between-android-speech-to-text-api-recognizer-intent-and-google-clo
+                this.tts.speak( options)
+                .then(() => console.log('Success'))
+                .catch((reason: any) => console.log(reason))
             });
       }else if(this.platform.is('ios')){
             this.iosPrinterProvider.print(title,message).then(()=>{
@@ -1567,7 +1628,7 @@ export class ShopTablePage {
         console.log("order.autoCheckStore:"+order.autoCheckStore);
         if(this.storageProvider.categoryNotification && this.storageProvider.saveCategoryNOs && this.storageProvider.saveCategoryNOs.length>0){              // 각 분류별로 주문을 전달받는 상점의 경우             
             return this.checkCategoryNoti(order) && ( order.orderStatus=="paid" ||(order.manualStore=='1' && order.orderStatus=='checked') ||(order.autoCheckStore=='1' && order.orderStatus=='checked'));
-        }else if(order.orderStatus=="paid" ||(order.manualStore=='1' && order.orderStatus=='checked')){
+        }else if(order.orderStatus=="paid" ||(order.manualStore=='1' && order.orderStatus=='checked') || (order.autoCheckStore=='1' && order.orderStatus=='checked')){
             return true;
         }
         return false;
@@ -1672,7 +1733,9 @@ export class ShopTablePage {
                             //this.orders.unshift(newOrder); // 주문 목록을 가져오는것이 맞지 않을까?
                             this.orders=[];
                             this.getOrders(-1,-1);
+                            console.log("call checkPaidOrder")
                             if(this.checkPaidOrder(incommingOrder)/* incommingOrder.orderStatus=="paid"*/){
+                                  console.log("call printOrder");
                                   this.printOrder(newOrder,true).then(()=>{
                                         playback=true;// 출력이후 소리를 낸다.
                                   },err=>{
@@ -2827,9 +2890,18 @@ export class ShopTablePage {
           alert.present();
     }else{
       if(this.platform.is("android")){
+        console.log("call print");
+        let loading = this.loadingCtrl.create({
+            content: "프린트 진행중입니다.",
+            duration: 3 * 1000 //milliseconds
+        });   
+        loading.present();  
+
         this.printerProvider.print("주문","프린터가 동작합니다").then(()=>{
+            loading.dismiss();
               console.log("프린트 명령을 보냈습니다. ");
           },()=>{
+            loading.dismiss();
             let alert = this.alertController.create({
                 title: '프린트 명령을 보내는것에 실패했습니다.',
                 buttons: ['OK']

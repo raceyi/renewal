@@ -160,9 +160,36 @@ export class MyApp {
                 this.storageProvider.myshop=this.storageProvider.myshoplist[0];
                 this.rootPage=ShopTablePage;
              }else{ 
-                console.log("multiple shops");
-                this.rootPage=SelectorPage;
-             }
+                // 만약 지정된 상점정보가 있다면 지정된 상점을 오픈한다.
+                this.nativeStorage.getItem("specifyMyShopTakitId").then((value:string)=>{
+                    console.log("specifyMyShopTakitId:"+value);
+                    if(value=="true"){
+                        this.nativeStorage.getItem("myShopTakitId").then((value:string)=>{
+                            console.log("myShopTakitId:"+value);
+                            let index=-1;
+                            for(let i=0;i<this.storageProvider.myshoplist.length;i++){
+                                if(this.storageProvider.myshoplist[i].takitId==value){
+                                    index=i;
+                                    break;
+                                }
+                            }
+                            if(index>=0){
+                                this.storageProvider.myshop=this.storageProvider.myshoplist[index];
+                                this.rootPage=ShopTablePage;
+                            }else{
+                                this.rootPage=SelectorPage;                        
+                            }
+                        },()=>{
+                            this.rootPage=SelectorPage;
+                        });
+                    }else{
+                        this.rootPage=SelectorPage;
+                    }
+                },()=>{
+                    this.rootPage=SelectorPage;
+                    console.log("multiple shops");                   
+                })
+            }
         }
         /*
         this.nativeStorage.getItem("printer").then((value:string)=>{

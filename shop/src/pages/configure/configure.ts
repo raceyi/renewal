@@ -37,6 +37,9 @@ export class ConfigurePage {
   categoryNotifyCategories=[];
   categoryNotifyCategoryInput:string;
 
+  specifyMyShopTakitId;
+  myShopTakitId;
+  
   //////////////////////////////////////////////////////////////////////////////
   // 1. poll을 설정 가능하도록 하자. 테더링해서 사용할 경우를 생각해서.
   //  테터링할경우 데이터를 최소화하는것이 필요하다.
@@ -650,4 +653,37 @@ removeSpecialCharacters(str){
           alertConfirm.present();
       })
   }
+
+  updateSpecifyMyShopTakitId(){
+      this.storageProvider.saveSpecifyMyShopTakitId(this.specifyMyShopTakitId).then(()=>{
+        let alertConfirm = this.alertController.create({
+          title: '상점지정 설정에 성공했습니다.',
+          buttons: ['OK']
+        });
+        alertConfirm.present();
+      },err=>{
+        let alertConfirm = this.alertController.create({
+          title: '상점지정 설정에 실패했습니다.',
+          buttons: ['OK']
+        });
+        alertConfirm.present();
+      })
+  }
+
+  updateMyShopTakitId(){
+      this.storageProvider.saveMyShopTakitId(this.myShopTakitId).then(()=>{
+        let alertConfirm = this.alertController.create({
+          title: '지정상점 설정에 성공했습니다.',
+          buttons: ['OK']
+        });
+        alertConfirm.present();
+      },err=>{
+        let alertConfirm = this.alertController.create({
+          title: '지정상점 설정에 실패했습니다.',
+          buttons: ['OK']
+        });
+        alertConfirm.present();          
+      })
+  }
+  
 }

@@ -68,6 +68,21 @@
   </ion-col>
 </ion-row>
 
+<ion-row *ngIf="storageProvider.myshoplist.length>1">
+    <ion-col>
+        <ion-item>
+            <ion-label>상점지정</ion-label>
+            <ion-checkbox [(ngModel)]="specifyMyShopTakitId" (ionChange)="updateSpecifyMyShopTakitId()" ></ion-checkbox>
+        </ion-item>   
+      </ion-col>
+      <ion-col>
+        <ion-select placeholder="앱 실행시 자동 지정할 상점을 선택해 주세요." [(ngModel)]="myShopTakitId" style="max-width: 100%;" (ionChange)="updateMyShopTakitId()">  
+            <ion-option class="category-name"  style="width:40vw;" text-center [value]="shop.takitId" *ngFor="let shop of storageProvider.myshoplist;let i=index;">
+                <ion-label text-center style="width:100vw;text-align:center;"><div text-center>{{shop.takitId}}</div></ion-label>
+            </ion-option>
+        </ion-select>   
+      </ion-col>
+</ion-row>
 <ion-row>
   <ion-col>
   <ion-item>
