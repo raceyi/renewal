@@ -341,7 +341,7 @@ phoneAuth(){
                         var encrypted:string=this.storageProvider.encryptValue('id',this.loginMethod);// save facebook id 
                         this.nativeStorage.setItem('id',encodeURI(encrypted));
                         this.storageProvider.shopList=[];
-                        this.storageProvider.userInfoSet(this.email,this.name,this.phone,this.mobileProvider,false,"","IncomeDeduction",result.recommends);
+                        this.storageProvider.userInfoSet(this.email,this.name,this.phone,this.mobileProvider,false,"","IncomeDeduction",result.recommends,result.promotionOrgList);
                         this.navCtrl.setRoot(SignupPaymentPage,{email:this.email,name:this.name,phone:this.phone});
                     }else  if(serverCode=="duplication"){ // result.result=="exist"
                         let alert = this.alertCtrl.create({
@@ -383,7 +383,7 @@ phoneAuth(){
                         this.nativeStorage.setItem('password',encodeURI(encrypted));
                         this.storageProvider.shopList=[];
                         this.storageProvider.emailLogin=true;
-                        this.storageProvider.userInfoSet(this.email,this.name,this.phone,this.mobileProvider,false,"","IncomeDeduction",result.recommends);
+                        this.storageProvider.userInfoSet(this.email,this.name,this.phone,this.mobileProvider,false,"","IncomeDeduction",result.recommends,result.promotionOrgList);
                         this.navCtrl.setRoot(SignupPaymentPage,{email:this.email,name:this.name,phone:this.phone,password:this.password});
                     }else if(output == "duplication"){ // result.result=="exist"
                         let alert = this.alertCtrl.create({

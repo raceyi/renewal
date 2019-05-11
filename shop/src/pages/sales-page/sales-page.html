@@ -51,16 +51,47 @@
       <ion-col>
         <label>할인전가격: {{originalSales}}</label>
       </ion-col>
+      <ion-col *ngIf="storageProvider.shopInfo.autoPickupStore=='1'">
+        <button ion-button clear (click)="autoPickup()">정산</button>
+      </ion-col>
+    </ion-row>
+  </div>
+  <div *ngIf="originalCashSales>0">
+    <ion-row>
+      <ion-col>
+        <label>웨이티 캐시매출: {{cashSales}}</label>
+      </ion-col>
+      <ion-col>
+        <label>할인전가격: {{originalCashSales}}</label>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <label>웨이티 캐시 이외매출: {{sales-cashSales}}</label>
+      </ion-col>
+      <ion-col>
+        <label>할인전가격: {{originalSales-originalCashSales}}</label>
+      </ion-col>
     </ion-row>
   </div>
   <div padding>
     <label *ngIf="storageProvider.shopInfo.stamp!=null && storageProvider.shopInfo.stamp">발행 스탬프:{{issueStampCount}}</label>
     <label *ngIf="storageProvider.shopInfo.stamp!=null && storageProvider.shopInfo.stamp">사용 쿠폰 금액:{{couponAmount}}</label>
   </div>  
+
+  <ion-segment [(ngModel)]="displayType" (ionChange)="changeDisplayType(displayType)">
+    <ion-segment-button  value="menu">
+    메뉴
+    </ion-segment-button>
+    <ion-segment-button  value="category">
+    카테고리
+    </ion-segment-button>
+  </ion-segment>
+  <div *ngIf="displayType=='menu'">
   <ion-list  *ngFor="let menu of statistics" >
   <ion-item>
     <ion-row>
-      <ion-col col-4>
+      <ion-col col-4 text-wrap>
         {{menu.menuName}}
       </ion-col>
       <ion-col col-2 style="text-align: -webkit-right;">
@@ -69,13 +100,32 @@
       <ion-col col-3 style="text-align: -webkit-right;">
         {{menu.menuSales}}
       </ion-col>
-
       <ion-col col-3 style="text-align: -webkit-right;">
         {{menu.orignalMenuSales}}
       </ion-col>
     </ion-row>
   </ion-item>
   </ion-list>
-  
+  </div>
+<div *ngIf="displayType=='category'">
+  <ion-list  *ngFor="let category of categoryStatistics" >
+    <ion-item>
+      <ion-row>
+        <ion-col col-4 text-wrap>
+          {{category.name}}
+        </ion-col>
+        <ion-col col-2 style="text-align: -webkit-right;">
+          {{category.count}}
+        </ion-col>
+        <ion-col col-3 style="text-align: -webkit-right;">
+          {{category.categorySales}}
+        </ion-col>
+        <ion-col col-3 style="text-align: -webkit-right;">
+          {{category.orignalCategorySales}}
+        </ion-col>
+      </ion-row>
+    </ion-item>
+    </ion-list>
+</div>
 
 </ion-content>

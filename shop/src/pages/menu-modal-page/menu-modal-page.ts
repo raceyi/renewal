@@ -370,7 +370,7 @@ export class MenuModalPage {
                     this.menu.explanation=null;
 
                 if(!this.menu.explanationEn || this.menu.explanationEn.trim().length==0)
-                    this.menu.explanation=null;
+                    this.menu.explanationEn=null;
                 
                 //filter 정보를 추가한다. storeType=='restaurant'이라면 영문정보를 위해
                 if(this.storageProvider.storeType=='restaurant'){

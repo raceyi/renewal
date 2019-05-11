@@ -159,7 +159,7 @@ export class CashPasswordPage {
                                     buttons: ['OK']
                                 });
                                 alert.present();
-                            }, 3000);
+                            }, 1000);
 
                             if(this.trigger=="cart"){
                                     console.log("trigger is cart. call deleteAll");

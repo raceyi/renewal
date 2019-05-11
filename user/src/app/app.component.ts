@@ -221,7 +221,31 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
+      handleBranch();            
     });
+
+    platform.resume.subscribe(() => {
+        handleBranch();
+      });
+  
+    // Branch initialization
+    const handleBranch = () => {
+        // only on devices
+        if (!platform.is('cordova')) { return }
+        const Branch = window['Branch'];
+        Branch.initSession().then(data => {
+            console.log("branch init");
+            if (data['+clicked_branch_link']) {
+            // read deep link data on click
+            //alert('Deep Link Data: ' + JSON.stringify(data));
+            //alert('data.custom: ' + JSON.stringify(data.custom));
+            console.log("data.custom:"+data.custom);    
+            this.storageProvider.recommender=data.custom;
+            }
+        });
+    }
   }
+
+  
 }
 

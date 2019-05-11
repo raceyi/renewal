@@ -7,6 +7,9 @@ import { NativeStorage } from '@ionic-native/native-storage';
 import {IosPrinterProvider} from '../../providers/ios-printer';
 import { Events } from 'ionic-angular';
 
+declare var bxl_service: any;
+var gPrinterPage;
+
 @Component({
   selector: 'page-printer',
   templateUrl: 'printer.html',
@@ -20,11 +23,19 @@ export class PrinterPage {
     printerNames=[];
     printerIPAddress;
 
+    /////////////////////////////
+    //btAddress="74:F0:7D:B0:22:3C";
+    //modelName="SRP-Q300_223C";
+
+    btAddress="74:F0:7D:EA:48:85";
+    modelName="SRP-Q300_030041";
+
   constructor(private navController: NavController, private navParams: NavParams,public printerProvider:PrinterProvider,
                 private alertController:AlertController,private ngZone:NgZone,private nativeStorage: NativeStorage,
                 public storageProvider:StorageProvider,private iosPrinterProvider:IosPrinterProvider,
                 private platform:Platform,public events: Events){
-           console.log("PrinterPage construtor-printOn"+this.storageProvider.printOn);
+            gPrinterPage=this;        
+            console.log("PrinterPage construtor-printOn"+this.storageProvider.printOn);
            this.printOn=this.storageProvider.printOn;
   }
 
@@ -46,7 +57,7 @@ export class PrinterPage {
             this.iosPrinterProvider.printer=printer;
       }
   }
- 
+ /*
   scanPrinter(){
       console.log("scanPrinter");
       if(this.platform.is('android')){
@@ -98,7 +109,7 @@ export class PrinterPage {
             });
       }
   }
-
+*/
   testPrinter(){
       if(this.platform.is('android')){
         this.printerProvider.print("주문","프린터가 동작합니다").then(()=>{
@@ -153,6 +164,7 @@ export class PrinterPage {
        }
   }
 
+  /*
   disconnectPrinter(){
       if(this.platform.is('android')){
             this.printerProvider.disconnectPrinter().then(()=>{
@@ -188,7 +200,7 @@ export class PrinterPage {
                     });
       }
   }
-
+*/
   savePrinter(){
       if(this.platform.is('android')){
             this.nativeStorage.setItem('printer',JSON.stringify(this.printerProvider.printer));
@@ -244,5 +256,75 @@ export class PrinterPage {
         this.storageProvider.printerIPAddresses.splice(i,1);
         this.nativeStorage.setItem("printerIPAddresses",JSON.stringify(this.storageProvider.printerIPAddresses));
   }
+
+  printTestBixolonBt(){
+      console.log("printTestBixolonBt comes");
+      this.printerProvider.connectPrinter().then(()=>{
+        let title="주문"
+        let message="프린터가 동작합니다."
+        let string= title+','+message+"\n\n\n\n ************\n";//"한글인쇄\n\n\n\n";
+         
+        this.printerProvider.print(title,message).then(()=>{
+            console.log("printNormal success");             
+        },err=>{
+            alert("printNormal failed");
+            console.log("printNormal failed");
+            this.printerProvider.disconnectPrinter();
+        });
+      },err=>{
+        alert("connectPrinter failed");
+      })
+/*
+    bxl_service.addEntry(
+        function(){ 
+          console.log("addEntry success"); 
+          bxl_service.open(
+            function(){ 
+              console.log("open success"); 
+              bxl_service.claim(
+                function(){ 
+                  console.log("claim success"); 
+                  bxl_service.setDeviceEnabled (
+                    function(){ 
+                      console.log("setDeviceEnabled success");
+                  }, function(){ 
+                      alert("setDeviceEnabled failed");
+                      console.log("setDeviceEnabled failed");
+                      bxl_service.release(); 
+                      bxl_service.close();
+                    }, true
+                    )
+                }, function(){ 
+                  alert("claim failed");
+                  console.log("claim failed"); 
+                  bxl_service.close();
+                }, 3000
+                )
+          }, function(){ 
+            console.log("open failed"); 
+            alert("open failed");
+            bxl_service.close();
+          }, 
+          gPrinterPage.modelName)
+        }, function(){ 
+          console.log("addEntry failed"); 
+          alert("addEntry failed");
+        }, gPrinterPage.modelName, 0, gPrinterPage.btAddress
+        )  
+*/        
+  }
+
+  saveBixolonPrinter(){
+    this.nativeStorage.setItem('printerBTAddress',this.btAddress);
+    this.nativeStorage.setItem('modelName',this.modelName);
+    //save it into localstorage
+    this.storageProvider.printOn=this.printOn;
+    this.nativeStorage.setItem("printOn",this.storageProvider.printOn.toString());
+        let alert = this.alertController.create({
+            title: '프린터 정보가 저장되었습니다.',
+            buttons: ['OK']
+        });
+        alert.present();
+    }
 
 }

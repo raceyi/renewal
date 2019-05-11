@@ -93,11 +93,12 @@ cashInComplete(){
             alert.present();
             return;
       }
-
-      if(this.amount==undefined){
+      
+      if(this.amount==undefined || this.amount.toString()==""){
             this.InProgress=false;          
             let alert = this.alertController.create({
                 title: "입금액을 입력해주시기바랍니다.",
+                subTitle:", 없이 숫자만 입력해주세요.",
                 buttons: ['OK']
             });
             alert.present();

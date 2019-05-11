@@ -437,6 +437,23 @@ export class StorageProvider{
         });   
     }
 
+    deleteALog(orderNO){
+        return new Promise((resolve,reject)=>{           
+                console.log("deleteALog");
+                let queryString:string;
+                queryString="DELETE FROM printlogs where orderInfo like %_"+orderNO;
+                console.log("query:"+queryString);
+                this.db.executeSql(queryString).then((resp)=>{
+                    console.log("[deleteALog]resp:"+JSON.stringify(resp));
+                    resolve();
+                }).catch(e => {
+                    console.log("deleteALog error:"+JSON.stringify(e));
+                    //error가 아닌데 error로 넘어온다 ㅜㅜ. 우선 resolve를 호출해준다.
+                    resolve();
+                });
+            });   
+    }
+
 
 }
 

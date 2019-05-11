@@ -35,6 +35,10 @@
     <ion-textarea [(ngModel)]="deliveryAddress" placeholder="배송지를 입력해주세요.한글,영문,숫자이외 문자는 전달되지 않습니다."></ion-textarea>
 </div>
 </div>
+<div text-center>
+  <ion-icon name="ios-information-circle-outline"></ion-icon>위치 정보를 확인할수 없는 상황이라면<br>
+  나의정보->위치정보확인을 해제하신 후 결제해주세요.
+</div>
 <div class="pay-amount">
   <ion-row  class="pay-amount-label" no-padding no-margin>
     <ion-col no-padding no-margin text-left> 결제내역</ion-col>
@@ -105,7 +109,12 @@
 </div>
 <div class="paymethod">
   <ion-row  class="pay-amount-label" no-padding no-margin>
-    결제방식
+    <ion-col>
+        결제방식        
+    </ion-col>
+    <ion-col text-right>
+      <button ion-button clear class="get-voucher-info" (click)="getVoucherInfo()">식비카드 가져오기</button>
+    </ion-col>
   </ion-row>
 
 <div class="scroll-div" *ngIf="voucherAvailable && voucherConstraint">

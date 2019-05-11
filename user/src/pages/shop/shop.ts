@@ -67,6 +67,7 @@ export class ShopPage {
   authCarrier;
 
   todayBreakTimes:string;
+  deliveryTimeConstraintString:string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public serverProvider:ServerProvider,private app:App,
@@ -148,7 +149,40 @@ export class ShopPage {
             this.shop.shopInfo.foodOrigin=this.shop.shopInfo.foodOrigin.replace(new RegExp('\n','g'), '<br>');
             console.log("foodOrigin:"+this.shop.shopInfo.foodOrigin);
       }   
+
+      this.getDeliveryTimeConstraintString();
   }
+
+ getDeliveryTimeConstraintString(){  
+    // payment에서 들어가야만 한다 ㅜㅜ. payment에서 shop정보를 다시 가져와야만 한다. 그게 맞다. 
+    // 현재 구조에는 문제가 있다. 우선 배달일때만 shop정보를 다시 가져와보자. 
+   if(this.shop.shopInfo.deliveryTimeConstraint!=undefined && this.shop.shopInfo.deliveryTimeConstraint!=null){
+        let deliveryTimeConstraint=JSON.parse(this.shop.shopInfo.deliveryTimeConstraint);
+        let fromHour,toHour,fromMin,toMin;
+        if(deliveryTimeConstraint.toMins && deliveryTimeConstraint.toMins!=null){
+            toHour=(deliveryTimeConstraint.toMins-deliveryTimeConstraint.toMins%60)/60;
+            toMin= deliveryTimeConstraint.toMins%60;
+        }
+        if(deliveryTimeConstraint.fromMins && deliveryTimeConstraint.fromMins!=null){
+            fromHour=(deliveryTimeConstraint.fromMins-deliveryTimeConstraint.fromMins%60)/60;
+            fromMin= deliveryTimeConstraint.fromMins%60;
+        }
+        //고객앱에서 주문 가능시간 표기
+        if(deliveryTimeConstraint.from && deliveryTimeConstraint.from!=null 
+            && deliveryTimeConstraint.to && deliveryTimeConstraint.to!=null){
+            if(deliveryTimeConstraint.condition=="XOR"){
+                this.deliveryTimeConstraintString="배달가능시간:"+toHour+'시'+toMin+'분 이전',fromHour+'시'+fromMin+'분 이후';
+            }else if(deliveryTimeConstraint.condition=="AND"){
+                this.deliveryTimeConstraintString="배달가능시간:"+fromHour+'시'+fromMin+'분-'+toHour+'시'+toMin+'분';            
+            }
+        }else if(deliveryTimeConstraint.from && deliveryTimeConstraint.from!=null){
+            this.deliveryTimeConstraintString="배달가능시간:"+fromHour+'시'+fromMin+"분 이후";
+        }else if(deliveryTimeConstraint.to && deliveryTimeConstraint.to!=null){
+            this.deliveryTimeConstraintString="배달가능시간:"+toHour+'시'+toMin+'분 이전';
+        }
+        console.log("deliveryTimeConstraintString:"+this.deliveryTimeConstraintString);
+   }
+}
 
  autoHypenPhone(str) {
         str = str.replace(/[^0-9]/g, '');
@@ -238,7 +272,19 @@ export class ShopPage {
             if(info.cards==undefined){ // no way ㅜㅜ
                     // carrierName도 없을 경우는 어떻게해야만 할까? 우선 넘어가자. ㅜㅜ 
                     resolve(gShopPage.storageProvider.phone);
-            }else if(!info.cards[0].phoneNumber || info.cards[0].phoneNumber==undefined){
+            }else /* if(info.cards.length>1){
+                //check other sim card info
+                for(let i=0;i<info.cards.length;i++){
+                    if(info.cards[i].carrierName){  //iOS와 동일하게 처리함. 통신사만 보고 동일하지만 확임함. ㅜㅜ, payment에도 동일한 코드가 업데이트되어야한다.... 
+                        if(info.cards[i].carrierName[0] == gShopPage.authCarrier[0] && info.cards[i].carrierName[1] != gShopPage.authCarrier[1]){ // 앞에 두자리만 비교한다.
+                            resolve(gShopPage.storageProvider.phone);
+                            return;
+                        }
+                    }                                    
+                }
+                reject(); // 모두 일치하지 않을 경우만 reject해야하는데....????
+                return;
+            }*/if(!info.cards[0].phoneNumber || info.cards[0].phoneNumber==undefined){
                 console.log("info.cards[0].phoneNumber is undefined ");
                 console.log("info.cards[0].carrierName:"+info.cards[0].carrierName);
                 if(info.cards[0].carrierName){  //iOS와 동일하게 처리함. 통신사만 보고 동일하지만 확임함. ㅜㅜ 
@@ -354,8 +400,8 @@ export class ShopPage {
 
     if(!this.storageProvider.shopResponse.shopInfo.paymethod.cash 
         && this.storageProvider.shopResponse.shopInfo.paymethod.voucher){ // 캐시사용 불가능 
-        let voucherNames=this.storageProvider.shopResponse.shopInfo.paymethod.voucher[0].split(" ");
-        if(!(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 && voucherNames[0]==this.storageProvider.vouchers[0].name && this.storageProvider.vouchers[0].valid)){ // 내가 가진 식비 카드가 아닐 경우
+        //let voucherNames=this.storageProvider.shopResponse.shopInfo.paymethod.voucher[0].split(" ");
+        if(!(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 /*&& voucherNames[0]==this.storageProvider.vouchers[0].name */&& this.storageProvider.vouchers[0].valid)){ // 내가 가진 식비 카드가 아닐 경우
             let alert = this.alertCtrl.create({
                 title: "고객님께서는 주문이 불가능한 매장입니다.",
                 subTitle:"식권카드로만 구매가능합니다.",
@@ -418,20 +464,30 @@ export class ShopPage {
                        if(info){
                             gShopPage.checkSimInfo().then((phone)=>{
                                 //authPhone: 01032256467  phone: +821032256467
-                                let authPhoneCommon=gShopPage.authPhone.substr(1);
-                                let phoneCommon= phone.substr(phone.length-authPhoneCommon.length);
-                                console.log("authPhoneCommon: "+authPhoneCommon+" phoneCommon:"+phoneCommon);
-                                //if(gShopPage.authPhone==phone){
-                                if(authPhoneCommon==phoneCommon){
-                                    JsBarcode( gShopPage.barcode.nativeElement, barCode, {displayValue: false});
-                                    gShopPage.updateMyShoplist();
-                                }else{
+                                console.log("!!!! 1.checkSimInfo:"+phone);
+                                if(!phone){
                                     let alert = gShopPage.alertCtrl.create({
-                                        title: "등록된 휴대폰 번호와 일치하지 않습니다.",
-                                        subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
+                                        title: "휴대폰 정보를 가져오지 못했습니다.",
+                                        subTitle:"하나의 sim카드만 확인 가능합니다. 정상 번호 스마트폰에서 바코드 생성이 안될경우 카카오 플러스 @웨이티로 문의바랍니다",
                                         buttons: ['OK']
                                     });
                                     alert.present();
+                                }else{
+                                    let authPhoneCommon=gShopPage.authPhone.substr(1);
+                                    let phoneCommon= phone.substr(phone.length-authPhoneCommon.length);
+                                    console.log("authPhoneCommon: "+authPhoneCommon+" phoneCommon:"+phoneCommon);
+                                    //if(gShopPage.authPhone==phone){
+                                    if(authPhoneCommon==phoneCommon){
+                                        JsBarcode( gShopPage.barcode.nativeElement, barCode, {displayValue: false});
+                                        gShopPage.updateMyShoplist();
+                                    }else{
+                                        let alert = gShopPage.alertCtrl.create({
+                                            title: "등록된 휴대폰 번호와 일치하지 않습니다.",
+                                            subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하신후 식권관리 담당자에게 번호 변경을 요청해 주시기 바랍니다.",
+                                            buttons: ['OK']
+                                        });
+                                        alert.present();
+                                    }
                                 }
                             });
                        }else{
@@ -439,6 +495,7 @@ export class ShopPage {
                                 console.log("requestReadPermission-info:"+JSON.stringify(info)); 
                                 if(info){
                                     gShopPage.checkSimInfo().then((phone)=>{
+                                        console.log("!!!! 2.checkSimInfo:"+phone);
                                         let authPhoneCommon=gShopPage.authPhone.substr(1);
                                         let phoneCommon= phone.substr(phone.length-authPhoneCommon.length);
                                         console.log("authPhoneCommon: "+authPhoneCommon+" phoneCommon:"+phoneCommon);

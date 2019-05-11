@@ -86,7 +86,7 @@
       <ion-col style="color: #bdbdbd;" text-right> {{order.orderedTimeString}}
       </ion-col>
     </ion-row>
-    <ion-row class="order-third-line">
+    <ion-row class="order-third-line" *ngIf="order.orderStatus!=null && order.orderStatus">
       <ion-col col-7 style="padding-right:0px;">
         <span style="color:#bdbdbd;" *ngIf="order.orderStatus!='pickup'">주문상태:</span>
         <span *ngIf="order.orderStatus!='pickup'" style="color:#bdbdbd;">{{order.orderStatusString}}</span>

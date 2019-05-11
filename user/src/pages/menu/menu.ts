@@ -69,7 +69,39 @@ export class MenuPage {
         this.menu.discountOptions=JSON.parse(this.menu.menuDiscountOption);
     }
 
-    if(this.menu.timeConstraint!=undefined && this.menu.timeConstraint!=null){
+    /* server에서 막는 루틴을 넣자. 장바구니의 경우 오류 발생가능성이 있다. 
+    if(this.menu.weekTimeConstraint!=undefined && this.menu.weekTimeConstraint!=null){
+        // 주간 시간 정보를 timeConstraint에 저장한다.
+        let now= new Date(); 
+        let weekaday=now.getDay();
+        let weekTimeConstraint=JSON.parse(this.menu.weekTimeConstraint);
+         
+        this.timeConstraint=weekTimeConstraint[weekaday];
+        // 아래 내용을 함수화 하자.
+        let fromHour,toHour,fromMin,toMin;
+        if(this.timeConstraint.toMins && this.timeConstraint.toMins!=null){
+            toHour=(this.timeConstraint.toMins-this.timeConstraint.toMins%60)/60;
+            toMin= this.timeConstraint.toMins%60;
+        }
+        if(this.timeConstraint.fromMins && this.timeConstraint.fromMins!=null){
+            fromHour=(this.timeConstraint.fromMins-this.timeConstraint.fromMins%60)/60;
+            fromMin= this.timeConstraint.fromMins%60;
+        }
+        //고객앱에서 주문 가능시간 표기
+        if(this.timeConstraint.from && this.timeConstraint.from!=null 
+            && this.timeConstraint.to && this.timeConstraint.to!=null){
+            if(this.timeConstraint.condition=="XOR"){
+                this.timeConstraintString="주문가능시간:"+toHour+'시'+toMin+'분 이전',fromHour+'시'+fromMin+'분 이후';
+            }else if(this.timeConstraint.condition=="AND"){
+                this.timeConstraintString="주문가능시간:"+fromHour+'시'+fromMin+'분-'+toHour+'시'+toMin+'분';            
+            }
+        }else if(this.timeConstraint.from && this.timeConstraint.from!=null){
+            this.timeConstraintString="주문가능시간:"+fromHour+'시'+fromMin+"분 이후";
+        }else if(this.timeConstraint.to && this.timeConstraint.to!=null){
+            this.timeConstraintString="주문가능시간:"+toHour+'시'+toMin+'분 이전';
+        }
+        console.log("timeConstraintString:"+this.timeConstraintString);
+    }else */ if(this.menu.timeConstraint!=undefined && this.menu.timeConstraint!=null){
         this.timeConstraint=JSON.parse(this.menu.timeConstraint);
         let fromHour,toHour,fromMin,toMin;
         if(this.timeConstraint.toMins && this.timeConstraint.toMins!=null){

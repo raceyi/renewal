@@ -54,6 +54,7 @@ export class StorageProvider {
     public couponList=[];
     public emailLogin:boolean=false;
 
+    public promotionOrgList=[];
     //public recommendations=[];
     //public wholeStores=[];
 
@@ -188,6 +189,8 @@ defaultCardColor ="#33B9C6";
   vouchers:any=[]; //사용자 식비 카드 정보
   organizations=[]; // 식비카드 제공 전체 단체목록
 
+  recommender;
+  
   constructor(private configProvider:ConfigProvider,
               private sqlite: SQLite,
               private nativeStorage: NativeStorage,
@@ -234,7 +237,8 @@ defaultCardColor ="#33B9C6";
         this.name=userInfo.name;
         this.phone=userInfo.phone;
         this.mobileProvider=userInfo.mobileProvider;
-
+        if(userInfo.promotionOrgList && userInfo.promotionOrgList!=null)
+            this.promotionOrgList=JSON.parse(userInfo.promotionOrgList);
         this.couponList=JSON.parse(userInfo.couponList); ///userInfo의 couponList
         if(userInfo.receiptIssue=="1"){
             this.receiptIssue=true;
@@ -351,12 +355,15 @@ defaultCardColor ="#33B9C6";
         console.log("shoplistSet:"+JSON.stringify(shoplistValue));    
     }
 
-    userInfoSet(email,name,phone,mobileProvider,receiptIssue,receiptId,receiptType,recommends){
+    userInfoSet(email,name,phone,mobileProvider,receiptIssue,receiptId,receiptType,recommends,promotionOrgList){
         this.email=email;
         this.name=name;
         this.phone=phone;
         this.mobileProvider=mobileProvider;
         this.tourMode=false;
+        if(promotionOrgList && promotionOrgList!=null){ //Please check JSON.parse error here.
+            this.promotionOrgList=JSON.parse(promotionOrgList);
+        }
         if(receiptIssue=="1"){
             this.receiptIssue=true;
         }else{

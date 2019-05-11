@@ -89,6 +89,8 @@ export class PaymentPage {
   shopDistance;
   checkConstraintDone:boolean=false;
 
+  discountMenus=[];
+
   constructor(public navCtrl: NavController, 
               private ngZone:NgZone,
               public navParams: NavParams,
@@ -162,11 +164,15 @@ export class PaymentPage {
                             if(cart.paymethod.card==undefined)
                                 cardAvailable=false;
                             if(cart.paymethod.voucher){ // cart의 길이는 1이다.
-                                let voucherNames=cart.paymethod.voucher[0].split(" ");
+                                for(let k=0;k<cart.paymethod.voucher.length;k++){
+                                let voucherNames=cart.paymethod.voucher[k].split(" ");
+                                console.log("!!!! voucherNames[0]"+voucherNames[0]);
+                                console.log("  "+this.storageProvider.vouchers[0].name);
                                 if(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 && voucherNames[0]==this.storageProvider.vouchers[0].name && this.storageProvider.vouchers[0].valid && this.storageProvider.vouchers[0].available>0){ // 내가 가진 식비 카드일 경우
                                     this.voucherAvailable=true;
                                     this.paymentSelection="voucher";
                                     this.voucherName=this.storageProvider.vouchers[0].name;
+                                }
                                 }
                             }                    
                         }
@@ -175,8 +181,42 @@ export class PaymentPage {
 
 
                 this.ngZone.run(()=>{
-                    this.cardAvailable=cardAvailable;                  
-                    this.computePayAmount();
+                    this.cardAvailable=cardAvailable;
+                    // promotionOrgList 필드가 있다면 확인이 필요하다. 이후에 computeAmount가 수행되어야 한다.
+                    // 폰번호와 device uuid의 확인이 필요하다.
+                    if(this.storageProvider.promotionOrgList.length>0){
+                        let body={takitId:shops[0],promotionOrgList:this.storageProvider.promotionOrgList};
+                        this.serverProvider.post(this.storageProvider.serverAddress+"/promotion/getPromotionOrgInfoUser",body).then((res:any)=>{
+                            if(res.result=="success"){
+                                console.log("할인정보:"+JSON.stringify(res));
+                                if(res.promotionShops && res.promotionShops.length>0 && res.promotionShops[0].takitId==shops[0]){ // 하나의 상점이 카트에 들어온다.
+                                    console.log("할인 상점");
+                                    this.discountMenus=res.promotionMenus;
+                                }
+                                this.computePayAmount();
+                            }else{
+                                this.navCtrl.pop();
+                                let alert = this.alertController.create({
+                                    title: "고객님의 할인 정보를 가져오는데 실패했습니다.",
+                                    buttons: ['OK']
+                                });
+                                alert.present();
+                            }
+                        },err=>{
+                            if(err=="NetworkFailure"){
+                                this.navCtrl.pop();
+                                let alert = this.alertController.create({
+                                    title: "서버와 통신에 문제가 있습니다.",
+                                    subTitle:"고객님의 할인 정보를 가져오는데 실패했습니다.",
+                                    buttons: ['OK']
+                                });
+                                alert.present();
+                            }else{
+                                console.log("Hum.../promotion/getPromotionOrgInfoUser-HttpError");
+                            }
+                        })
+                    }else
+                        this.computePayAmount();
                 });
             }else{
                 console.log("couldn't get discount rate of due to unknwn reason");
@@ -446,7 +486,7 @@ export class PaymentPage {
        });
  }
 
- computePayAmount(){ //현재 carts는 1나만 들어온다. 동일주소에 대해서만 주문 가능함으로. 
+ computePayAmount(){ //현재 carts는 1나만 들어온다. 동일주소에 대해서만 주문 가능함으로.     
     this.cardDiscount=0;
     this.cashDiscount=0;
     this.menuDiscountAmount=0;
@@ -534,6 +574,17 @@ export class PaymentPage {
 
   checkMenuDiscount(menu){
       console.log("checkMenuDiscount:"+JSON.stringify(menu));
+      //리얼 후라이 처럼 특정 메뉴 할인이 있고 단체의 할인이 있다.
+      if(this.discountMenus.length>0){ //생협 단체 할인
+         let index=this.discountMenus.findIndex(function(element){
+            if(element.menuNo==menu.menuNo && element.menuName==menu.menuName){
+                return true;
+            }else 
+                return false;
+         });
+
+      }
+      //리얼 후라이 특정 메뉴 할인
       if( menu.menuDiscount && menu.menuDiscount!=null && menu.menuDiscount>0){
           if(menu.menuDiscountOption && menu.menuDiscountOption==null){
               return true;    
@@ -594,7 +645,7 @@ export class PaymentPage {
     }
     //console.log("checkDeliveryAvailable-3 ");
     for(var j=0;j<this.carts[0].orderList.menus.length;j++)
-        if(this.carts[0].orderList.menus[j].takeout<1){
+        if(this.carts[0].orderList.menus[j].takeout<2){ //2019.04.27
             this.deliveryAvailable=false;
             return;
         }
@@ -664,6 +715,8 @@ export class PaymentPage {
         return update;
   }
 
+  //시간 정보를 서버에서만 확인하는게 맞다.ㅜㅜ 
+  //요일에따라 정보가 틀릴경우가 존재함으로
   checkOneTimeConstraint(timeConstraint){
         var currTime = new Date();
         let currLocalTime=currTime.getMinutes()+ currTime.getHours()*60;
@@ -730,8 +783,8 @@ export class PaymentPage {
     
     if(this.storageProvider.locationInfoCheck && !this.checkConstraintDone){
         let alert = this.alertController.create({
-            title: '상점과의 거리 계산이 완료되지 않았습니다. 위치정보가 반드시 켜있어야만 합니다.',
-            subTitle:'위치정보가 켜있다면 잠시 기다려 주십시요. 상점거리 확인을 제외하시려면 나의정보->위치정보확인을 해제해주세요.',
+            title: '상점과의 거리 계산이 완료되지 않았습니다.',
+            subTitle:'위치정보를 확인할수 없는 상황이라면 나의정보->위치정보확인을 해제하신후 결제해주세요.',
             buttons: ['OK']
         });
         alert.present();
@@ -758,7 +811,10 @@ export class PaymentPage {
         return;           
     }
     console.log("this.checkTimeConstraint(): "+this.checkTimeConstraint());
-
+    
+    //일단 서버에서 막는다. 나중에 메뉴/상점의 정보를 요청하는 코드가 필요하다. 
+    //배달시간 제한과 요일별 시간 제약을 반영하기 위해서....
+    //local db에 저장하는것으로는 한계가 있다. 업데이트가 반영되지 않음.
     if(!this.checkTimeConstraint()){
         console.log("checkTimeConstraint return false");
         let alert = this.alertController.create({
@@ -1127,10 +1183,31 @@ export class PaymentPage {
   checkSimInfo(){ // android 일경우만 동작함.
     return new Promise((resolve,reject)=>{
        window.plugins.sim.getSimInfo(function(info){
-           console.log("android-sim-info:"+JSON.stringify(info));
-           console.log("getSimInfo:"+info.cards[0].phoneNumber);
-           resolve(info.cards[0].phoneNumber);
-       }, function(error){
+        console.log("android-sim-info:"+JSON.stringify(info));
+        //console.log("getSimInfo:"+info.cards[0].phoneNumber);
+        if(info.cards==undefined){ // no way ㅜㅜ
+                // carrierName도 없을 경우는 어떻게해야만 할까? 우선 넘어가자. ㅜㅜ 
+                resolve(gPaymentPage.storageProvider.phone);
+        }else if(!info.cards[0].phoneNumber || info.cards[0].phoneNumber==undefined){
+            console.log("info.cards[0].phoneNumber is undefined ");
+            console.log("info.cards[0].carrierName:"+info.cards[0].carrierName);
+            if(info.cards[0].carrierName){  //iOS와 동일하게 처리함. 통신사만 보고 동일하지만 확임함. ㅜㅜ 
+                if(info.cards[0].carrierName[0] != gPaymentPage.authCarrier[0] || info.cards[0].carrierName[1] != gPaymentPage.authCarrier[1]){ // 앞에 두자리만 비교한다.
+                    reject();
+                    return;
+                }else{
+                    resolve(gPaymentPage.storageProvider.phone); 
+                    return;           
+                }                                    
+            }else{
+                // carrierName도 없을 경우는 어떻게해야만 할까? 우선 넘어가자. ㅜㅜ 
+                resolve(gPaymentPage.storageProvider.phone);
+                return;
+            }
+        }else/* if(info.cards[0].phoneNumber)*/{
+            resolve(info.cards[0].phoneNumber);                
+        }
+   }, function(error){
            console.log("info:"+JSON.stringify(error));
            let alert = gPaymentPage.alertController.create({
                title: "휴대폰 번호 확인에 실패했습니다.-API오류",
@@ -1287,4 +1364,97 @@ export class PaymentPage {
                 });  
   }
 
+  getVoucherInfo(){
+      console.log("getVoucherInfo ");
+  this.serverProvider.post(this.storageProvider.serverAddress+"/getUserVouchers",{}).then((res:any)=>{
+    console.log("getUserVouchers res:"+JSON.stringify(res));
+    if(res.result=="success" && res.vouchers.length>0){
+        this.storageProvider.vouchers=res.vouchers;
+        /////////////////////////////////////////////////////////// 
+        let shops=[];
+        this.carts.forEach(cart => { 
+            console.log("cart.price:"+cart.price);
+          this.totalAmount+=cart.price; 
+          shops.push(cart.takitId)
+        });
+    
+        this.cardAvailable=true;
+        for(var j=0;j<this.carts.length;j++){
+            if(!this.carts[j].paymethod.hasOwnProperty('card')){
+                this.cardAvailable=false;
+            }
+        }
+    
+            let body = {shops:JSON.stringify(shops)};
+            this.serverProvider.post(this.storageProvider.serverAddress+"/getPayMethod",body).then((res:any)=>{
+                console.log("getPayMethod-res:"+JSON.stringify(res));
+                if(res.result=="success"){
+                    console.log("res.payMethod:"+res.payMethods);
+                    let cardAvailable=true;
+                    this.carts.forEach(cart => { 
+                        for(var j=0;j<res.payMethods.length;j++){
+                            if(res.payMethods[j].takitId==cart.takitId){
+                                cart.paymethod=JSON.parse(res.payMethods[j].paymethod);
+                                console.log("cart.paymethod:"+JSON.stringify(cart.paymethod));
+                                if(cart.paymethod.card==undefined)
+                                    cardAvailable=false;
+                                if(cart.paymethod.voucher){ // cart의 길이는 1이다.
+                                    for(let k=0;k<cart.paymethod.voucher.length;k++){
+                                        let voucherNames=cart.paymethod.voucher[k].split(" ");
+                                        if(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 && voucherNames[0]==this.storageProvider.vouchers[0].name && this.storageProvider.vouchers[0].valid && this.storageProvider.vouchers[0].available>0){ // 내가 가진 식비 카드일 경우
+                                            this.voucherAvailable=true;
+                                            this.paymentSelection="voucher";
+                                            this.voucherName=this.storageProvider.vouchers[0].name;
+                                        }
+                                    }
+                                }                    
+                            }
+                        }
+                    });
+    
+    
+                    this.ngZone.run(()=>{
+                        this.cardAvailable=cardAvailable;
+                        // promotionOrgList 필드가 있다면 확인이 필요하다. 이후에 computeAmount가 수행되어야 한다.
+                        // 폰번호와 device uuid의 확인이 필요하다.
+                            this.computePayAmount();
+                    });
+                }else{
+                    console.log("couldn't get discount rate of due to unknwn reason");
+                }
+                ///////////////////////////////////////////////////////////////////////////
+            },(err)=>{
+                    if(err=="NetworkFailure"){
+                                this.navCtrl.pop();
+                                let alert = this.alertController.create({
+                                    title: "서버와 통신에 문제가 있습니다.",
+                                    subTitle:"상점의 결제정보를 가져오는데 실패했습니다.",
+                                    buttons: ['OK']
+                                });
+                                alert.present();
+                     }else{
+                         console.log("Hum...getPayMethod-HttpError");
+                     }
+            })    
+    }else if( res.result=="success" && res.vouchers.length==0){
+        let alert = this.alertController.create({
+            title: "사용 가능 식비 카드가 없습니다.",
+            buttons: ['OK']
+        });
+        alert.present();
+    }else{
+        let alert = this.alertController.create({
+            title: "식비 카드 목록을 가져오지 못했습니다.",
+            buttons: ['OK']
+        });
+        alert.present();
+    }
+    },err=>{
+        let alert = this.alertController.create({
+            title: "네트웍상태를 확인해주세요.",
+            buttons: ['OK']
+        });
+        alert.present();        
+    });
+  }
 }

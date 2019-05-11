@@ -22,7 +22,8 @@ export class VoucherSubscribePage {
     
   personalInfoChecked:boolean=false;
 
-  myInput;
+  myInput;       // 단체 이름
+  organizationId;//단체 id
   organizations;
 
   constructor(public navCtrl: NavController, 
@@ -86,6 +87,7 @@ export class VoucherSubscribePage {
 
   selectOrganization(organization){
     this.myInput=organization.name;
+    this.organizationId=organization.id;
     this.organizations=[];
   }
 
@@ -141,41 +143,63 @@ export class VoucherSubscribePage {
           return;
       }
       //userInfo에 voucher정보가 추가되어야 한다. 한번에 몇개까지?현재 1개임.
-      let body={voucherName:this.myInput.trim(),uuid:this.device.uuid}; 
-
+      let body={voucherName:this.myInput.trim(),voucherId:this.organizationId}; 
+      //let body={voucherName:this.myInput.trim(), uuid:this.device.uuid}; 
+      console.log("registerVoucher res:"+JSON.stringify(body));
       this.serverProvider.post(this.storageProvider.serverAddress+"/registerVoucher",body).then((res:any)=>{
         console.log("registerVoucher res:"+JSON.stringify(res));
         if(res.result=="success"){
               //update voucher info
               this.serverProvider.post(this.storageProvider.serverAddress+"/getUserVouchers",{}).then((res:any)=>{
                 console.log("getUserVouchers res:"+JSON.stringify(res));
-                if(res.result=="success"){
                     this.storageProvider.vouchers=res.vouchers;
-                    this.navCtrl.pop();                                    
-                  }else{
+                    this.navCtrl.pop();   
+              },err=>{
                     let alert = this.alertController.create({
                         title: "식비 카드 목록을 업데이트하지 못했습니다.",
+                        subTitle:"네트웍상태를 확인해주세요",
                         buttons: ['OK']
                     });
-                    alert.present();
-                    this.navCtrl.pop();                                    
-                }
-              },error=>{
-                    let alert = this.alertController.create({
-                      title: "식비 카드 목록을 업데이트하지 못했습니다.",
-                      buttons: ['OK']
-                  });
-                  alert.present();          
-                  this.navCtrl.pop();                                
+                    alert.present();          
+                    this.navCtrl.pop();                                
               });
         }else{
+            console.log("res.error:"+res.error);  
+            if(res.error=="NotRegistered"){
+                this.serverProvider.post(this.storageProvider.serverAddress+"/getUserVouchers",{}).then((res:any)=>{
+                    console.log("getUserVouchers res:"+JSON.stringify(res));
+                        this.storageProvider.vouchers=res.vouchers;
+                        let alert = this.alertController.create({
+                            title: "식비 카드 담당자에게 카드 등록을 요청해 주세요.",
+                            buttons: ['OK']
+                        });
+                        alert.present();
+                        this.navCtrl.pop();  
+                  },err=>{
+                        let alert = this.alertController.create({
+                            title: "식비 카드 목록을 업데이트하지 못했습니다.",
+                            subTitle:"네트웍상태를 확인해주세요",
+                            buttons: ['OK']
+                        });
+                        alert.present();          
+                        this.navCtrl.pop();                                
+                  });
+            }else if(res.error="invalid voucherName"){
+                let alert = this.alertController.create({
+                    title: "식비 카드 이름이 잘못되었습니다.",
+                    buttons: ['OK']
+                });
+                alert.present();
+                this.navCtrl.pop();
+            }              
+        }
+        },error=>{
             let alert = this.alertController.create({
                 title: "바우처 등록에 실패했습니다.",
                 subTitle:"네트웍 상태를 확인해주세요",
                 buttons: ['OK']
             });
             alert.present();
-        }
-      });
+        });
   }
 }

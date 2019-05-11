@@ -35,28 +35,31 @@ export class SoldOutPage {
         console.log("[configureShopInfo]this.shop:"+this.shop);
         this.shop.menus.forEach(menu=>{
             //console.log("menu.no:"+menu.menuNO+" index:"+menu.menuNO.indexOf(';'));
-            let no:string=menu.menuNO.substr(menu.menuNO.indexOf(';')+1);
-            //console.log("category.category_no:"+category.categoryNO+" no:"+no);
-            if(no==category.categoryNO){
-                menu.filename=encodeURI(this.storageProvider.awsS3+menu.imagePath);
-                menu.categoryNO=no;
-                //console.log("menu.filename:"+menu.filename);
-                let menu_name=menu.menuName.toString();
-                //console.log("menu.name:"+menu_name);
-                
-                /*
-                if(navigator.language.startsWith("ko") && menu_name.indexOf("(")>0){
-                    //console.log("name has (");
-                    menu.menuName = menu_name.substr(0,menu_name.indexOf('('));
-                    //console.log("menu.name:"+menu.name);
-                    menu.description = menu_name.substr(menu_name.indexOf('('));
-                    menu.descriptionHide=false;
-                }else{
-                    menu.descriptionHide=true;
-                }*/
+            console.log("menu.deactive:"+menu.deactive);
+            if( menu.deactive!=1){ // 비활성화 메뉴는 보여주지 않는다.
+                let no:string=menu.menuNO.substr(menu.menuNO.indexOf(';')+1);
+                //console.log("category.category_no:"+category.categoryNO+" no:"+no);
+                if(no==category.categoryNO){
+                    menu.filename=encodeURI(this.storageProvider.awsS3+menu.imagePath);
+                    menu.categoryNO=no;
+                    //console.log("menu.filename:"+menu.filename);
+                    let menu_name=menu.menuName.toString();
+                    //console.log("menu.name:"+menu_name);
+                    
+                    /*
+                    if(navigator.language.startsWith("ko") && menu_name.indexOf("(")>0){
+                        //console.log("name has (");
+                        menu.menuName = menu_name.substr(0,menu_name.indexOf('('));
+                        //console.log("menu.name:"+menu.name);
+                        menu.description = menu_name.substr(menu_name.indexOf('('));
+                        menu.descriptionHide=false;
+                    }else{
+                        menu.descriptionHide=true;
+                    }*/
 
-                console.log("menu:"+JSON.stringify(menu));
-                menus.push(menu);
+                    console.log("menu:"+JSON.stringify(menu));
+                    menus.push(menu);
+                }
             }
         });
 

@@ -235,7 +235,24 @@ checkCashIdDuplicate(){
                                           title:"결제비밀번호확인" ,description:"결제 비밀번호를 한번 더 입력해주세요."});
   }
 
- registerPaymentInfo(){
+  registerRecommender(){
+    let body:any = {recommender:this.storageProvider.recommender,rewardName:"친구추천"};
+
+    console.log("[registerRecommender]body:"+body);
+    this.serverProvider.post(this.storageProvider.serverAddress+"/registerRecommender",body).then((res:any)=>{
+        console.log("registerRecommender done.");
+    },err=>{
+        if(err!="over 100"){
+            let alert = this.alertCtrl.create({
+                title: "추천인 등록에 실패했습니다.",
+                buttons: ['OK']
+            });
+            alert.present();
+        }
+    });
+  }
+
+  registerPaymentInfo(){
     if(this.startInProgress) return;
       if(this.checkValidity()){
           this.startInProgress=true;
@@ -244,6 +261,9 @@ checkCashIdDuplicate(){
                 this.serverProvider.post(this.storageProvider.serverAddress+"/createCashId",body).then((res:any)=>{
                     console.log("configureCashId:"+JSON.stringify(res));
                     if(res.result=="success"){
+                        if(this.storageProvider.recommender){
+                            this.registerRecommender();
+                        }
                         console.log("res.result is success "+res.cashBalance);
                         this.storageProvider.cashId=this.cashId.trim().toUpperCase();
                         this.storageProvider.cashAmount=res.cashBalance;

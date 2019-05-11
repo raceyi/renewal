@@ -21,6 +21,11 @@ export class SalesPage {
   originalSales=0;
   issueStampCount=0;
   couponAmount=0;
+  displayType="menu";
+  categoryStatistics=[];
+
+  originalCashSales=0;
+  cashSales=0;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,private alertController:AlertController,
         private serverProvider:ServerProvider,public storageProvider:StorageProvider) {
@@ -58,6 +63,11 @@ export class SalesPage {
     });
    }
 
+   sortByCategorySales(array) {
+    return array.sort(function(a, b) {       
+        return ((parseInt(a.categorySales) > parseInt(b.categorySales)) ? -1 : ((parseInt(a.categorySales) < parseInt(b.categorySales)) ? 1 : 0));
+    });
+   }
   searchPeriod(){
    if(this.startDate==undefined || this.endDate==undefined){
       // 시작일과 종료일을 설정해 주시기 바랍니다. 
@@ -98,10 +108,17 @@ export class SalesPage {
     if(this.storageProvider.shopInfo.stamp!=null && this.storageProvider.shopInfo.stamp){
         stamp=true;
     }
+
+    let voucher:boolean=false;
+    let paymethod=this.storageProvider.shopInfo.paymethod;
+    if(paymethod.voucher && paymethod.voucher.length>0){
+        voucher=true;
+    }
      let body  = JSON.stringify({  takitId:this.storageProvider.myshop.takitId,option:"period",
                                    startTime:startDate.toISOString(), 
                                    endTime:endDate.toISOString(),
-                                   stamp:stamp
+                                   stamp:stamp,
+                                   voucher:voucher 
                               });
       this.serverProvider.post("/shop/getSalesAndSatas",body).then((res:any)=>{
             if(res.result=="success"){
@@ -122,6 +139,10 @@ export class SalesPage {
                                     stats.push(res.stats[i]);
                                 }
                         this.statistics=this.sortBySales(stats);
+                        if(voucher){ // cash와 voucher를 분리한다. 현금매출과 다른 매출을 분리한다.
+                            this.originalCashSales=res.cashSales.originalSales;
+                            this.cashSales=res.cashSales.sales;
+                        }
                   //}
             }else{
                   let alert = this.alertController.create({
@@ -159,7 +180,18 @@ export class SalesPage {
         if(this.storageProvider.shopInfo.stamp!=null && this.storageProvider.shopInfo.stamp){
             stamp=true;
         }
-        let body=JSON.stringify({takitId:this.storageProvider.myshop.takitId,option:option,stamp:stamp});
+
+        let voucher:boolean=false;
+        let paymethod=this.storageProvider.shopInfo.paymethod;
+        if(paymethod.voucher && paymethod.voucher.length>0){
+            voucher=true;
+        }
+
+        let body=JSON.stringify({takitId:this.storageProvider.myshop.takitId,
+                                option:option,
+                                stamp:stamp,
+                                voucher:voucher
+                                });
         this.serverProvider.post("/shop/getSalesAndSatas",body).then((res:any)=>{
             console.log("getSalesAndSatas:"+JSON.stringify(res));
             if(res.result=="success"){
@@ -181,6 +213,10 @@ export class SalesPage {
         //                   console.log("stats:"+JSON.stringify(stats));
                         this.statistics=this.sortBySales(stats);
         //                   console.log("statistics:"+JSON.stringify(this.statistics));
+                        if(voucher){ // cash와 voucher를 분리한다. 현금매출과 다른 매출을 분리한다.
+                            this.originalCashSales=res.cashSales.originalSales;
+                            this.cashSales=res.cashSales.sales;
+                        }
                    }
             }else{
                   let alert = this.alertController.create({
@@ -213,4 +249,86 @@ export class SalesPage {
     }
   }
 
+  autoPickup(){
+    let body=JSON.stringify({takitId:this.storageProvider.myshop.takitId});
+    this.serverProvider.post("/shop/shopAutoPickup",body).then((res:any)=>{
+        console.log("shopAutoPickup:"+JSON.stringify(res));
+        if(res.result=="success"){
+            this.changeValue('today');
+        }else{
+                  let alert = this.alertController.create({
+                                    title: '정산에 실패했습니다.',
+                                    buttons: ['OK']
+                                });
+                  alert.present();
+        }
+    },err=>{
+            if(err=="NetworkFailure"){
+                  let alert = this.alertController.create({
+                                    title: '서버와 통신에 문제가 있습니다',
+                                    subTitle: '네트웍상태를 확인해 주시기바랍니다',
+                                    buttons: ['OK']
+                                });
+                  alert.present();
+              }else{
+                  let alert = this.alertController.create({
+                                    title: '정산에 실패했습니다.',
+                                    buttons: ['OK']
+                                });
+                  alert.present();
+              }
+    })
+  }
+
+
+  changeDisplayType(displayType){
+    if(this.displayType=="menu"){
+        this.changeValue(this.Option);
+    }else if(this.displayType=="category"){
+        if(this.Option!="period"){
+            //request getCategoryStates
+            let body=JSON.stringify({takitId:this.storageProvider.myshop.takitId,option:this.Option});
+            this.serverProvider.post("/shop/getCategoryStates",body).then((res:any)=>{
+                console.log("getCategoryStates:"+JSON.stringify(res));
+                if(res.result=="success"){
+                      // show sales info
+                       if(this.sales==0){
+                            this.categoryStatistics=[];
+                       }else{
+                            let stats=[];
+                            for(var i=0;i<res.stats.length;i++)
+                                    if(res.stats[i].categorySales!=undefined && res.stats[i].categorySales!=null && res.stats[i].categorySales!='0'){
+                                        stats.push(res.stats[i]);
+                                    }
+                            this.categoryStatistics=this.sortByCategorySales(stats);
+                       }
+                }else{
+                      let alert = this.alertController.create({
+                          title: '상점의 매출 정보를 알수 없습니다.',
+                          subTitle: '상점 매출 정보를 읽어오는데 실패했습니다.',
+                          buttons: ['OK']
+                      });
+                      alert.present();
+                }
+            },(err)=>{
+                  if(err=="NetworkFailure"){
+                    console.log("/shop/getCategoryStates error"+body);
+                      let alert = this.alertController.create({
+                                        title: '서버와 통신에 문제가 있습니다',
+                                        subTitle: '네트웍상태를 확인해 주시기바랍니다',
+                                        buttons: ['OK']
+                                    });
+                      alert.present();
+                  }else{
+                      let alert = this.alertController.create({
+                                        title: '상점의 매출 정보를 알수 없습니다.',
+                                        subTitle: '상점 매출 정보를 읽어오는데 실패했습니다.',
+                                        buttons: ['OK']
+                                    });
+                      alert.present();
+                  }
+            });
+        }
+    }
+  }
 }

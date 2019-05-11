@@ -334,4 +334,23 @@ export class MyInfoPage {
     }
   }
 
+  BranchShare() {
+    const Branch = window["Branch"];
+    // only canonicalIdentifier is required
+    var buo = {
+      canonicalIdentifier: "content/123",
+      contentMetadata: {
+        custom: this.storageProvider.email,
+        this_is: true
+      }
+    };
+
+    Branch.createBranchUniversalObject(buo).then(function (res) {
+      var message = "웨이티 앱으로 이동(회원가입/결제정보입력완료 후 보상금이 지급됩니다.)";
+      // share sheet
+      res.showShareSheet({}, {}, message);
+    });
+  }
+  
+
 }

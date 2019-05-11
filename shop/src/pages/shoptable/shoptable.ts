@@ -166,7 +166,10 @@ export class ShopTablePage {
 
         gShopTablePage.nativeStorage.getItem("pollingInterval").then((value:string)=>{
             console.log("pollingInterval is "+value+" in storage");
-            if(value==null || value==undefined){
+            if(value=='0'){
+                console.log("!!!! Do not polling !!!!");
+                return;
+            }else if(value==null || value==undefined){
                 gShopTablePage.storageProvider.pollingInterval=3; // 3 minutes
             }else{
                 gShopTablePage.storageProvider.pollingInterval= parseInt(value);
@@ -594,8 +597,10 @@ export class ShopTablePage {
             if (this.app.getRootNav().getActive()==this.viewCtrl){
                console.log("Handling back button on  tabs page");
                //Please check the amIGotNoti and storeOpen with server call
+               /*
                if(this.storageProvider.amIGotNoti==true && 
                     this.storageProvider.storeOpen==true){
+
                     this.alertController.create({
                         title: '앱을 종료하시겠습니까?',
                         message: '알림을 받고 계십니다. 상점도 같이 종료합니다.',
@@ -639,6 +644,8 @@ export class ShopTablePage {
                }else{
                     this.platform.exitApp();
                }
+               */
+                this.platform.exitApp();
             }
             else if (this.navController.canGoBack() || view && view.isOverlay) {
                console.log("popping back");
@@ -772,6 +779,8 @@ export class ShopTablePage {
           if(order.hasOwnProperty('orderedTime') && order.orderedTime!=null){
               order.localOrderedTimeString=this.timeUtil.getlocalTimeStringWithoutDay(order.orderedTime);
           }
+          
+        
           //console.log("kiosk-order result:"+JSON.stringify(order));
           return order;
     }
@@ -847,6 +856,9 @@ export class ShopTablePage {
           if(order.hasOwnProperty('orderedTime') && order.orderedTime!=null){
               order.localOrderedTimeString=this.timeUtil.getlocalTimeStringWithoutDay(order.orderedTime);
           }
+          if(order.hasOwnProperty('localOrderedTime') && order.localOrderedTime!=null){ //2019.05.06 
+            order.localOrderedTimeString=order.localOrderedTime.substr(10);
+          }
           if(order.hasOwnProperty('reviewTime') && order.reviewTime!=null){
               order.localReviewTimeString=this.timeUtil.getlocalTimeStringWithoutDay(order.reviewTime);        
           }
@@ -907,8 +919,8 @@ export class ShopTablePage {
               console.log("orders.length:"+this.orders.length);
               //orderedTime으로 소팅은 서버에서 한다. Why app에서 정상으로 안될까? 나중에 검증하자.
               this.orders.sort(function(a, b){
-                  let aDate=new Date(a.orderedTime);
-                  let bDate=new Date(b.orderedTime);
+                  let aDate=new Date(a.localOrderedTime); //2019.05.06
+                  let bDate=new Date(b.localOrderedTime); //2019.05.06
                   if(aDate>bDate){
                       return -1;
                   }else if(aDate<bDate){
@@ -1155,12 +1167,31 @@ export class ShopTablePage {
             //이미 출력한 번호인지 확인한다. 세개가 한꺼번에 오는경우가 있다.   
             this.storageProvider.saveLog(order.orderStatus,order.orderNO).then(()=>{
                 // 적당한 위치는 아니지만 출력들어갈때 소리를 한번 내준다.자동 접수 매장의 경우
+                /*
                 if(this.storageProvider.shop.shopInfo.autoCheckStore &&
                     this.storageProvider.shop.shopInfo.autoCheckStore!=null &&   
                     this.storageProvider.shop.shopInfo.autoCheckStore=='1'){
                 this.mediaProvider.playOneTime(); 
-                }
+                }*/
                 this.printOrderJob(order).then(()=>{
+                    //출력이후에 주문상태를 바꿔주자.
+                    /* if(this.storageProvider.shop.shopInfo.autoPickupStore &&
+                    this.storageProvider.shop.shopInfo.autoPickupStore!=null &&   
+                    this.storageProvider.shop.shopInfo.autoPickupStore=='1' )
+                    this.updateStatus(order,"completeOrder").then(()=>{
+                        order.orderStatus="completed";
+                        order.statusString="전달"; 
+                        order.completedTime=new Date().toISOString();
+                        //5분이후에 해당 번호를 삭제하자.
+                      },()=>{
+                        console.log("주문 완료에 실패했습니다.");
+                        let alert = this.alertController.create({
+                                        title: '주문 완료에 실패했습니다.',
+                                        buttons: ['OK']
+                                    });
+                          alert.present();
+                      });
+                    */  
                     resolve();
                 },err=>{
                     if(err=="printerUndefined"){
@@ -1184,6 +1215,7 @@ export class ShopTablePage {
         },err=>{ // 이미 출력한 경우로 아무작업도 수행하지 않는다.
             if(err=="duplicated"){
                         console.log("duplicated just ignore it");
+                        //
                         reject();
             }else{
                         let alert = this.alertController.create({
@@ -1214,50 +1246,13 @@ export class ShopTablePage {
             loading.present();  
 
             if(auto){
-                    //마지막 출력한 값보다 작은 값이 온다면 로그를 삭제한후 작업한다.     
-                    this.nativeStorage.getItem("lastPrintedOrderNO").then((value)=>{ 
-                        let orderNO=parseInt(value);
-                        if(orderNO>order.orderNO){ // orderNO가 reset되었다.
-                            this.storageProvider.deleteLog().then(()=>{
-                                this.printOrderExecute(order).then(()=>{
-                                        loading.dismiss();
-                                        this.nativeStorage.setItem("lastPrintedOrderNO", order.orderNO.toString());
-                                        resolve();
-                                },err=>{
-                                        loading.dismiss();
-                                        reject();
-                                })  
-                            },err=>{
-                                //로그 삭제에 실패했습니다. 주문서가 출력되지 않을수 있습니다. 메뉴->서비스정보->로그삭제 후 앱을 다시 실행해 주세요.
-                                loading.dismiss();
-                                let alert = this.alertController.create({
-                                    title: '로그 삭제에 실패했습니다.메뉴->서비스정보->로그삭제 후 앱을 다시 실행해 주세요.',
-                                    subTitle: '지속적인 문제 발생시 앱의 데이터를 제거후 앱을 다시 실행해주세요.',
-                                    buttons: ['OK']
-                                });
-                                alert.present();
-                                reject();
-                            })
-                        }else{ //다음 주문 번호임.
-                            this.printOrderExecute(order).then(()=>{
-                                this.nativeStorage.setItem("lastPrintedOrderNO", order.orderNO.toString());
-                                loading.dismiss();
-                                resolve();
-                            },err=>{
-                                loading.dismiss();
-                                reject();
-                            })  
-                        }
-                    },err=>{
-                        this.printOrderExecute(order).then(()=>{
-                            this.nativeStorage.setItem("lastPrintedOrderNO", order.orderNO.toString());
-                            loading.dismiss();
-                            resolve();
-                        },err=>{
-                            loading.dismiss();
-                            reject();
-                        })  
-                    })
+                this.printOrderExecute(order).then(()=>{
+                        loading.dismiss();
+                        resolve();
+                },err=>{
+                        loading.dismiss();
+                        reject();
+                })                              
             }else{
                 this.printOrderJob(order).then(()=>{
                         loading.dismiss();
@@ -1467,6 +1462,7 @@ export class ShopTablePage {
                 reject(err);
                 // print에 실패했습니다.
                 // printer를 확인해주세요. OK누르면 다시 connect하고 출력한다.(?) 
+                
                 let options={
                     text:order.orderNO+'번 출력에 실패했습니다'+order.orderNO+'번 출력에 실패했습니다'+order.orderNO+'번 출력에 실패했습니다',
                     locale:'ko-KR',
@@ -1476,6 +1472,7 @@ export class ShopTablePage {
                 this.tts.speak( options)
                 .then(() => console.log('Success'))
                 .catch((reason: any) => console.log(reason))
+                
             });
       }else if(this.platform.is('ios')){
             this.iosPrinterProvider.print(title,message).then(()=>{
@@ -1550,8 +1547,11 @@ export class ShopTablePage {
                         })
                         if(i<0){
                             var newOrder=this.convertOrderInfo(incommingOrder);
-                            this.orders=[];
-                            this.getOrders(-1,-1);
+                            ///////////!!!! 새로운 주문이 들어오면 무조건 getOrders를 호출하지 말고 추가하자.!!!
+                            //kalen.lee.2019.04.12 this.orders=[];
+                            //kalen.lee.2019.04.12 this.getOrders(-1,-1);
+                            this.addNewOrderAtfront(newOrder); //kalen.lee.2019.04.12
+                            
                             if(this.checkPaidOrder(newOrder)/* newOrder.orderStatus=="paid"*/){
                                   this.printOrder(newOrder,true).then(()=>{
                                     playback=true; //출력이후 소리를 낸다.
@@ -1623,6 +1623,32 @@ export class ShopTablePage {
         }
         return false;
     }
+
+    addNewOrderAtfront(newOrder){
+                let progressBarLoader = this.loadingCtrl.create({
+                        content: "진행중입니다.",
+                        duration: 30*1000
+                    });
+                progressBarLoader.present();
+                var i=0;
+                i=this.orders.findIndex(function(order){
+                    return (order.orderId== newOrder.orderId);
+                })
+                if(i<0){
+                    this.orders.unshift(newOrder); // 주문 목록을 가져오는것이 맞지 않을까?
+                }
+                this.orders.sort(function(a, b){
+                    let aDate=new Date(a.localOrderedTime);  //2019.05.06
+                    let bDate=new Date(b.localOrderedTime);  //2019.05.06
+                    if(aDate>bDate){
+                        return -1;
+                    }else if(aDate<bDate){
+                         return 1;
+                    }
+                    return 0;
+                });
+                progressBarLoader.dismiss();
+            }
 
     checkPaidOrder(order){ // manualStore의 경우 checked일 경우 음성 알림이 떠야 한다.
         console.log("order.autoCheckStore:"+order.autoCheckStore);
@@ -1731,8 +1757,9 @@ export class ShopTablePage {
                         if(i<0){    //새로운 주문이 왔다면                            
                             var newOrder=this.convertOrderInfo(incommingOrder);
                             //this.orders.unshift(newOrder); // 주문 목록을 가져오는것이 맞지 않을까?
-                            this.orders=[];
-                            this.getOrders(-1,-1);
+                            //kalen.lee.2019.04.12 this.orders=[];
+                            //kalen.lee.2019.04.12 this.getOrders(-1,-1);
+                            this.addNewOrderAtfront(newOrder); //kalen.lee.2019.04.12
                             console.log("call checkPaidOrder")
                             if(this.checkPaidOrder(incommingOrder)/* incommingOrder.orderStatus=="paid"*/){
                                   console.log("call printOrder");

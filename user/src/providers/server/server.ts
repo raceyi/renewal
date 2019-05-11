@@ -22,6 +22,7 @@ export class ServerProvider {
   browserRef;
   timeout=30; // 30 seconds
 //  stampCount=[];
+  lastOrderedTime;
 
     constructor(public http: HttpClient
                 ,private storageProvider:StorageProvider
@@ -153,36 +154,88 @@ loginAgain(){
         });
   }
 
+checkDuplicateOrder(){
+    if(this.lastOrderedTime){
+        let now= new Date();
+        if((now.getTime()-this.lastOrderedTime.getTime())>1000*3*60)
+            return false;
+        else 
+            return true;     
+    }else
+        return false;
+}  
+
 saveOrderCart(body){
       return new Promise((resolve,reject)=>{
 
-            //let headers = new Headers();
-            //headers.append('Content-Type', 'application/json');
             console.log("saveOrder:"+JSON.stringify(body));
-
-            let progressBarLoader = this.loadingCtrl.create({
-                content: "진행중입니다.",
-                duration: this.timeout*1000
-            });
-            progressBarLoader.present();
-
-            this.post(this.storageProvider.serverAddress+"/saveOrderCart",body).then((res:any)=>{
-                  progressBarLoader.dismiss();
-                  console.log("res:"+JSON.stringify(res));
-                  console.log("saveOrder-res.result:"+res.result);
-                  if(res.result=="success"){
-                        this.updateCash().then(()=>{   // 버전 다시 만들때는 반듯이 updateCash를 다시 불러주자. !!! 서버에서 응답값으로 변경 값을 보내주도록 하자. !!!
-                            resolve(res);
-                        },err=>{
-                            resolve(res);
-                        })
-                  }else{
-                    reject(res.error);
-                  }
-            },(err)=>{
-                progressBarLoader.dismiss();                
-                reject(err);  
-            });
+            if(this.checkDuplicateOrder()){ // 3분이내에 주문이 존재한다면 확인을 요청하자. 
+                    // 3분이내의 주문이 존재합니다. 고객님 추가 주문이 맞으신가요? 네, 아니오 
+                    let confirm = this.alertCtrl.create({
+                        title: '3분이내의 주문이 존재합니다. 고객님 주문을 진행하시겠습니까?',
+                        subTitle: '중복주문이 되지 않도록 주문목록에서 내역을 확인하신후 진행해주시기 바랍니다.',
+                        buttons: [{
+                                    text: '아니오',
+                                    handler: () => {
+                                      console.log('Disagree clicked');
+                                      reject("user reject");
+                                    }
+                                  },
+                                  {
+                                    text: '네',
+                                    handler:()=>{
+                                        let progressBarLoader = this.loadingCtrl.create({
+                                            content: "진행중입니다.",
+                                            duration: this.timeout*1000
+                                        });
+                                        progressBarLoader.present();
+                                        this.post(this.storageProvider.serverAddress+"/saveOrderCart",body).then((res:any)=>{
+                                            progressBarLoader.dismiss();
+                                            this.lastOrderedTime=new Date();
+                                            console.log("res:"+JSON.stringify(res));
+                                            console.log("saveOrder-res.result:"+res.result);
+                                            if(res.result=="success"){
+                                                    this.updateCash().then(()=>{   // 버전 다시 만들때는 반듯이 updateCash를 다시 불러주자. !!! 서버에서 응답값으로 변경 값을 보내주도록 하자. !!!
+                                                        resolve(res);
+                                                    },err=>{
+                                                        resolve(res);
+                                                    })
+                                            }else{
+                                                reject(res.error);
+                                            }
+                                        },(err)=>{
+                                            progressBarLoader.dismiss();                
+                                            reject(err);  
+                                        });
+                                    }
+                                  }]            
+                                });
+                        confirm.present();        
+            }else{
+                let progressBarLoader = this.loadingCtrl.create({
+                    content: "진행중입니다.",
+                    duration: this.timeout*1000
+                });
+                progressBarLoader.present();
+                this.post(this.storageProvider.serverAddress+"/saveOrderCart",body).then((res:any)=>{
+                    progressBarLoader.dismiss();
+                    this.lastOrderedTime=new Date();
+                    console.log("res:"+JSON.stringify(res));
+                    console.log("saveOrder-res.result:"+res.result);
+                    if(res.result=="success"){
+                            this.updateCash().then(()=>{   // 버전 다시 만들때는 반듯이 updateCash를 다시 불러주자. !!! 서버에서 응답값으로 변경 값을 보내주도록 하자. !!!
+                                resolve(res);
+                            },err=>{
+                                resolve(res);
+                            })
+                    }else{
+                        reject(res.error);
+                    }
+                },(err)=>{
+                    progressBarLoader.dismiss();                
+                    reject(err);  
+                });
+            }
       });
   }
 

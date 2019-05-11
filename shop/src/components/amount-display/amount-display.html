@@ -1,8 +1,18 @@
 <!-- Generated template for the AmountDisplayComponent component -->
-   <span *ngIf="(amount-amount%1000)>0 && (amount%1000)>=100">{{(amount-amount%1000)/1000}},{{amount%1000}}</span>
-   <span *ngIf="(amount-amount%1000)>0 && (amount%1000)<100 && (amount%1000)>=10">{{(amount-amount%1000)/1000}},0{{amount%1000}}</span>
-   <span *ngIf="(amount-amount%1000)>0 && (amount%1000)<10">{{(amount-amount%1000)/1000}},00{{amount%1000}}</span>
-   <span *ngIf="(amount-amount%1000)==0">{{amount%1000}}</span>
+  <!-- xxx,xxx,xxx 단위 -->
+   <span *ngIf="(amount-amount%1000000)>0 && (amount%1000000)>=100000">{{(amount-amount%1000000)/1000000}},{{(amount%1000000-amount%1000)/1000}}</span>
+   <span *ngIf="(amount-amount%1000000)>0 && (amount%1000000)<100000 && (amount%1000000)>=10000">{{(amount-amount%1000000)/1000000}},0{{(amount%1000000-amount%1000)/1000}}</span>
+   <span *ngIf="(amount-amount%1000000)>0 && (amount%1000000)<10000">{{(amount-amount%1000000)/1000000}},00{{(amount%1000000-amount%1000)/1000}}</span>
+   <span *ngIf="amount>=1000000 && (amount%1000)>0 && (amount%1000)>=100 ">,{{(amount)%1000}}</span>
+   <span *ngIf="amount>=1000000 && (amount%1000)>0 && (amount%1000)<100 && (amount%1000)>=10">,0{{(amount)%1000}}</span>
+   <span *ngIf="amount>=1000000 && (amount%1000)>0 && (amount%1000)<10">,00{{(amount)%1000}}</span>
+   <span *ngIf="amount>=1000000 && (amount%1000)==0">,000</span>
+
+  <!-- xxx,xxx 단위 -->    
+   <span *ngIf="amount<1000000 && (amount-amount%1000)>0 && (amount%1000)>=100">{{(amount-amount%1000)/1000}},{{amount%1000}}</span>
+   <span *ngIf="amount<1000000 && (amount-amount%1000)>0 && (amount%1000)<100 && (amount%1000)>=10">{{(amount-amount%1000)/1000}},0{{amount%1000}}</span>
+   <span *ngIf="amount<1000000 && (amount-amount%1000)>0 && (amount%1000)<10">{{(amount-amount%1000)/1000}},00{{amount%1000}}</span>
+   <span *ngIf="amount<1000000 && (amount-amount%1000)==0">{{amount%1000}}</span>
 <!--
   <span>{{amountString}}</span>   do not use this.
 -->
