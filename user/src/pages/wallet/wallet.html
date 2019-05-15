@@ -23,6 +23,9 @@
         <ion-segment-button value="card">
                 나의 카드
         </ion-segment-button>        
+        <ion-segment-button value="memberShip">
+                멤버쉽
+        </ion-segment-button>                
     </ion-segment>
     <div *ngIf="section=='cash'" style="height: 158px; background-color: white;">
         <div class="cash-section" style="display:flex;height:100px;padding-top:30px;">
@@ -66,7 +69,22 @@
                         </ion-slide>
                 </ion-slides>
     </div>
-    
+
+    <div *ngIf="section=='memberShip'">
+        <ion-slides class="slides" pager="true">
+                <ion-slide  *ngFor="let membership of this.storageProvider.promotionOrgList">
+                        <button ion-button class="plus-card-outline multiline-button" style="background-color:#00bea1;font-size:12px;">
+                                        <span class="voucher-name">{{membership.organization}}</span>
+                        </button>  
+                </ion-slide>
+                <ion-slide>
+                        <button ion-button class="plus-card-outline multiline-button" (click)="checkPromotionOrg()" style="background-color:lightgray;font-size:12px;">
+                                        멤버쉽 확인<br><br>
+                                        <ion-icon name="add-circle-outline"></ion-icon>
+                        </button>    
+                </ion-slide>
+        </ion-slides>
+    </div>
     <div text-center>
         <button class="toss-button" style="margin-top:30px;margin-bottom:30px;" outline round ion-button (click)="launchToss()">Toss로 입금</button>        
  </div>

@@ -55,12 +55,30 @@
   
 <ion-row *ngIf="menuDiscountAmount>0" class="coupon-button" no-padding no-margin>
 <ion-col class="coupon-label" no-padding no-margin>
-메뉴 할인금액
+멤버쉽 할인
 </ion-col>
 <ion-col no-padding no-margin text-right>
  -<amount-display [amount]="menuDiscountAmount"></amount-display>원
 </ion-col>
 </ion-row>
+
+<div text-left *ngIf="memberShipAuthWarning" style="font-size:3.4vw;background-color:lightgray;" padding>
+    <ion-icon name="ios-information-circle-outline"></ion-icon>멤버쉽 할인 적용을 위해 나의정보->휴대폰 번호->변경하기에서
+      <br> 본인인증을 수행하여 주시기 바랍니다.
+</div>
+
+
+<ion-row *ngIf="menuDiscountAmount==0 && !memberShipAuthWarning && this.storageProvider.promotionOrgList.length>0" class="coupon-button" no-padding no-margin>
+<!--
+<ion-row *ngIf="menuDiscountAmount==0" class="coupon-button" no-padding no-margin>    
+-->
+    <ion-col class="coupon-label" no-padding no-margin>
+    </ion-col>
+    <ion-col no-padding no-margin text-right>
+        <button ion-button clear class="get-voucher-info" (click)="getMembershipInfo()">멤버쉽 가져오기</button>
+    </ion-col>
+</ion-row>
+    
 <ion-row *ngIf="menuDiscountAmount>0 && cashDiscountAmount>0" class="coupon-button" no-padding no-margin>
 <ion-col class="coupon-label" no-padding no-margin>
 캐시 할인금액

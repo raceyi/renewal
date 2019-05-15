@@ -405,6 +405,9 @@ export class MenuPage {
                         else
                             options.push({name:option.name,price:option.price,number:1});                        
                     }
+                }else if(option.number==0){      //if(option.price==0 && option.hasOwnProperty("choice")) 
+                    if(option.select!=undefined) //팬도로씨 (수)에이드 옵션, 필수로 선택하는 옵션, 음 상점주앱에는 정상으로 나올까?
+                        options.push({name:option.name,price:option.price,number:1,select:option.select});
                 }    
             });
         }

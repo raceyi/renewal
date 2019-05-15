@@ -281,4 +281,29 @@ export class WalletPage {
             }
           });    
   }
+
+  checkPromotionOrg(){
+    let body={phone: this.storageProvider.phone}; 
+    this.serverProvider.post(this.storageProvider.serverAddress+"/promotion/addPromotionOrgInfo",body).then((res:any)=>{
+      console.log("/promotion/addPromotionOrgInfo res:"+JSON.stringify(res));
+      if(res.result=="success"){
+          this.storageProvider.promotionOrgList=res.promotionOrgList;
+      }else{
+        let alert = this.alertController.create({
+            title: "멤버쉽 목록을 업데이트하지 못했습니다.",
+            buttons: ['OK']
+        });
+        alert.present();
+      }
+    },err=>{
+        let alert = this.alertController.create({
+            title: "멤버쉽 목록을 업데이트하지 못했습니다.",
+            subTitle:"네트웍 상태를 확인해주세요",
+            buttons: ['OK']
+        });
+        alert.present();
+    })
+
+  }
+
 }

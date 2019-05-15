@@ -119,7 +119,10 @@ export class OrderDetailPage {
     }
     console.log("price:"+this.order.price);
 
-    this.order.discount=this.order.price-this.order.amount;
+    if(this.order.amount>0 && Math.abs(this.order.total - this.order.amount)>0){ // 멤버쉽 할인
+        this.order.discount=Math.min(this.order.price,this.order.price-this.order.total);        
+    }else
+        this.order.discount=Math.min(this.order.price,this.order.price-this.order.amount);            
     console.log("amount:"+this.order.amount);    
     console.log("discount:"+this.order.discount);
     
@@ -292,6 +295,10 @@ export class OrderDetailPage {
          this.app.getRootNavs()[0].push(ReviewInputPage,{order:this.order,callback:this.callbackFunction});
   }
 
+  compueteDiscount(order){
+      if(order.amount>0) return  Math.abs(order.total - order.amount);
+      else return 0;
+  }
   orderAgain(order){  // hum... payment에서 보내는 구조로 가야만 한다. 확인이 필요함.
     if(order.price==0 || !order.price || order.price==null){ //order.price는 할인전 가격이다.
         let alert = this.alertController.create({

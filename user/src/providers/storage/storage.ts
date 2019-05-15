@@ -6,6 +6,8 @@ import * as CryptoJS from 'crypto-js';
 import { NativeStorage } from '@ionic-native/native-storage';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import {CartProvider} from '../../providers/cart/cart';
+import { Device } from '@ionic-native/device';
+
 var storageProvider;
 /*
   Generated class for the StorageProvider provider.
@@ -55,6 +57,7 @@ export class StorageProvider {
     public emailLogin:boolean=false;
 
     public promotionOrgList=[];
+    public uuid;
     //public recommendations=[];
     //public wholeStores=[];
 
@@ -193,6 +196,7 @@ defaultCardColor ="#33B9C6";
   
   constructor(private configProvider:ConfigProvider,
               private sqlite: SQLite,
+              private deviceInfo:Device,
               private nativeStorage: NativeStorage,
               private cartProvider:CartProvider,
               private alertCtrl:AlertController,
@@ -239,6 +243,8 @@ defaultCardColor ="#33B9C6";
         this.mobileProvider=userInfo.mobileProvider;
         if(userInfo.promotionOrgList && userInfo.promotionOrgList!=null)
             this.promotionOrgList=JSON.parse(userInfo.promotionOrgList);
+        this.uuid=userInfo.uuid;
+
         this.couponList=JSON.parse(userInfo.couponList); ///userInfo의 couponList
         if(userInfo.receiptIssue=="1"){
             this.receiptIssue=true;
@@ -375,6 +381,9 @@ defaultCardColor ="#33B9C6";
             this.receiptIssue=false;
             this.receiptType="IncomeDeduction";//default value   
         }
+        //회원가입시라면 현재의 device uuid를 저장해준다.
+        this.uuid=this.deviceInfo.uuid;
+
         /*
         if(recommends){
             this.recommendations=recommends;

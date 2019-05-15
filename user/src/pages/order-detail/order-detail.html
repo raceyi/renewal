@@ -209,8 +209,17 @@
     <amount-display [amount]="order.price"></amount-display>원
   </ion-col>
 </ion-row>
-
-<ion-row *ngIf="order.discount!=null && order.discount>0">
+<!--
+<ion-row *ngIf="compueteDiscount(order)>0">  
+    <ion-col text-left>
+      멤버쉽 할인  
+    </ion-col>
+    <ion-col text-right>
+      -<amount-display [amount]="compueteDiscount(order)"></amount-display>원
+    </ion-col>
+  </ion-row>
+-->  
+<ion-row *ngIf="order.discount!=null && order.discount>0">  
   <ion-col text-left>
     할인 금액  
   </ion-col>

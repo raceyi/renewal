@@ -90,6 +90,7 @@ export class PaymentPage {
   checkConstraintDone:boolean=false;
 
   discountMenus=[];
+  memberShipAuthWarning:boolean=false;
 
   constructor(public navCtrl: NavController, 
               private ngZone:NgZone,
@@ -165,14 +166,12 @@ export class PaymentPage {
                                 cardAvailable=false;
                             if(cart.paymethod.voucher){ // cart의 길이는 1이다.
                                 for(let k=0;k<cart.paymethod.voucher.length;k++){
-                                let voucherNames=cart.paymethod.voucher[k].split(" ");
-                                console.log("!!!! voucherNames[0]"+voucherNames[0]);
-                                console.log("  "+this.storageProvider.vouchers[0].name);
-                                if(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 && voucherNames[0]==this.storageProvider.vouchers[0].name && this.storageProvider.vouchers[0].valid && this.storageProvider.vouchers[0].available>0){ // 내가 가진 식비 카드일 경우
-                                    this.voucherAvailable=true;
-                                    this.paymentSelection="voucher";
-                                    this.voucherName=this.storageProvider.vouchers[0].name;
-                                }
+                                    let voucherNames=cart.paymethod.voucher[k].split(" ");
+                                    if(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 && voucherNames[0]==this.storageProvider.vouchers[0].name && this.storageProvider.vouchers[0].valid && this.storageProvider.vouchers[0].available>0){ // 내가 가진 식비 카드일 경우
+                                        this.voucherAvailable=true;
+                                        this.paymentSelection="voucher";
+                                        this.voucherName=this.storageProvider.vouchers[0].name;
+                                    }
                                 }
                             }                    
                         }
@@ -189,9 +188,10 @@ export class PaymentPage {
                         this.serverProvider.post(this.storageProvider.serverAddress+"/promotion/getPromotionOrgInfoUser",body).then((res:any)=>{
                             if(res.result=="success"){
                                 console.log("할인정보:"+JSON.stringify(res));
-                                if(res.promotionShops && res.promotionShops.length>0 && res.promotionShops[0].takitId==shops[0]){ // 하나의 상점이 카트에 들어온다.
+
+                                if(res.promotionOrgList && res.promotionOrgList.length>0 && res.promotionOrgList[0].promotionShops[0].takitId==shops[0]){ // 하나의 상점이 카트에 들어온다.
                                     console.log("할인 상점");
-                                    this.discountMenus=res.promotionMenus;
+                                    this.discountMenus=res.promotionOrgList[0].promotionShops[0].promotionMenus;
                                 }
                                 this.computePayAmount();
                             }else{
@@ -525,17 +525,24 @@ export class PaymentPage {
                 let menuDiscountExist=false;
                 for(let j=0;j<this.carts[i].orderList.menus.length;j++){
                     if(this.paymentSelection=="cash"){
-                        if(this.checkMenuDiscount(this.carts[i].orderList.menus[j])){ //menu discount 적용시 
+                        let menuDiscountAmount;
+                        if((menuDiscountAmount=this.checkOrgMenuDiscount(this.carts[i].orderList.menus[j]))>0){ // 생협의 금액할인을 적용함 
+                            menuDiscountExist=true;
+                            this.menuDiscountAmount+=menuDiscountAmount;
+                            this.carts[i].orderList.menus[j].amount= this.carts[i].orderList.menus[j].price-menuDiscountAmount-Math.round((this.carts[i].orderList.menus[j].price-menuDiscountAmount)*cashDiscount/100);
+                            this.cashDiscountAmount+=Math.round((this.carts[i].orderList.menus[j].price-menuDiscountAmount)*cashDiscount/100);
+                        }
+                        /*if(this.checkMenuDiscount(this.carts[i].orderList.menus[j])){ //menu discount 적용시 , realfry이의 옵션이 없어졌음으로 우선 사용하자.
                             menuDiscountExist=true;
                             let menuDiscount:number;
                             if(typeof this.carts[i].orderList.menus[j].menuDiscount ==="string"){
                                 menuDiscount=parseInt(this.carts[i].orderList.menus[j].menuDiscount);
-                            }else 
+                            }else  
                                 menuDiscount=this.carts[i].orderList.menus[j].menuDiscount;
                             menuDiscount=menuDiscount/100;
                             this.menuDiscountAmount+=Math.round(this.carts[i].orderList.menus[j].price*(menuDiscount));
                             this.carts[i].orderList.menus[j].amount= this.carts[i].orderList.menus[j].price-Math.round(this.carts[i].orderList.menus[j].price*(menuDiscount));
-                        }else if(cashDiscount){
+                        }*/else if(cashDiscount){  //현재 팬도로씨처럼 캐시할인이 0인경우 코드는 오류나 문제는없다 ㅜㅜ 
                             this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price-Math.round((this.carts[i].orderList.menus[j].price*cashDiscount)/100);
                             this.cashDiscountAmount+=Math.round((this.carts[i].orderList.menus[j].price*cashDiscount)/100);
                         }else{
@@ -547,9 +554,9 @@ export class PaymentPage {
                         this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price;
                     }    
                 }
-                if(menuDiscountExist){ //compute carts[i].amoun again. cart는 1만 있다. 
-                    this.carts[i].amount=this.carts[i].price -(this.menuDiscountAmount+this.cashDiscountAmount);
-                }
+                //if(menuDiscountExist){ //compute carts[i].amoun again. cart는 1만 있다. realfry 메뉴 할인이 없어짐
+                //    this.carts[i].amount=this.carts[i].price -(this.menuDiscountAmount+this.cashDiscountAmount);
+                //}
                 console.log("this.cardDiscount: "+this.cardDiscount+ "this.cashDiscount:"+this.cashDiscount)
     }
     if(this.paymentSelection=="cash"){
@@ -568,22 +575,39 @@ export class PaymentPage {
     }else
         this.deliveryFee=undefined;
 
+    this.payAmount=Math.max(0,this.payAmount);
     console.log("payAmount:"+this.payAmount);
     this.computePayAmountDone=true;
   }
 
-  checkMenuDiscount(menu){
-      console.log("checkMenuDiscount:"+JSON.stringify(menu));
+  checkOrgMenuDiscount(menu){
       //리얼 후라이 처럼 특정 메뉴 할인이 있고 단체의 할인이 있다.
       if(this.discountMenus.length>0){ //생협 단체 할인
-         let index=this.discountMenus.findIndex(function(element){
-            if(element.menuNo==menu.menuNo && element.menuName==menu.menuName){
-                return true;
-            }else 
-                return false;
-         });
+        let index=this.discountMenus.findIndex(function(element){
+           if(element.menuNo==menu.menuNO && element.menuName==menu.menuName){
+               return true;
+           }else 
+               return false;
+        });
+        if(index>=0){  
+            console.log( "this.storageProvider.uuid:"+this.storageProvider.uuid);
+            console.log( "this.device.uuid:"+this.device.uuid);
+            
+            if(this.storageProvider.uuid && this.storageProvider.uuid!=null && this.device.uuid==this.storageProvider.uuid){
+                if(this.discountMenus[index].discountType=='amount'){ //discount 금액을 return한다.
+                    return this.discountMenus[index].discount;
+                }  
+            }else{ // "휴대폰 본인인증후 할인이 적용됩니다" 표기하자.
+                    this.memberShipAuthWarning=true;
+                    return 0;
+            }
+        }
+     } 
+      return 0; 
+  }
 
-      }
+  checkMenuDiscount(menu){
+      console.log("checkMenuDiscount:"+JSON.stringify(menu));
       //리얼 후라이 특정 메뉴 할인
       if( menu.menuDiscount && menu.menuDiscount!=null && menu.menuDiscount>0){
           if(menu.menuDiscountOption && menu.menuDiscountOption==null){
@@ -898,6 +922,15 @@ export class PaymentPage {
                     receiptType:this.storageProvider.receiptType,
                 };
     }else if(this.paymentSelection=="voucher"){  
+        if(!this.storageProvider.uuid || this.storageProvider.uuid==null || this.device.uuid!=this.storageProvider.uuid){
+            let alert = this.alertController.create({
+                title: "등록된 휴대폰 앱이 아닙니다.",
+                subTitle:"나의정보->휴대폰 번호->변경하기에서 본인인증을 수행하여 주시기 바랍니다.",
+                buttons: ['OK']
+            });
+            alert.present();    
+            return;
+        }
         //check validity of this app -end
         let carts=this.carts;
         this.carts.forEach((order)=>{
@@ -1374,8 +1407,7 @@ export class PaymentPage {
         let shops=[];
         this.carts.forEach(cart => { 
             console.log("cart.price:"+cart.price);
-          this.totalAmount+=cart.price; 
-          shops.push(cart.takitId)
+            shops.push(cart.takitId)
         });
     
         this.cardAvailable=true;
@@ -1390,11 +1422,15 @@ export class PaymentPage {
                 console.log("getPayMethod-res:"+JSON.stringify(res));
                 if(res.result=="success"){
                     console.log("res.payMethod:"+res.payMethods);
+                      //Just for testing
+
                     let cardAvailable=true;
                     this.carts.forEach(cart => { 
                         for(var j=0;j<res.payMethods.length;j++){
                             if(res.payMethods[j].takitId==cart.takitId){
-                                cart.paymethod=JSON.parse(res.payMethods[j].paymethod);
+                                cart.paymethod=JSON.parse(res.payMethods[j].paymethod); 
+                                //Just for testing
+                                //cart.paymethod= {"cash":"0.5%","voucher":["성결대학교 식비카드","성결대학교생협 식비카드","성결대학교산학협력단 식비카드","성결대학교일자리센터 식비카드","웨이티테스트 식비카드"]};                                                                
                                 console.log("cart.paymethod:"+JSON.stringify(cart.paymethod));
                                 if(cart.paymethod.card==undefined)
                                     cardAvailable=false;
@@ -1407,6 +1443,13 @@ export class PaymentPage {
                                             this.voucherName=this.storageProvider.vouchers[0].name;
                                         }
                                     }
+                                }
+                                if(!this.voucherAvailable){
+                                    let alert = this.alertController.create({
+                                        title: "사용 가능 식비 카드가 없습니다.",
+                                        buttons: ['OK']
+                                    });
+                                    alert.present();
                                 }                    
                             }
                         }
@@ -1415,9 +1458,10 @@ export class PaymentPage {
     
                     this.ngZone.run(()=>{
                         this.cardAvailable=cardAvailable;
-                        // promotionOrgList 필드가 있다면 확인이 필요하다. 이후에 computeAmount가 수행되어야 한다.
-                        // 폰번호와 device uuid의 확인이 필요하다.
+                        this.computePayAmountDone=false;
+                        // !!! 폰번호와 device uuid의 확인이 필요하다. !!! device uuid만 확인하자.결제시 확인한다.
                             this.computePayAmount();
+
                     });
                 }else{
                     console.log("couldn't get discount rate of due to unknwn reason");
@@ -1456,5 +1500,53 @@ export class PaymentPage {
         });
         alert.present();        
     });
+  }
+
+  getMembershipInfo(){
+    let shops=[];
+    this.carts.forEach(cart => { 
+      console.log("cart.price:"+cart.price);
+      shops.push(cart.takitId)
+    });
+    this.computePayAmountDone=false;
+
+    let body={takitId:shops[0],promotionOrgList:this.storageProvider.promotionOrgList};
+    this.serverProvider.post(this.storageProvider.serverAddress+"/promotion/getPromotionOrgInfoUser",body).then((res:any)=>{
+        if(res.result=="success"){
+            console.log("할인정보:"+JSON.stringify(res));
+
+            if(res.promotionOrgList && res.promotionOrgList.length>0 && res.promotionOrgList[0].promotionShops[0].takitId==shops[0]){ // 하나의 상점이 카트에 들어온다.
+                console.log("할인 상점");
+                this.discountMenus=res.promotionOrgList[0].promotionShops[0].promotionMenus;
+                this.computePayAmountDone=false;
+                this.computePayAmount();    
+            }else{
+                let alert = this.alertController.create({
+                    title: "사용 가능 멤버쉽이 없습니다.",
+                    buttons: ['OK']
+                });
+                alert.present();
+            }
+        }else{
+            this.navCtrl.pop();
+            let alert = this.alertController.create({
+                title: "고객님의 멤버쉽 할인 정보를 가져오는데 실패했습니다.",
+                buttons: ['OK']
+            });
+            alert.present();
+        }
+    },err=>{
+        if(err=="NetworkFailure"){
+            this.navCtrl.pop();
+            let alert = this.alertController.create({
+                title: "서버와 통신에 문제가 있습니다.",
+                subTitle:"고객님의 할인 정보를 가져오는데 실패했습니다.",
+                buttons: ['OK']
+            });
+            alert.present();
+        }else{
+            console.log("Hum.../promotion/getPromotionOrgInfoUser-HttpError");
+        }
+    })
   }
 }

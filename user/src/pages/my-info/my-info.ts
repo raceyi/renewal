@@ -99,6 +99,8 @@ export class MyInfoPage {
                     alert.present();
       }
       console.log("birthYear:"+res.userAge+" phone:"+res.userPhone);
+      let userPhone=res.userPhone;
+      let provider=res.provider;
       let body= {email:this.storageProvider.email,
                     phone:res.userPhone, 
                     name:this.storageProvider.name,
@@ -110,8 +112,8 @@ export class MyInfoPage {
         this.serverProvider.post(this.storageProvider.serverAddress+"/modifyUserInfo",body).then((res:any)=>{
             console.log("res:"+JSON.stringify(res));
             //update storageProvider정보 
-            this.storageProvider.phone=res.userPhone;
-            this.storageProvider.mobileProvider=res.provider;
+            this.storageProvider.phone=userPhone;
+            this.storageProvider.mobileProvider=provider;
             if(res.result=="success"){
                     let alert = this.alertCtrl.create({
                         title: "휴대폰 번호가 변경되었습니다.",
@@ -129,6 +131,7 @@ export class MyInfoPage {
         
         this.serverProvider.post(this.storageProvider.serverAddress+"/modifyUUID",{uuid:this.device.uuid}).then((res:any)=>{
             console.log("modifyUUID success "+this.device.uuid);
+            this.storageProvider.uuid=this.device.uuid;
         },(err)=>{
                     let alert = this.alertCtrl.create({
                         title: "앱의 고유번호(UUID)를 등록하지못했습니다.",
