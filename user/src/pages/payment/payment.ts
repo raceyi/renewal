@@ -213,6 +213,13 @@ export class PaymentPage {
                                 alert.present();
                             }else{
                                 console.log("Hum.../promotion/getPromotionOrgInfoUser-HttpError");
+                                this.navCtrl.pop();
+                                let alert = this.alertController.create({
+                                    title: "고객님의 할인 정보를 가져오는데 실패했습니다.",
+                                    subTitle:"주문을 다시 진행해 주시기 바랍니다.",
+                                    buttons: ['OK']
+                                });
+                                alert.present();
                             }
                         })
                     }else
@@ -232,7 +239,14 @@ export class PaymentPage {
                             alert.present();
                  }else{
                      console.log("Hum...getPayMethod-HttpError");
-                 }
+                     this.navCtrl.pop();
+                     let alert = this.alertController.create({
+                         title: "상점의 결제정보를 가져오는데 실패했습니다.",
+                         subTitle:"주문을 다시 수행해 주시기바랍니다.",
+                         buttons: ['OK']
+                     });
+                     alert.present();
+                }
         })    
     },err=>{
          if(err=="NetworkFailure"){
@@ -243,9 +257,17 @@ export class PaymentPage {
                                 buttons: ['OK']
                             });
                             alert.present();
-                 }else{
+        }else{
                      console.log("Hum...getPayMethod-HttpError");
-                 }
+                     this.navCtrl.pop();
+                     let alert = this.alertController.create({
+                         title: err,
+                         subTitle:"주문을 다시 수행해 주시기바랍니다.",
+                         buttons: ['OK']
+                     });
+                     alert.present();
+              
+        }
     });    
     this.checkConstraint();
   }
@@ -528,6 +550,7 @@ export class PaymentPage {
                         let menuDiscountAmount;
                         if((menuDiscountAmount=this.checkOrgMenuDiscount(this.carts[i].orderList.menus[j]))>0){ // 생협의 금액할인을 적용함 
                             menuDiscountExist=true;
+                            this.carts[i].orderList.membership=true; //
                             this.menuDiscountAmount+=menuDiscountAmount;
                             this.carts[i].orderList.menus[j].amount= this.carts[i].orderList.menus[j].price-menuDiscountAmount-Math.round((this.carts[i].orderList.menus[j].price-menuDiscountAmount)*cashDiscount/100);
                             this.cashDiscountAmount+=Math.round((this.carts[i].orderList.menus[j].price-menuDiscountAmount)*cashDiscount/100);
@@ -552,7 +575,7 @@ export class PaymentPage {
                         this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price-Math.round((this.carts[i].orderList.menus[j].price*cardDiscount)/100);                    
                     else if(this.paymentSelection=="voucher"){ // 바우처는 할인이 없음.
                         this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price;
-                    }    
+                    } 
                 }
                 //if(menuDiscountExist){ //compute carts[i].amoun again. cart는 1만 있다. realfry 메뉴 할인이 없어짐
                 //    this.carts[i].amount=this.carts[i].price -(this.menuDiscountAmount+this.cashDiscountAmount);

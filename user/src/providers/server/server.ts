@@ -213,7 +213,7 @@ saveOrderCart(body){
                         confirm.present();        
             }else{
                 let progressBarLoader = this.loadingCtrl.create({
-                    content: "진행중입니다.",
+                    content: "진행중입니다.",// \n화면이 전환되지 않을 경우 주문목록에서 주문결과를 확인해주세요 ==> 정말 넣어야 할까???
                     duration: this.timeout*1000
                 });
                 progressBarLoader.present();

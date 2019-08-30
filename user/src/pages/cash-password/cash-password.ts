@@ -405,9 +405,17 @@ export class CashPasswordPage {
                                 buttons: ['OK']
                             });
                             alert.present();
+                        }else if(error=="invalid version"){ //2019.08.29 kalen.lee@takit.biz 서버 수정시 사용을 위해 추가함.
+                            let alert = this.alertController.create({
+                                title: '주문에 실패했습니다.',
+                                subTitle:'주문을 위해 앱업데이트가 필요합니다.',
+                                buttons: ['OK']
+                            });
+                            alert.present();
                         }else{
                             let alert = this.alertController.create({
                                     title: '주문에 실패했습니다.',
+                                    subTitle: error,
                                     buttons: ['OK']
                                 });
                                 alert.present();                     

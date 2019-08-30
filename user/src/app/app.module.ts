@@ -79,6 +79,7 @@ import { Device } from '@ionic-native/device';
 import {VoucherSubscribePageModule} from '../pages/voucher-subscribe/voucher-subscribe.module';
 import {WarningPageModule} from '../pages/warning/warning.module';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
+import {MembershipSubscribePageModule} from '../pages/membership-subscribe/membership-subscribe.module';
 
 @NgModule({
   declarations: [
@@ -132,6 +133,7 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
     NoticePageModule,
     VoucherSubscribePageModule,
     WarningPageModule,
+    MembershipSubscribePageModule,
     IonicModule.forRoot(MyApp,{mode:'ios'/*, animate: false*/ })
   ],
   bootstrap: [IonicApp],

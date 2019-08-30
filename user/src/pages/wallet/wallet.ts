@@ -13,6 +13,7 @@ import { WebIntent } from '@ionic-native/web-intent';
 import {CashListPage} from '../cash-list/cash-list';
 import {FaqPage} from '../faq/faq';
 import {VoucherSubscribePage} from '../voucher-subscribe/voucher-subscribe';
+import {MembershipSubscribePage} from '../membership-subscribe/membership-subscribe';
 
 import * as moment from 'moment';
 
@@ -216,6 +217,7 @@ export class WalletPage {
             alert.present();
         }
       });
+      this.getPromotionOrg();
     }
   }
 
@@ -282,7 +284,8 @@ export class WalletPage {
           });    
   }
 
-  checkPromotionOrg(){
+  getPromotionOrg(){
+    console.log("call getPromotionOrg");
     let body={phone: this.storageProvider.phone}; 
     this.serverProvider.post(this.storageProvider.serverAddress+"/promotion/addPromotionOrgInfo",body).then((res:any)=>{
       console.log("/promotion/addPromotionOrgInfo res:"+JSON.stringify(res));
@@ -303,7 +306,33 @@ export class WalletPage {
         });
         alert.present();
     })
+  }
 
+  checkPromotionOrg(){
+      console.log("call addPromotionOrgInfo");
+    let body={phone: this.storageProvider.phone}; 
+    this.serverProvider.post(this.storageProvider.serverAddress+"/promotion/addPromotionOrgInfo",body).then((res:any)=>{
+      console.log("/promotion/addPromotionOrgInfo res:"+JSON.stringify(res));
+      if(res.result=="success"){
+          this.storageProvider.promotionOrgList=res.promotionOrgList;
+          //if(this.storageProvider.promotionOrgList.length==0){
+            this.app.getRootNavs()[0].push(MembershipSubscribePage);
+          //}
+      }else{
+        let alert = this.alertController.create({
+            title: "멤버쉽 목록을 업데이트하지 못했습니다.",
+            buttons: ['OK']
+        });
+        alert.present();
+      }
+    },err=>{
+        let alert = this.alertController.create({
+            title: "멤버쉽 목록을 업데이트하지 못했습니다.",
+            subTitle:"네트웍 상태를 확인해주세요",
+            buttons: ['OK']
+        });
+        alert.present();
+    })
   }
 
 }

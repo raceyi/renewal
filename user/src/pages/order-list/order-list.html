@@ -60,7 +60,8 @@
       <ion-row class="order-first-line">
           <ion-col>{{order.name_main}} {{order.name_sub}}
           </ion-col>
-          <ion-col *ngIf="order.amount" text-right>  <amount-display [amount]="order.amount" ></amount-display>원</ion-col>
+          <ion-col *ngIf="order.amount && order.amount>=0" text-right>  <amount-display [amount]="order.amount" ></amount-display>원</ion-col>
+          <ion-col *ngIf="order.amount && order.amount<0" text-right>  0 원</ion-col>          
       </ion-row>
       <ion-row class="order-second-line">
           <ion-col>
@@ -76,8 +77,10 @@
       <span *ngIf="order.takeout==1">-포장</span>
       <span *ngIf="order.takeout==2">-배달</span>
     </ion-col>
-    <ion-col *ngIf="!order.total" text-right>  <amount-display [amount]="order.amount" ></amount-display>원</ion-col>
-    <ion-col *ngIf="order.total" text-right>  <amount-display [amount]="order.total" ></amount-display>원</ion-col>
+    <ion-col *ngIf="!order.total && order.amount>=0" text-right>  <amount-display [amount]="order.amount" ></amount-display>원</ion-col>
+    <ion-col *ngIf="!order.total && order.amount<0" text-right>  0원</ion-col>
+    <ion-col *ngIf="order.total  && order.total>=0" text-right>  <amount-display [amount]="order.total" ></amount-display>원</ion-col>
+    <ion-col *ngIf="order.total  && order.total<0" text-right>  0원</ion-col>    
     </ion-row>
     <ion-row class="order-second-line">
       <ion-col>

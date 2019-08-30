@@ -1,0 +1,69 @@
+<!--
+  Generated template for the MembershipSubscribePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar hideBackButton>
+  <ion-buttons start>
+    <button (click)="back()" style="color:white;background-color:#FF5F3A;"><ion-icon style="font-size:4.8vw;" name="ios-arrow-back"></ion-icon></button>
+  </ion-buttons>
+  <ion-title>  성결생협 조합원가입
+  </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <!--
+  이름 /학번(사번) /소속(학부) / 직급(교원, 직원, 대학원, 학부) / 번호(?) /이메일 /출자금 /출자좌수 / 
+  출자금 기부 여부
+  ( 기부시 쿠폰 10000원 지급 및 졸업 후 3년간 조합원 자격 유지 후 생협에 출자금 적립/ 비기부시 쿠폰 5000원 지급 졸업과 동시에 출자금 반환)
+  -->
+  <ion-list>
+        <ion-item>
+            <ion-label fixed>유형(선택)</ion-label>
+            <ion-select interface='action-sheet' [(ngModel)]="memberType">
+              <ion-option value="대학생">학부</ion-option>              
+              <ion-option value="대학원생">대학원</ion-option>
+              <ion-option value="직원">직원</ion-option>
+              <ion-option value="교원">교원</ion-option>              
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label fixed>소속</ion-label>
+            <ion-input class="keypad-input keypad-receiptId" placeholder="학과/소속단체" [(ngModel)]="organization"  type="text"  ></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label fixed>학번(사번)</ion-label>
+            <ion-input class="keypad-input keypad-receiptId" [(ngModel)]="identifier" type="number" ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label fixed>출자금</ion-label>
+          <ion-input class="keypad-input keypad-receiptId" [(ngModel)]="investmentAmount" type="number"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label fixed>출자수</ion-label>
+          <ion-input class="keypad-input keypad-receiptId" [(ngModel)]="investmentNumber" type="number"></ion-input>
+        </ion-item>
+      </ion-list>
+      <ion-row>
+      <ion-col col-6 align-self-center>
+          <ion-label fixed>출자금 기부 여부</ion-label>
+      </ion-col>
+      <ion-col col-6 text-left align-self-center>
+          <ion-checkbox [(ngModel)]="donation" mode="md" style="border:0;" ></ion-checkbox>
+      </ion-col>
+      </ion-row>
+      <p class="cashid-explain">기부시 쿠폰 10000원 지급 및 졸업 후 3년간 조합원 자격 유지 후 생협에 출자금 적립</p>
+      <p class="cashid-explain">비기부시 쿠폰 5000원 지급 졸업과 동시에 출자금 반환</p>
+
+      <p class="cashid-explain">출자금 입금계좌 <br>국민은행 264401-04-314409 <br>성결대학교소비자생활협동조합</p>
+      <ion-row>
+          <ion-col text-right><button ion-button (click)="copyAccount()">계좌번호복사하기</button></ion-col>          
+      </ion-row> 
+      
+    </ion-content>
+    <ion-footer>
+        <button style="margin:0px;" (click)="registerMembershipInfo()" ion-button full>가입신청하기</button>
+    </ion-footer>

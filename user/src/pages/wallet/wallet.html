@@ -21,7 +21,7 @@
                 웨이티 캐시
         </ion-segment-button>
         <ion-segment-button value="card">
-                나의 카드
+                식비 카드
         </ion-segment-button>        
         <ion-segment-button value="memberShip">
                 멤버쉽
@@ -73,13 +73,16 @@
     <div *ngIf="section=='memberShip'">
         <ion-slides class="slides" pager="true">
                 <ion-slide  *ngFor="let membership of this.storageProvider.promotionOrgList">
-                        <button ion-button class="plus-card-outline multiline-button" style="background-color:#00bea1;font-size:12px;">
+                        <button *ngIf="membership.approval=='waiting'" ion-button class="plus-card-outline multiline-button" style="background-color:lightgray;font-size:12px;">
+                                        <span class="voucher-name">{{membership.organization}}</span>
+                        </button>  
+                        <button *ngIf="membership.approval!='waiting'" ion-button class="plus-card-outline multiline-button" style="background-color:#00bea1;font-size:12px;">
                                         <span class="voucher-name">{{membership.organization}}</span>
                         </button>  
                 </ion-slide>
                 <ion-slide>
                         <button ion-button class="plus-card-outline multiline-button" (click)="checkPromotionOrg()" style="background-color:lightgray;font-size:12px;">
-                                        멤버쉽 확인<br><br>
+                                        멤버쉽 가입<br><br>
                                         <ion-icon name="add-circle-outline"></ion-icon>
                         </button>    
                 </ion-slide>
