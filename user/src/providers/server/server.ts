@@ -260,7 +260,7 @@ saveOrderCart(body){
                                     this.post(this.storageProvider.serverAddress+"/cancelOrderCart",body).then((res:any)=>{
                                         console.log("cancelOrder-res:"+JSON.stringify(res));
                                         var result:string=res.result;
-                                        if(result==="success"){
+                                        if(result==="success" && order.payMethod!="card"){
                                             let alert = this.alertCtrl.create({
                                                 title: '주문 취소가 정상 처리 되었습니다.',
                                                 buttons: ['확인']
@@ -278,23 +278,57 @@ saveOrderCart(body){
                                             this.events.publish("orderUpdate",{order:res.order});
                                             this.events.publish("cashUpdate");
                                             resolve(res.order);
+                                        }else if(result==="success" && order.payMethod=="card"){
+                                            // 주문 취소를 수행함.
+                                            //카드 결제를 취소한다.
+                                            let encodedTakitId=encodeURI(order.takitId);
+                                            let kcpOpenUrl= this.storageProvider.kcpCancelUrl+"takitId="+encodedTakitId+"&imp_uid="+order.imp_uid+"&AppUrl=waitee://card_pay?";
+                                            if(this.platform.is("android")){
+                                                this.browserRef=this.iab.create(kcpOpenUrl,"_blank" ,'toolbar=no,location=no');
+                                            }else{ // ios
+                                                console.log("ios");
+                                                this.browserRef=this.iab.create(kcpOpenUrl,"_blank" ,'location=no,closebuttoncaption=종료');
+                                            }
+                                            
+                                            this.browserRef.on("loadstart").subscribe((event:InAppBrowserEvent)=>{
+                                                console.log("InAppBrowserEvent(loadstart):"+String(event.url));
+                                                if(event.url.includes("kcp/index.html?res_cd=")){
+                                                    this.browserRef.close();
+                                                    let substrs=event.url.split("res_cd=");
+                                                    let alert;
+                                                    if(substrs[1]=="0000"){
+                                                        alert = this.alertCtrl.create({
+                                                            title: '카드 결제 취소에 성공했습니다.',
+                                                            buttons: ['OK']
+                                                        });
+                                                    }else{
+                                                        alert = this.alertCtrl.create({
+                                                            title: '카드 결제 취소에 실패했습니다.',
+                                                            subTitle:"상점 또는 웨이티 고객센터(카카오플러스 @웨이티,0505-170-3636)에 문의해주세요.",
+                                                            buttons: ['OK']
+                                                        });                                  
+                                                    }
+                                                    alert.present();
+                                                }else if(event.url.endsWith("kcp/index.html") ){//수행되지 않는 코드임.
+                                                    this.browserRef.close();
+                                                    let alert = this.alertCtrl.create({
+                                                        title: '카드 결제 취소에 실패했습니다.',
+                                                        subTitle:"상점 또는 웨이티 고객센터(카카오플러스 @웨이티,0505-170-3636)에 문의해주세요.",
+                                                        buttons: ['OK']
+                                                    }); 
+                                                    alert.present(); 
+                                                }
+                                            });
+                                            resolve(res.order);
                                         }else{
                                             //Please give user a notification
                                             let alert;
                                             let reason:string=res.reason;
-                                            if(reason=="card-cancel failure"){
-                                                    alert = this.alertCtrl.create({
-                                                        title: '주문 상태는 변경되었으나 카드 결제 취소에 실패했습니다.',
-                                                        subTitle: '고객센터(0505-170-3636,help@takit.biz)에 연락바랍니다.',
-                                                        buttons: ['OK']
-                                                    });
-                                            }else{
-                                                    alert = this.alertCtrl.create({
-                                                        title: '주문취소에 실패했습니다.',
-                                                        subTitle: '주문 상태를 확인해 주시기바랍니다',
-                                                        buttons: ['OK']
-                                                    });
-                                            }
+                                            alert = this.alertCtrl.create({
+                                                title: '주문취소에 실패했습니다.',
+                                                subTitle: '주문 상태를 확인해 주시기바랍니다',
+                                                buttons: ['OK']
+                                            });
                                             alert.present();
                                             reject();
                                         }
@@ -366,13 +400,87 @@ saveOrderCart(body){
         }
     }
 
+    payCreditCard(bodyIn,takitId,orderName){
+        console.log("payCreditCard");
+        return new Promise((resolve,reject)=>{
+            let done=false;
+            //1. DB에 저장한다. 
+            let body={
+                      takitId:takitId,
+                      amount:bodyIn.total,
+                      name:this.storageProvider.name,
+                      email:this.storageProvider.email,
+                      phone:this.storageProvider.phone,
+                      orderName:orderName,
+                      body:JSON.stringify(bodyIn)  
+                    }
+            this.post(this.storageProvider.serverAddress+"/triggerCardPayment",body).then((res:any)=>{
+                if(res.result=="success"){
+                    console.log("payId:"+res.payId);
+                    //2. DB의 payId를 전달한다.
+                    let encodedTakitId=encodeURI(takitId);
+                    let kcpOpenUrl= this.storageProvider.kcpOpenUrl+"takitId="+encodedTakitId+"&payId="+res.payId+"&AppUrl=waitee://card_pay?";
+                    if(this.platform.is("android")){
+                        this.browserRef=this.iab.create(kcpOpenUrl,"_blank" ,'toolbar=no,location=no');
+                    }else{ // ios
+                        console.log("ios");
+                        this.browserRef=this.iab.create(kcpOpenUrl,"_blank" ,'location=no,closebuttoncaption=종료');
+                        //this.browserRef.show(); 정말 필요한가?
+                    }
+                    this.browserRef.on("loadstart").subscribe((event:InAppBrowserEvent)=>{
+                        console.log("payCreditCard-InAppBrowserEvent(loadstart):"+String(event.url));
+                        if(event.url.includes("kcp/index.html?orderId=")){
+                            //this.nativeStorage.remove("cardInProcess");
+                            this.browserRef.close();
+                            let substrs=event.url.split("kcp/index.html?orderId=");
+                            let body={orderId: parseInt(substrs[1])};
+                            this.post(this.storageProvider.serverAddress+"/getOrderDetail",body).then((res:any)=>{
+                                if(res.result=="success"){
+                                    resolve(res.order);
+                                }else{
+                                    reject(res.error);
+                                }    
+                                return;
+                            },err=>{
+                                    reject(res.err);                                    
+                            })
+                            done=true;
+                        }else if(event.url.endsWith("kcp/index.html") ){
+                                this.browserRef.close();
+                                reject("사용자 결제 중지");
+                        }
+                    });
+                    this.browserRef.on("exit").subscribe((event)=>{
+                        console.log("payCreditCard-InAppBrowserEvent(exit):"+JSON.stringify(event)); 
+                        this.browserRef.close();
+                        if(!done){
+                            //this.nativeStorage.remove("cardInProcess");
+                            reject("카드 결제 중지"); // 성공일때는 아무것도 보내지 말아야 한다.오류 동작 가능성 확인하자.
+                        }
+                    });
+                }else{
+                    let alert = this.alertCtrl.create({
+                        title: "서버 오류로 거래 등록에 실패했습니다.",
+                        subTitle: "카카오톡 @웨이티에 문의해주시기 바랍니다.",
+                        buttons: ['OK']
+                    });
+                    alert.present();
+                    reject("서버 오류로 거래 등록에 실패했습니다.");
+                }
+            },err=>{
+                reject(err);
+            });       
+        });
+
+    }
+
     mobileAuth(){
       console.log("mobileAuth");
     return new Promise((resolve,reject)=>{
       // move into CertPage and then 
       if(this.platform.is("android")){
             this.browserRef=this.iab.create(this.storageProvider.certUrl,"_blank" ,'toolbar=no,location=no');
-      }else{ // ios
+        }else{ // ios
             console.log("ios");
             this.browserRef=this.iab.create(this.storageProvider.certUrl,"_blank" ,'location=no,closebuttoncaption=종료');
       }

@@ -1,5 +1,5 @@
 import { Component,NgZone ,ViewChild} from '@angular/core';
-import { ViewController,IonicPage, NavController, NavParams ,AlertController,Slides,Platform} from 'ionic-angular';
+import { ViewController,IonicPage, NavController, NavParams ,AlertController,Slides,Platform,Events} from 'ionic-angular';
 import {OrderDetailPage} from '../order-detail/order-detail';
 import {CashChargePage} from '../cash-charge/cash-charge';
 import {StorageProvider} from '../../providers/storage/storage';
@@ -9,6 +9,8 @@ import {CashPasswordPage} from '../cash-password/cash-password';
 import { Device } from '@ionic-native/device';
 import {Geolocation} from '@ionic-native/geolocation';
 import {WarningPage} from '../warning/warning';
+import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
+import {CartProvider} from '../../providers/cart/cart';
 
 declare var window:any;
 var gPaymentPage;
@@ -78,6 +80,7 @@ export class PaymentPage {
   cashDiscountAmount=0;
   //menu-discount end
   computePayAmountDone:boolean=false;
+  cardPayAmount=0; //카드 결제 금액
 
   voucherAvailable:boolean=false;
   voucherName:string;
@@ -92,15 +95,21 @@ export class PaymentPage {
   discountMenus=[];
   memberShipAuthWarning:boolean=false;
 
+  //card결제로 추가된 변수 2019.09.15 
+  timerId;
+
   constructor(public navCtrl: NavController, 
               private ngZone:NgZone,
               public navParams: NavParams,
               private cardProvider: CardProvider,
               private alertController:AlertController,              
               public storageProvider:StorageProvider,
+              private cartProvider:CartProvider,
               public platform:Platform,
               private device: Device, 
               private geolocation: Geolocation,
+              private iab: InAppBrowser,
+              private events:Events,
               public serverProvider:ServerProvider) {
     console.log("!!!!!payments constructor!!!!!  locationInfoCheck:"+this.storageProvider.locationInfoCheck);
    // cash 값을 다시 서버로 부터 받아온다.
@@ -149,6 +158,10 @@ export class PaymentPage {
         }
     }
 
+    if(this.cardAvailable && this.paymentSelection=="cash"){  //2019.10.09
+        this.paymentSelection="card";
+    }
+
     this.checkStamp().then(()=>{
         console.log("checkStamp success");
         let body = {shops:JSON.stringify(shops)};
@@ -168,7 +181,7 @@ export class PaymentPage {
                                 for(let k=0;k<cart.paymethod.voucher.length;k++){
                                     let voucherNames=cart.paymethod.voucher[k].split(" ");
                                     if(this.storageProvider.vouchers && this.storageProvider.vouchers.length>=1 && voucherNames[0]==this.storageProvider.vouchers[0].name && this.storageProvider.vouchers[0].valid && this.storageProvider.vouchers[0].available>0){ // 내가 가진 식비 카드일 경우
-                                        this.voucherAvailable=true;
+                                        this.voucherAvailable=true;  
                                         this.paymentSelection="voucher";
                                         this.voucherName=this.storageProvider.vouchers[0].name;
                                     }
@@ -178,9 +191,11 @@ export class PaymentPage {
                     }
                 });
 
-
                 this.ngZone.run(()=>{
                     this.cardAvailable=cardAvailable;
+                    if(!this.cardAvailable && this.paymentSelection=="card"){  //2019.10.09
+                        this.paymentSelection="cash";
+                    }
                     // promotionOrgList 필드가 있다면 확인이 필요하다. 이후에 computeAmount가 수행되어야 한다.
                     // 폰번호와 device uuid의 확인이 필요하다.
                     if(this.storageProvider.promotionOrgList.length>0){
@@ -269,7 +284,7 @@ export class PaymentPage {
               
         }
     });    
-    this.checkConstraint();
+    this.checkConstraint();  
   }
 
   //'K' is kilometers
@@ -328,18 +343,16 @@ export class PaymentPage {
                 && (this.carts[0].orderList.menus.length > voucherConstraint.maxCount
                    || this.computeMenusNum() > voucherConstraint.maxCount)){
                 this.voucherConstraint=false;
-                this.paymentSelection="cash";
-                console.log("correct paymentSelection!!!");
             }
-            /* price의 계산이 끝나기전에는 알수가 없다 ㅜㅜ 나중에처리하자.
-            if(res.shopInfo.voucherConstraint.maxAmount){
-
-            }
-            */
         }else{
-            this.voucherConstraint=true;
+            this.voucherConstraint=true; // null이라면 voucherConstraint는 false가 되야 하지 않을까????
         }
-
+        //충전금이 높으면 cash선택 아니면 card를 선택하도록 한다. 보여줄때도 틀리게 해야함... 
+        //if(this.storageProvider.cashAmount>this.payAmount && this.computePayAmountDone){
+        //    this.paymentSelection="cash";
+        //}else if(this.cardAvailable && this.paymentSelection!="voucher"){
+        //    this.paymentSelection="card";
+        //}
         console.log("categoryPickup:"+ res.shopInfo.categoryPickup);
 
         if(res.shopInfo.categoryPickup && res.shopInfo.categoryPickup!=null && res.shopInfo.categoryPickup=='1'){
@@ -548,7 +561,7 @@ export class PaymentPage {
                 for(let j=0;j<this.carts[i].orderList.menus.length;j++){
                     if(this.paymentSelection=="cash"){
                         let menuDiscountAmount;
-                        if((menuDiscountAmount=this.checkOrgMenuDiscount(this.carts[i].orderList.menus[j]))>0){ // 생협의 금액할인을 적용함 
+                        if((menuDiscountAmount=this.checkOrgMenuDiscount(this.carts[i].orderList.menus[j])* this.carts[i].orderList.menus[j].quantity)>0){ // 생협의 금액할인을 적용함 
                             menuDiscountExist=true;
                             this.carts[i].orderList.membership=true; //
                             this.menuDiscountAmount+=menuDiscountAmount;
@@ -571,9 +584,19 @@ export class PaymentPage {
                         }else{
                             this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price; 
                         }                           
-                    }else if(this.paymentSelection=="card")// card
-                        this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price-Math.round((this.carts[i].orderList.menus[j].price*cardDiscount)/100);                    
-                    else if(this.paymentSelection=="voucher"){ // 바우처는 할인이 없음.
+                    }else if(this.paymentSelection=="card"){// card
+                        let menuDiscountAmount;
+                        if((menuDiscountAmount=this.checkOrgMenuDiscount(this.carts[i].orderList.menus[j])*this.carts[i].orderList.menus[j].quantity)>0){ // 생협의 금액할인을 적용함 
+                            menuDiscountExist=true;
+                            this.carts[i].orderList.membership=true; //
+                            this.menuDiscountAmount+=menuDiscountAmount;
+                            this.carts[i].orderList.menus[j].amount= this.carts[i].orderList.menus[j].price-menuDiscountAmount-Math.round((this.carts[i].orderList.menus[j].price-menuDiscountAmount)*cashDiscount/100);
+                        }/*else if(cardDiscount){ cardDiscount는 별도로 없다.
+                            this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price-Math.round((this.carts[i].orderList.menus[j].price*cashDiscount)/100);
+                            this.cardDiscountAmount+=Math.round((this.carts[i].orderList.menus[j].price*cashDiscount)/100);
+                        }*/else
+                            this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price-Math.round((this.carts[i].orderList.menus[j].price*cardDiscount)/100);                    
+                    }else if(this.paymentSelection=="voucher"){ // 바우처는 할인이 없음.
                         this.carts[i].orderList.menus[j].amount=this.carts[i].orderList.menus[j].price;
                     } 
                 }
@@ -589,10 +612,22 @@ export class PaymentPage {
         }else
             this.payAmount=this.totalAmount-this.cashDiscount-this.couponDiscountAmount;
     }else if(this.paymentSelection=="card"){
-        this.payAmount=this.totalAmount-this.cardDiscount-this.couponDiscountAmount;
+        if(this.menuDiscountAmount>0){
+            //menuDiscount와 다른 부분을 분리하고 나머지 가격에 대해 할인을 적용한다. 
+            this.payAmount=this.totalAmount-(this.menuDiscountAmount)-this.couponDiscountAmount;
+        }else
+            this.payAmount=this.totalAmount-this.cardDiscount-this.couponDiscountAmount;
     }else if(this.paymentSelection=="voucher"){
         this.payAmount=this.totalAmount;
     }
+    ///////////////////////////////////////////////
+    //카드 결제 금액은 항상 계산되어야 한다.
+    this.cardPayAmount=this.totalAmount-this.cardDiscount-this.couponDiscountAmount;
+    console.log("cardPayAmount:"+this.cardPayAmount);
+    if(this.storageProvider.cashAmount >= this.cardPayAmount){
+
+    }
+    ////////////////////////////////////////////////
     if(this.takeout==2 && this.payAmount<this.carts[0].freeDelivery){
         this.deliveryFee=parseInt(this.carts[0].deliveryFee);
     }else
@@ -601,10 +636,13 @@ export class PaymentPage {
     this.payAmount=Math.max(0,this.payAmount);
     console.log("payAmount:"+this.payAmount);
     this.computePayAmountDone=true;
-  }
+
+}
 
   checkOrgMenuDiscount(menu){
       //리얼 후라이 처럼 특정 메뉴 할인이 있고 단체의 할인이 있다.
+      //console.log("!!! discountMenus:"+JSON.stringify(this.discountMenus));
+
       if(this.discountMenus.length>0){ //생협 단체 할인
         let index=this.discountMenus.findIndex(function(element){
            if(element.menuNo==menu.menuNO && element.menuName==menu.menuName){
@@ -813,8 +851,14 @@ export class PaymentPage {
   }
 
   pay(){
-    if(!this.voucherAvailable || !this.voucherConstraint){
-        this.paymentSelection="cash";  // correct paymentSelection.
+    if((!this.voucherAvailable || !this.voucherConstraint) && this.paymentSelection=="voucher"){
+        let alert = this.alertController.create({
+            title: '결제방법 선택이 잘못되었습니다.',
+            subTitle:'상점에 다시 입장하셔서 메뉴를 주문하시기 바랍니다',
+            buttons: ['OK']
+        });
+        alert.present();
+        return;
     }  
 
     console.log("carts:"+JSON.stringify(this.carts));
@@ -989,9 +1033,8 @@ export class PaymentPage {
                     amount:this.payAmount,
                     takeout: this.takeout, // takeout:0(inStore) , 1(takeout), 2(delivery) 
                     orderedTime:new Date().toISOString(),
-                    customer_uid: this.storageProvider.payInfo[this.cardIndex].customer_uid
+                    //customer_uid: this.storageProvider.payInfo[this.cardIndex].customer_uid
                 };
-
     }
     if(this.takeout==2){
         body.deliveryAddress=this.removeSpecialCharacters(this.deliveryAddress);
@@ -1005,9 +1048,24 @@ export class PaymentPage {
     else    
         body.total= body.amount;
     
-    console.log("body.total:"+body.total);
+    console.log("body.total:"+body.total+ "paymentSelection:"+this.paymentSelection);
 
-    if(this.shopDistance>1 && this.takeout!=2/* !delivery */){
+    if(this.paymentSelection=="card"){
+        //inAppBrowser를 사용하여 서버 페이지로 이동한다.
+        console.log("call this.serverProvider.payCreditCard");
+        if(this.shopDistance>1 && this.takeout!=2/* !delivery */){
+            this.navCtrl.push(WarningPage,{class:"WarningPage",
+            shopDistance:this.shopDistance,
+            callback: this.moveIntoCardPayment,
+            body:body,
+            takitId:this.carts[0].orderList.takitId,
+            payment:this.paymentSelection});
+        }else{
+            this.serverProvider.payCreditCard(body,this.carts[0].orderList.takitId,this.carts[0].orderName).then((order)=>{
+                this.orderSuccessHandler(order,body);
+            });
+        }
+    }else if(this.shopDistance>1 && this.takeout!=2/* !delivery */){
         this.navCtrl.push(WarningPage,{class:"WarningPage",
                                         shopDistance:this.shopDistance,
                                         callback: this.moveIntoCashPasswordPage,
@@ -1027,6 +1085,105 @@ export class PaymentPage {
                                             title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
                                             class:"CashPasswordPage"});
     }
+  }
+
+  moveIntoCardPayment(payment,body){
+    return new Promise((resolve,reject)=>{
+        gPaymentPage.serverProvider.payCreditCard(body,gPaymentPage.carts[0].orderList.takitId,gPaymentPage.carts[0].orderName).then((order)=>{
+            let  views:ViewController[]; 
+            views=gPaymentPage.navCtrl.getViews();
+            views.forEach(view=>{
+                if(view.getNavParams().get("class")!=undefined){
+                    console.log("class:"+view.getNavParams().get("class"));
+                    if(view.getNavParams().get("class")=="WarningPage")  {
+                            console.log("remove "+view.getNavParams().get("class"));
+                            gPaymentPage.navCtrl.removeView(view);
+                    }             
+                }
+            })
+            gPaymentPage.orderSuccessHandler(order,body);
+            resolve(); 
+        })
+    });
+  }
+
+ionViewWillUnload(){
+    if(this.timerId){
+      console.log("paymentPage ionViewWillUnload comes");   
+      clearTimeout(this.timerId); // orderDetail페이지로 화면전환이 정상적으로 될경우 timer가 취소됨.
+    }
+}
+  orderSuccessHandler(order,body){ //cash-password의 루틴과 동일해야만 한다. 향후 코드 관리에 주의가 필요함.
+    //방어코드: timer를 둬서 만약 orderDetailPage로 전환이 안될경우 alert을 표기하자.
+        this.timerId = setTimeout(function(){ 
+            let alert = gPaymentPage.alertController.create({
+                title: '주문이 정상처리되었으나 화면전환에 실패했습니다.',
+                subTitle:'주문 목록에서 주문정보 확인이 가능합니다.',
+                buttons: ['OK']
+            });
+            alert.present();
+        }, 2000);
+
+        if(this.trigger=="cart"){
+                console.log("trigger is cart. call deleteAll");
+                this.cartProvider.deleteAll().then(()=>{
+                    
+                },()=>{
+                        //move into shophome
+                        let alert = this.alertController.create({
+                                title: '장바구니 정보 업데이트에 실패했습니다',
+                                buttons: ['OK']
+                            });
+                            alert.present();
+                });
+        }else{  //trigger from shop page
+            if(order.stampUsageCount!=null && order.stampUsageCount>0){
+                //update shop coupon stamp coupon Count
+                this.serverProvider.getCurrentShopStampInfo();
+            }
+        }
+        //임시로 shopEnter로 구현하였다. 서버에서 최근 주문 음식점을 관리하도록 한다.   
+        console.log("body:"+JSON.stringify(body));                        
+        let carts=JSON.parse(body.orderList);
+        let shops=[];
+        carts.forEach(cart=>{
+            shops.push({ takitId:cart.takitId ,imagePath:cart.takitId+"_main", 
+                         deliveryArea: cart.deliveryArea,paymethod:cart.paymethod})
+        })
+        console.log("shops:"+JSON.stringify(shops));
+        this.storageProvider.updateShopList(shops);
+
+        let bodyParam = {shopList:JSON.stringify(this.storageProvider.shopList)};
+        console.log("!!shopEnter-body:",body);
+
+        console.log("send orderUpdate");
+        this.events.publish('orderUpdate',{order:order});
+        this.events.publish("cashUpdate");
+
+        if(this.storageProvider.tourMode==false){    
+            this.serverProvider.post(this.storageProvider.serverAddress+"/shopEnter",bodyParam).then((res:any)=>{
+                console.log("res.result:"+res.result);
+                var result:string=res.result;
+                if(result=="success"){
+
+                }else{
+                    
+                }
+            },(err)=>{
+                console.log("shopEnter-http post err "+err);
+                //Please give user an alert!
+                if(err=="NetworkFailure"){
+                let alert = this.alertController.create({
+                        title: '서버와 통신에 문제가 있습니다',
+                        subTitle: '최근 주문 음식점이 서버에 반영되지 않았습니다.',
+                        buttons: ['OK']
+                    });
+                    alert.present();
+                }
+            });
+        }
+        /////////////////////////////////////////////////////////////////////////////
+        this.navCtrl.push(OrderDetailPage,{order:order,trigger:"order",class:"OrderDetailPage"});
   }
 
   moveIntoCashPasswordPage(payment,body){
@@ -1220,6 +1377,7 @@ export class PaymentPage {
 
 
   slideChanged(){
+      console.log("slideChanged");
       if(this.voucherAvailable){
         let currentIndex = this.slides.getActiveIndex();
         console.log("Current index is", currentIndex);
@@ -1229,11 +1387,57 @@ export class PaymentPage {
             this.computePayAmountDone=false;
             this.computePayAmount();
         }else{
-            this.paymentSelection="cash";   
-            this.computePayAmountDone=false;     
-            this.computePayAmount();
+            /*
+           if(this.storageProvider.cashAmount>this.payAmount){  // cash->card
+                if(currentIndex==1){  //cash
+                    this.paymentSelection="cash";   
+                    this.computePayAmountDone=false;     
+                    this.computePayAmount();        
+                }else if(currentIndex==2 && this.cardAvailable){  //card
+                    this.paymentSelection="card";   
+                    this.computePayAmountDone=false;     
+                    this.computePayAmount();        
+                }
+           }else*/{  // card->cash
+                if(currentIndex==1 && this.cardAvailable){  //card
+                    this.paymentSelection="card";   
+                    this.computePayAmountDone=false;     
+                    this.computePayAmount();                        
+                }else if( (currentIndex==1 && !this.cardAvailable) || currentIndex==2){  //cash
+                    this.paymentSelection="cash";   
+                    this.computePayAmountDone=false;     
+                    this.computePayAmount();        
+                }                
+           } 
         }
-      }
+      }else{
+        let currentIndex = this.slides.getActiveIndex();
+        console.log("Current index is", currentIndex);
+        if(this.cardAvailable){
+            /*
+                if(this.storageProvider.cashAmount>this.payAmount){  // cash->card
+                    if(currentIndex==0){  //cash
+                        this.paymentSelection="cash";   
+                        this.computePayAmountDone=false;     
+                        this.computePayAmount();        
+                    }else if(currentIndex==1){  //card
+                        this.paymentSelection="card";   
+                        this.computePayAmountDone=false;     
+                        this.computePayAmount();        
+                    }
+                }else */{  // card->cash
+                        if(currentIndex==0){  //card
+                            this.paymentSelection="card";   
+                            this.computePayAmountDone=false;     
+                            this.computePayAmount();                        
+                        }else if(currentIndex==1){  //cash
+                            this.paymentSelection="cash";   
+                            this.computePayAmountDone=false;     
+                            this.computePayAmount();        
+                        }                
+                } 
+        }
+  }
   }
 
   checkSimInfo(){ // android 일경우만 동작함.
@@ -1477,10 +1681,13 @@ export class PaymentPage {
                             }
                         }
                     });
-    
-    
+        
                     this.ngZone.run(()=>{
                         this.cardAvailable=cardAvailable;
+                        if(this.paymentSelection=="card" && !this.cardAvailable){
+                            console.log("!!! correct paymentSelection !!!")
+                            this.paymentSelection="cash"; //correct cardAvailable
+                        }                            
                         this.computePayAmountDone=false;
                         // !!! 폰번호와 device uuid의 확인이 필요하다. !!! device uuid만 확인하자.결제시 확인한다.
                             this.computePayAmount();

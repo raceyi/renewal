@@ -106,7 +106,7 @@
 </ion-col>
 </ion-row>
 
-<ion-row *ngIf="paymentSelection=='card'" class="coupon-button" no-padding no-margin>
+<ion-row *ngIf="paymentSelection=='card' && cardDiscount>0" class="coupon-button" no-padding no-margin>
 <ion-col class="coupon-label" no-padding no-margin>
 카드결제 할인금액
 </ion-col>
@@ -137,6 +137,7 @@
 
 <div class="scroll-div" *ngIf="voucherAvailable && voucherConstraint">
     <ion-slides #slides class="slides" pager="true" (ionSlideDidChange)="slideChanged()">
+
         <ion-slide  *ngFor="let card of storageProvider.vouchers">
                 <div *ngIf="card.valid" style="display:flex;flex-direction:column;">
                         <button class="multiline-button valid-card-outline" text-center style="background-color:#00bea1;">
@@ -145,6 +146,19 @@
                         </button>
                         </div>        
         </ion-slide>
+        <!--
+        <ion-slide *ngIf="cardAvailable && storageProvider.cashAmount < cardPayAmount">    
+        -->      
+        <ion-slide *ngIf="cardAvailable">                
+            <div style="display:flex;flex-direction:column;">
+                <button class="multiline-button valid-card-outline" text-center style="background-color:#FF5F3A;">
+                    <span class="voucher-name">카드결제</span><br>
+                    <amount-display *ngIf="deliveryFee!=undefined" class="voucher-amount" [amount]="cardPayAmount+deliveryFee"></amount-display>
+                    <amount-display *ngIf="deliveryFee==undefined" class="voucher-amount" [amount]="cardPayAmount"></amount-display>
+                </button>
+            </div>
+        </ion-slide> 
+
         <ion-slide>
             <div style="display:flex;flex-direction:column;">
                 <button class="multiline-button valid-card-outline" text-center style="background-color:#FF5F3A;">
@@ -153,11 +167,34 @@
                 </button>
             </div>
         </ion-slide> 
+<!--
+        <ion-slide *ngIf="cardAvailable && storageProvider.cashAmount>=cardPayAmount">
+          <div style="display:flex;flex-direction:column;">
+              <button class="multiline-button valid-card-outline" text-center style="background-color:#FF5F3A;">
+                  <span class="voucher-name">카드결제</span><br>
+                  <amount-display *ngIf="deliveryFee!=undefined" class="voucher-amount" [amount]="cardPayAmount+deliveryFee"></amount-display>
+                  <amount-display *ngIf="deliveryFee==undefined" class="voucher-amount" [amount]="cardPayAmount"></amount-display>
+              </button>
+          </div>
+      </ion-slide> 
+-->
       </ion-slides>
 </div>
 
 <div class="scroll-div" *ngIf="!voucherAvailable || !voucherConstraint">
-    <ion-slides class="slides" pager="true">
+    <ion-slides #slides class="slides" pager="true"  (ionSlideDidChange)="slideChanged()">
+      <!--
+        <ion-slide *ngIf="cardAvailable && storageProvider.cashAmount < cardPayAmount">
+        -->
+        <ion-slide *ngIf="cardAvailable">            
+            <div style="display:flex;flex-direction:column;">
+                <button class="multiline-button valid-card-outline" text-center style="background-color:#FF5F3A;">
+                    <span class="voucher-name">카드결제</span><br>
+                    <amount-display *ngIf="deliveryFee!=undefined" class="voucher-amount" [amount]="cardPayAmount+deliveryFee"></amount-display>
+                    <amount-display *ngIf="deliveryFee==undefined" class="voucher-amount" [amount]="cardPayAmount"></amount-display>
+                </button>
+            </div>
+        </ion-slide>       
         <ion-slide>
             <div style="display:flex;flex-direction:column;">
                 <button class="multiline-button valid-card-outline" text-center style="background-color:#FF5F3A;">
@@ -165,7 +202,18 @@
                     <amount-display class="voucher-amount" [amount]="storageProvider.cashAmount"></amount-display>
                 </button>
             </div>
-        </ion-slide> 
+        </ion-slide>
+        <!--
+        <ion-slide *ngIf="cardAvailable && storageProvider.cashAmount >= cardPayAmount">
+          <div style="display:flex;flex-direction:column;">
+              <button class="multiline-button valid-card-outline" text-center style="background-color:#FF5F3A;">
+                  <span class="voucher-name">카드결제</span><br>
+                  <amount-display *ngIf="deliveryFee!=undefined" class="voucher-amount" [amount]="cardPayAmount+deliveryFee"></amount-display>
+                  <amount-display *ngIf="deliveryFee==undefined" class="voucher-amount" [amount]="cardPayAmount"></amount-display>
+              </button>
+          </div>
+      </ion-slide>
+         -->     
       </ion-slides>
 </div>
 </div>
@@ -217,5 +265,7 @@
 </div>
 </ion-content>
 <ion-footer>
+  <ion-toolbar>
   <button no-margin ion-button full (click)="pay()">결제하기</button>
+  </ion-toolbar>
 </ion-footer>

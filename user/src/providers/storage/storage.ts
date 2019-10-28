@@ -41,6 +41,8 @@ export class StorageProvider {
     public authFailReturnUrl=this.configProvider.getAutFailReturnUrl();
     public tossApiKey=this.configProvider.getTossApiKey();
 
+    public kcpOpenUrl=this.configProvider.getkcpUrl();
+    public kcpCancelUrl=this.configProvider.getkcpCancelUrl();
     public device=this.configProvider.device;
     
     syncTimeout=500; //0.5 second

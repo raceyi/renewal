@@ -37,7 +37,7 @@
         </div>
         <div *ngIf="shop.shopInfo.categoryLevel=='1'" class="store-background-image category-level-select" style="padding-top: 64px;" [ngStyle]="ngStyle">
             <span class="shop-keyword" text-center align-self-center > {{location}} </span>
-            <span class="shop-keyword" *ngIf="shop.shopInfo.paymethod.cash!=undefined && shop.shopInfo.paymethod.cash!='0%'">할인 {{shop.shopInfo.paymethod.cash}}</span>
+            <span class="shop-keyword" *ngIf="shop.shopInfo.paymethod.cash!=undefined && shop.shopInfo.paymethod.cash!='0%'">캐시 할인 {{shop.shopInfo.paymethod.cash}}</span>
         </div>
         <div *ngIf="shop.shopInfo.categoryLevel=='1'" class="category-level-select">    
                 <ion-segment  mode="md" [(ngModel)]="section" (ionChange)="changeSegment()">
@@ -264,7 +264,7 @@
                         <button class="each-img" clear no-margin no-padding ion-button><img [src]="storageProvider.awsS3+promotion"></button>
                     </ion-slide>
             </ion-slides>
-            <ion-row>
+                    <ion-row>
                     <ion-col no-padding class="shop-text-info">
                     <label class="label">주문시간</label>  <span class="value">{{storageProvider.shopResponse.shopInfo.TodayBusinessTime}}</span>
                     </ion-col>
@@ -280,6 +280,25 @@
                     <label class="label" style="margin-left:0px;">휴무요일</label>  <span class="value"> {{regularOff}} </span>
                     </ion-col>
                     </ion-row>
+
+                    <ion-row>
+                            <ion-col no-padding div class="shop-text-info" *ngIf="storageProvider.shopResponse.shopInfo.businessName!=null && storageProvider.shopResponse.shopInfo.businessName!=undefined">
+                            <label class="label">상호</label>  <span class="value">{{storageProvider.shopResponse.shopInfo.businessName}} </span>
+                            </ion-col>
+                    </ion-row>
+                    <ion-row>
+                            <ion-col no-padding  class="shop-text-info" *ngIf="storageProvider.shopResponse.shopInfo.businessNumber!=undefined && storageProvider.shopResponse.shopInfo.businessNumber!=undefined">
+                                    <label class="label">사업자번호</label>  <span class="value"> {{storageProvider.shopResponse.shopInfo.businessNumber}} </span>
+                            </ion-col>                        
+                    </ion-row>                            
+                    <ion-row>
+                            <ion-col no-padding div class="shop-text-info" *ngIf="storageProvider.shopResponse.shopInfo.owner!=null && storageProvider.shopResponse.shopInfo.owner!=undefined">
+                            <label class="label">대표자이름</label>  <span class="value">{{storageProvider.shopResponse.shopInfo.owner}} </span>
+                            </ion-col>
+                            <ion-col no-padding  class="shop-text-info">
+                            </ion-col>
+                    </ion-row>
+
                     <div class="shop-text-info">
                     <label class="label">주소</label>  <span class="value">{{shop.shopInfo.address}}</span>
                     </div>

@@ -95,11 +95,7 @@ export class OrderDetailPage {
     if(this.order.payMethod=="cash")
         this.order.paymentString="캐시";
     else if(this.order.payMethod=="card"){
-        console.log("this.order.card_info:"+this.order.card_info);
-        let card_info;
-        if(typeof this.order.card_info ==="string")
-            card_info=JSON.parse(this.order.card_info);
-        this.order.paymentString=card_info.name+" "+card_info.mask_no; 
+        this.order.paymentString="카드("+this.order.card_info+")"; 
     }else{ // voucher
         if(this.order.voucherName && this.order.voucherName!=null)
             this.order.paymentString=this.order.voucherName+"식비카드";
