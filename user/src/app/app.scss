@@ -103,3 +103,9 @@ ion-fab {
         border-radius:5px;   
     } 
 }
+
+.alert-sub-title{  // 중복 주문 오류를 막기 위한 alert에 사용함. 2019.11.06
+    b{
+        color:red;
+    }
+}

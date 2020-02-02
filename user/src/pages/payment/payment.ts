@@ -28,7 +28,7 @@ var gPaymentPage;
   templateUrl: 'payment.html',
 })
 export class PaymentPage {
-  inStoreColor="#FF5F3A";
+  inStoreColor="#bdbdbd";//2019.12.28 "#FF5F3A";
   takeoutColor="#bdbdbd";
   deliveryColor="#bdbdbd";
   @ViewChild('slides') slides:Slides;
@@ -69,7 +69,7 @@ export class PaymentPage {
   totalAmount:number=0;
   payAmount:number=0;
 
-  takeout=0; //takeout:1 , takeout:2(delivery)
+  takeout;// 2019.12.28 takeout=0;(InStore) //takeout:1(takeout) , takeout:2(delivery)
   deliveryAddress;
 
   trigger;
@@ -131,6 +131,9 @@ export class PaymentPage {
     ////////////////////////////////////////
 
     this.checkTakeoutAvailable();
+    if(!this.takeoutAvailable){  //2019.12.28
+        this.takeout=0;
+    }
     this.checkDeliveryAvailable();
 
     this.storageProvider.payInfo.forEach(payment=>{
@@ -641,8 +644,6 @@ export class PaymentPage {
 
   checkOrgMenuDiscount(menu){
       //리얼 후라이 처럼 특정 메뉴 할인이 있고 단체의 할인이 있다.
-      //console.log("!!! discountMenus:"+JSON.stringify(this.discountMenus));
-
       if(this.discountMenus.length>0){ //생협 단체 할인
         let index=this.discountMenus.findIndex(function(element){
            if(element.menuNo==menu.menuNO && element.menuName==menu.menuName){
@@ -851,6 +852,15 @@ export class PaymentPage {
   }
 
   pay(){
+    if(this.takeout==undefined){
+        let alert = this.alertController.create({
+            title: '포장(배달)여부를 선택해주세요.',
+            buttons: ['OK']
+        });
+        alert.present();
+        return;
+    }
+
     if((!this.voucherAvailable || !this.voucherConstraint) && this.paymentSelection=="voucher"){
         let alert = this.alertController.create({
             title: '결제방법 선택이 잘못되었습니다.',
@@ -1050,41 +1060,74 @@ export class PaymentPage {
     
     console.log("body.total:"+body.total+ "paymentSelection:"+this.paymentSelection);
 
-    if(this.paymentSelection=="card"){
-        //inAppBrowser를 사용하여 서버 페이지로 이동한다.
-        console.log("call this.serverProvider.payCreditCard");
-        if(this.shopDistance>1 && this.takeout!=2/* !delivery */){
+    this.checkDuplicateOrder().then(()=>{
+        if(this.paymentSelection=="card"){
+            //inAppBrowser를 사용하여 서버 페이지로 이동한다.
+            console.log("call this.serverProvider.payCreditCard");
+            if(this.shopDistance>1 && this.takeout!=2/* !delivery */){
+                this.navCtrl.push(WarningPage,{class:"WarningPage",
+                shopDistance:this.shopDistance,
+                callback: this.moveIntoCardPayment,
+                body:body,
+                takitId:this.carts[0].orderList.takitId,
+                payment:this.paymentSelection});
+            }else{
+                this.serverProvider.payCreditCard(body,this.carts[0].orderList.takitId,this.carts[0].orderName).then((order)=>{
+                    this.orderSuccessHandler(order,body);
+                });
+            }
+        }else if(this.shopDistance>1 && this.takeout!=2/* !delivery */){
             this.navCtrl.push(WarningPage,{class:"WarningPage",
-            shopDistance:this.shopDistance,
-            callback: this.moveIntoCardPayment,
-            body:body,
-            takitId:this.carts[0].orderList.takitId,
-            payment:this.paymentSelection});
+                                            shopDistance:this.shopDistance,
+                                            callback: this.moveIntoCashPasswordPage,
+                                            body:body,
+                                            takitId:this.carts[0].orderList.takitId,
+                                            payment:this.paymentSelection});
         }else{
-            this.serverProvider.payCreditCard(body,this.carts[0].orderList.takitId,this.carts[0].orderName).then((order)=>{
-                this.orderSuccessHandler(order,body);
-            });
-        }
-    }else if(this.shopDistance>1 && this.takeout!=2/* !delivery */){
-        this.navCtrl.push(WarningPage,{class:"WarningPage",
-                                        shopDistance:this.shopDistance,
-                                        callback: this.moveIntoCashPasswordPage,
-                                        body:body,
-                                        takitId:this.carts[0].orderList.takitId,
-                                        payment:this.paymentSelection});
-    }else{
-        if(this.paymentSelection=="voucher"){
-            //check validity of this app -begin
-            this.checkValidVoucherApp().then(()=>{
+            if(this.paymentSelection=="voucher"){
+                //check validity of this app -begin
+                this.checkValidVoucherApp().then(()=>{
+                    this.navCtrl.push(CashPasswordPage,{body:body,trigger:this.trigger,
+                        title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
+                        class:"CashPasswordPage"});
+                });
+            }else
                 this.navCtrl.push(CashPasswordPage,{body:body,trigger:this.trigger,
-                    title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
-                    class:"CashPasswordPage"});
-            });
-        }else
-            this.navCtrl.push(CashPasswordPage,{body:body,trigger:this.trigger,
-                                            title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
-                                            class:"CashPasswordPage"});
-    }
+                                                title:"결제비밀번호" ,description:"오류 발생시 반드시 주문목록을 확인해주세요!",
+                                                class:"CashPasswordPage"});
+        }
+    });
+  }
+
+  checkDuplicateOrder(){
+    return new Promise((resolve,reject)=>{ 
+        this.serverProvider.checkDuplicateOrder().then((orderName)=>{  
+            if(orderName=="no order" || orderName=="cancelled or old order"){ //5분이내에 주문이 존재하지 않음.
+                resolve();
+            }else{
+                let confirm = this.alertController.create({
+                    title: orderName +'가 주문목록에 존재합니다. 고객님 추가 주문이 맞으신가요?',
+                    subTitle: "<br><b style=\'color:#ff0000;\'>중복 주문 환불불가!</b><br> 주문목록을 반드시 확인해주세요",//'중복 주문 환불불가! 주문목록을 반드시 확인해주세요.',
+                    buttons: [{
+                                text: '아니오',
+                                handler: () => {
+                                  console.log('Disagree clicked');
+                                  reject("user reject");
+                                }
+                              },
+                              {
+                                text: '네',
+                                handler:()=>{
+                                  resolve();
+                                }
+                              }]            
+                            });
+                    confirm.present();     
+            }
+        },err=>{  // no duplicate or error 
+            reject(err);
+        });
+    });
   }
 
   moveIntoCardPayment(payment,body){
@@ -1214,7 +1257,7 @@ ionViewWillUnload(){
             });
         }else{
             gPaymentPage.navCtrl.push(CashPasswordPage,{body:body,trigger:gPaymentPage.trigger,
-                                            title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
+                                            title:"결제비밀번호" ,description:"오류 발생시 반드시 주문목록을 확인해주세요!",
                                             class:"CashPasswordPage"});
             //remove WarningPage from window stack
             let  views:ViewController[]; 

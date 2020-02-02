@@ -103,12 +103,6 @@
       </ion-col>
       <ion-col style="padding-top:0px;" no-margin col-2 text-right>
         <button full no-padding no-margin *ngIf="order.orderStatus=='paid'" (click)="cancelOrder(order)" ion-button>주문취소</button>
-        <!--
-        <button *ngIf="(order.orderStatus=='pickup' || order.orderStatus=='completed') && order.payInfo && order.payInfo!=null" (click)="orderAgain(order)" full no-padding no-margin  ion-button>다시주문</button>
-        -->
-        <!--
-        <button (click)="inputReview(order)" full no-padding no-margin *ngIf="order.orderStatus=='pickup' && order.review==null" ion-button>후기작성</button>
-        -->
       </ion-col>  
       <ion-col style="padding-top:0px;" no-margin col-3 text-right>
           <button (click)="orderDetail(order)" full no-padding no-margin ion-button>주문상세</button>

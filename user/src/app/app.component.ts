@@ -34,7 +34,16 @@ export class MyApp {
              public loginProvider:LoginProvider,
              private alertCtrl:AlertController,
              private network: Network) {
-    platform.ready().then(() => {
+                 
+           /* It doesn't work     
+            window.handleOpenURL=function(url) {
+                    console.log("!!!! custom url scheme - received url: " + url);
+                    setTimeout(function() {
+                        alert("received url: " + url);
+                      }, 0);
+            }
+            */
+            platform.ready().then(() => {
             if(this.storageProvider.device){
                 window.plugins.preventscreenshot.enable(function(){
                         console.log("[MyApp]success enable screenshot");

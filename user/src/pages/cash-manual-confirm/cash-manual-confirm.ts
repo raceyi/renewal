@@ -84,6 +84,7 @@ bankSelect(bank){
 cashInComplete(){
       if(this.InProgress) return;
       this.InProgress=true;
+
       if(this.storageProvider.tourMode){
             this.InProgress=false;
             let alert = this.alertController.create({
@@ -93,6 +94,7 @@ cashInComplete(){
             alert.present();
             return;
       }
+      console.log("cashInComplete");
       
       if(this.amount==undefined || this.amount.toString()==""){
             this.InProgress=false;          
@@ -117,7 +119,6 @@ cashInComplete(){
         }
 
       if(this.memo==undefined || this.memo.trim().length==0){
-            this.InProgress=false;                      
              this.memo=this.storageProvider.name;
       }
 
@@ -147,6 +148,7 @@ cashInComplete(){
 
       this.serverProvider.post(this.storageProvider.serverAddress+"/checkCashUserself",body).then((res:any)=>{
                                     progressBarLoader.dismiss();
+                                    this.InProgress=false;
                                     console.log("res:"+JSON.stringify(res));
                                     if(res.result=="success"){
                                         if(res.cashlist){

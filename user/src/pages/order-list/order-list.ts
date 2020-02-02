@@ -277,6 +277,7 @@ export class OrderListPage {
 
             console.log("getOrders:"+JSON.stringify(body));
             this.serverProvider.post(this.storageProvider.serverAddress+"/getOrdersDefault",body).then((res:any)=>{
+              console.log("res.result:"+res.result);
               console.log("orders:"+JSON.stringify(res.orders));
             if(res.result=="success" && Array.isArray(res.orders)){
                   this.ngZone.run(()=>{
@@ -368,54 +369,4 @@ export class OrderListPage {
     this.storageProvider.name="";
     this.app.getRootNav().pop();
   }
-/*
-  orderAgain(order){  // hum... payment에서 보내는 구조로 가야만 한다. 확인이 필요함.
-    if(order.price==0 || !order.price || order.price==null){ //order.price는 할인전 가격이다.
-        let alert = this.alertController.create({
-            title: '주문 정보 부족으로 다시 주문이 불가능합니다.',
-            subTitle: '불편하시더라도 메뉴를 선택하여 다시 주문해주시기 바랍니다.',            
-            buttons: ['OK']
-        });
-        alert.present();
-      return;
-    }
-      //please check the price & discount rate ! server에서 하는것이 맞다. server에서 확인함. 
-     let orderList=[];
-     orderList.push({  
-            payment:'cash',
-            orderList:JSON.parse(order.orderList),
-            timeConstraints:[], // server에서 확인함.
-            deliveryAddress:order.deliveryAddress,
-            paymethod:JSON.parse(order.payInfo),
-            takitId:order.takitId,
-            shopName:order.shopName,
-            orderName:order.orderName,
-            payInfo:order.payInfo,
-            amount:order.total,
-         });
-     if(typeof order.total==='string')    
-         order.total=parseInt(order.total);    
-     let body = {payment:'cash',
-                    orderList:JSON.stringify(orderList),
-                    amount:order.total,
-                    takeout: order.takeout, // takeout:0(inStore) , 1(takeout), 2(delivery) 
-                    orderedTime:new Date().toISOString(),
-                    cashId: this.storageProvider.cashId,
-                    receiptIssue:this.storageProvider.receiptIssue,
-                    receiptId:this.storageProvider.receiptId,
-                    receiptType:this.storageProvider.receiptType,
-                    takitId:order.takitId,
-                    total:order.total, //실제 구매 가격
-                    price:order.price, //할인 전 가격
-                    payInfo:order.payInfo,
-                    deliveryAddress:order.deliveryAddress,
-                    paymethod: JSON.parse(order.payInfo) // 음... payment페이지로 이동해야만 하는가?
-                }
-      console.log("reorder-body:"+JSON.stringify(body));
-      this.app.getRootNavs()[0].push(CashPasswordPage,{body:body,trigger:"orderList",
-                                         title:"결제비밀번호" ,description:"결제 비밀번호를 입력해주세요.",
-                                         class:"CashPasswordPage"});
-
-  }
-  */
 }

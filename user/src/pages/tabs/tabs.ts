@@ -14,6 +14,8 @@ import {OrderDetailPage} from '../order-detail/order-detail';
 import {CashConfirmPage} from '../cash-confirm/cash-confirm';
 import {StoreSearchPage} from '../store-search/store-search';
 import { Media, MediaObject } from '@ionic-native/media';
+import { NativeStorage } from '@ionic-native/native-storage';
+import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
 
 @Component({
   templateUrl: 'tabs.html'
@@ -27,6 +29,8 @@ export class TabsPage {
   tab3Root = OrderListPage;
   tab4Root = WalletPage;
   tab5Root = MyInfoPage;
+
+  browserRef;
 
   constructor(public serverProvider:ServerProvider,
               private alertCtrl:AlertController,
@@ -42,6 +46,8 @@ export class TabsPage {
               public modalCtrl: ModalController,
               private cartProvider:CartProvider,
               private media: Media,
+              private iab: InAppBrowser,
+              private nativeStorage: NativeStorage,
               public storageProvider:StorageProvider){
   
     if(this.storageProvider.cashId!=undefined && this.storageProvider.cashId.length>=5){
@@ -76,6 +82,78 @@ export class TabsPage {
             console.log("call registerPushService");
             this.registerPushService(); 
         }
+        /* 동작하지 않는 코드임.
+        this.nativeStorage.getItem("cardInProcess").then((value:string)=>{
+            let confirm = this.alertCtrl.create({
+                title: '카드 계속 결제를 진행하시겠습니까?',
+                buttons: [
+                  {
+                    text: '아니오',
+                    handler: () => {
+                      console.log('Disagree clicked');
+                      this.nativeStorage.remove("cardInProcess");
+                      return;
+                    }
+                  },
+                  {
+                    text: '네',
+                    handler: () => {
+                        let kcpOpenUrl= value;
+                        let done=false;
+                        if(this.platform.is("android")){
+                            this.browserRef=this.iab.create(kcpOpenUrl,"_blank" ,'toolbar=no,location=no');
+                        }else{ // ios
+                            console.log("ios");
+                            this.browserRef=this.iab.create(kcpOpenUrl,"_blank" ,'location=no,closebuttoncaption=종료');
+                        }
+                        this.browserRef.on("loadstart").subscribe((event:InAppBrowserEvent)=>{
+                            console.log("payCreditCard-InAppBrowserEvent(loadstart):"+String(event.url));
+                            if(event.url.includes("kcp/index.html?orderId=")){
+                                this.nativeStorage.remove("cardInProcess");
+                                this.browserRef.close();
+                                let substrs=event.url.split("kcp/index.html?orderId=");
+                                let body={orderId: parseInt(substrs[1])};
+                                this.serverProvider.post(this.storageProvider.serverAddress+"/getOrderDetail",body).then((res:any)=>{
+                                    if(res.result=="success"){
+                                        this.app.getRootNavs()[0].push(OrderDetailPage,{order:res.order});
+                                    }else{
+                                        let alert = this.alertCtrl.create({
+                                            title: "주문 결제에 성공하였으나 주문 정보 페이지로 이동하지 못하였습니다.",
+                                            subTitle: JSON.stringify(res.error),
+                                            buttons: ['OK']
+                                        });
+                                        alert.present();
+                                    }    
+                                    return;
+                                },err=>{
+                                    let alert = this.alertCtrl.create({
+                                        title: "주문 결제에 성공하였으나 주문 정보 페이지로 이동하지 못하였습니다.",
+                                        subTitle: JSON.stringify(err),
+                                        buttons: ['OK']
+                                    });
+                                    alert.present();
+                                })
+                                done=true;
+                            }else if(event.url.includes("ispmobile://param?TID=")){  //ispmobile://param?TID=190915193533fI8f,T0000
+                                this.nativeStorage.setItem("cardInProcess",event.url);
+                            }
+                        });
+                        this.browserRef.on("exit").subscribe((event)=>{
+                            console.log("payCreditCard-InAppBrowserEvent(exit):"+JSON.stringify(event)); 
+                            this.browserRef.close();
+                            if(!done){
+                                this.nativeStorage.remove("cardInProcess");
+                            }
+                        });
+
+                    }
+                }]
+            })
+            confirm.present();
+        },err=>{
+
+        });
+        */
         //if(this.storageProvider.tourMode==false){    
             this.cartProvider.open().then(()=>{
 
@@ -119,7 +197,7 @@ export class TabsPage {
   ionViewDidLoad() {
       this.storageProvider.tabs=this.tabs;
        if(this.storageProvider.tourMode==false && this.storageProvider.id!=undefined){    // login status
-            this.backgroundMode.enable(); 
+           // this.backgroundMode.enable();  // 2019.11.12 문제가 될까?
 
         /////////////////////////////////////// 
         this.platform.pause.subscribe(()=>{

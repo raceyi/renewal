@@ -80,6 +80,7 @@ import {VoucherSubscribePageModule} from '../pages/voucher-subscribe/voucher-sub
 import {WarningPageModule} from '../pages/warning/warning.module';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 import {MembershipSubscribePageModule} from '../pages/membership-subscribe/membership-subscribe.module';
+import { KakaoCordovaSDK } from 'kakao-sdk';
 
 @NgModule({
   declarations: [
@@ -165,7 +166,8 @@ import {MembershipSubscribePageModule} from '../pages/membership-subscribe/membe
     WebIntent,
     Sim,
     Device,
-    AndroidPermissions
+    AndroidPermissions,
+    KakaoCordovaSDK
   ]
 })
 export class AppModule {}

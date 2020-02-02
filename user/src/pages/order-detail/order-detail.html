@@ -320,8 +320,3 @@
   </div>
 </div>
 </ion-content>
-<ion-footer>
-    <ion-toolbar> 
-    <button *ngIf="(order.orderStatus=='pickup' || order.orderStatus=='completed') && order.payInfo && order.payInfo!=null" (click)="orderAgain(order)" full no-padding no-margin  ion-button>한번 더 주문하기</button>
-    </ion-toolbar>
-  </ion-footer>

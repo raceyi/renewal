@@ -154,6 +154,49 @@ loginAgain(){
         });
   }
 
+  checkDuplicateOrder(){
+
+    return new Promise((resolve,reject)=>{
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        console.log("server:"+ this.storageProvider.serverAddress);
+        let body;           
+
+        body={ 
+                  lastOrderId: -1,
+                  limit:1
+              };
+        
+        console.log("getOrders:"+JSON.stringify(body));
+        this.post(this.storageProvider.serverAddress+"/getOrdersDefault",body).then((res:any)=>{
+          console.log("res.result:"+res.result);
+          console.log("orders:"+JSON.stringify(res.orders));
+        if(res.result=="success" && Array.isArray(res.orders)){
+            //현재 시간과 localOrderedTime이 5분이내이면 이름을 전달한다.
+            let timeInMilliseconds=this.timeUtil.getGMTtimeInMilliseconds(res.orders[0].orderedTime);
+            let now= new Date().getTime(); 
+            console.log("diff:"+ (now-timeInMilliseconds)/1000);
+            if(res.orders[0].orderStatus!="cancelled" && (now-timeInMilliseconds)<1000*5*60) //5분이내 주문
+                resolve(res.orders[0].orderNO+"번 "+res.orders[0].orderName);  
+            else
+                resolve("cancelled or old order");
+        }else if(res.orders=="0"){ //Please check if it works or not
+            console.log("no more orders");
+            resolve("no order");
+        }
+     },(err)=>{
+        let alert = this.alertCtrl.create({
+            title: '서버와 통신에 문제가 있습니다',
+            subTitle: '네트웍상태를 확인해 주시기바랍니다',
+            buttons: ['OK']
+        });
+        alert.present();
+        reject(err);
+     });
+   });
+}
+
+/*
 checkDuplicateOrder(){
     if(this.lastOrderedTime){
         let now= new Date();
@@ -161,82 +204,39 @@ checkDuplicateOrder(){
             return false;
         else 
             return true;     
-    }else
+    }else{
         return false;
+    }
 }  
+*/
 
 saveOrderCart(body){
       return new Promise((resolve,reject)=>{
-
             console.log("saveOrder:"+JSON.stringify(body));
-            if(this.checkDuplicateOrder()){ // 3분이내에 주문이 존재한다면 확인을 요청하자. 
-                    // 3분이내의 주문이 존재합니다. 고객님 추가 주문이 맞으신가요? 네, 아니오 
-                    let confirm = this.alertCtrl.create({
-                        title: '3분이내의 주문이 존재합니다. 고객님 주문을 진행하시겠습니까?',
-                        subTitle: '중복주문이 되지 않도록 주문목록에서 내역을 확인하신후 진행해주시기 바랍니다.',
-                        buttons: [{
-                                    text: '아니오',
-                                    handler: () => {
-                                      console.log('Disagree clicked');
-                                      reject("user reject");
-                                    }
-                                  },
-                                  {
-                                    text: '네',
-                                    handler:()=>{
-                                        let progressBarLoader = this.loadingCtrl.create({
-                                            content: "진행중입니다.",
-                                            duration: this.timeout*1000
-                                        });
-                                        progressBarLoader.present();
-                                        this.post(this.storageProvider.serverAddress+"/saveOrderCart",body).then((res:any)=>{
-                                            progressBarLoader.dismiss();
-                                            this.lastOrderedTime=new Date();
-                                            console.log("res:"+JSON.stringify(res));
-                                            console.log("saveOrder-res.result:"+res.result);
-                                            if(res.result=="success"){
-                                                    this.updateCash().then(()=>{   // 버전 다시 만들때는 반듯이 updateCash를 다시 불러주자. !!! 서버에서 응답값으로 변경 값을 보내주도록 하자. !!!
-                                                        resolve(res);
-                                                    },err=>{
-                                                        resolve(res);
-                                                    })
-                                            }else{
-                                                reject(res.error);
-                                            }
-                                        },(err)=>{
-                                            progressBarLoader.dismiss();                
-                                            reject(err);  
-                                        });
-                                    }
-                                  }]            
-                                });
-                        confirm.present();        
-            }else{
-                let progressBarLoader = this.loadingCtrl.create({
-                    content: "진행중입니다.",// \n화면이 전환되지 않을 경우 주문목록에서 주문결과를 확인해주세요 ==> 정말 넣어야 할까???
-                    duration: this.timeout*1000
-                });
-                progressBarLoader.present();
-                this.post(this.storageProvider.serverAddress+"/saveOrderCart",body).then((res:any)=>{
-                    progressBarLoader.dismiss();
-                    this.lastOrderedTime=new Date();
-                    console.log("res:"+JSON.stringify(res));
-                    console.log("saveOrder-res.result:"+res.result);
-                    if(res.result=="success"){
-                            this.updateCash().then(()=>{   // 버전 다시 만들때는 반듯이 updateCash를 다시 불러주자. !!! 서버에서 응답값으로 변경 값을 보내주도록 하자. !!!
-                                resolve(res);
-                            },err=>{
-                                resolve(res);
-                            })
-                    }else{
-                        reject(res.error);
-                    }
-                },(err)=>{
-                    progressBarLoader.dismiss();                
-                    reject(err);  
-                });
-            }
-      });
+            let progressBarLoader = this.loadingCtrl.create({
+                content: "주문목록에서 주문결과를 반드시 확인해주세요. 주문목록에 있을시 환불불가!",
+                duration: this.timeout*1000
+            });
+            progressBarLoader.present();
+            this.post(this.storageProvider.serverAddress+"/saveOrderCart",body).then((res:any)=>{
+                progressBarLoader.dismiss();
+                this.lastOrderedTime=new Date();
+                console.log("res:"+JSON.stringify(res));
+                console.log("saveOrder-res.result:"+res.result);
+                if(res.result=="success"){
+                        this.updateCash().then(()=>{   // 버전 다시 만들때는 반듯이 updateCash를 다시 불러주자. !!! 서버에서 응답값으로 변경 값을 보내주도록 하자. !!!
+                            resolve(res);
+                        },err=>{
+                            resolve(res);
+                        })
+                }else{
+                    reject(res.error);
+                }
+            },(err)=>{
+                progressBarLoader.dismiss();                
+                reject(err);  
+            });
+    });
   }
 
   cancelOrder(order){
@@ -424,9 +424,18 @@ saveOrderCart(body){
                         this.browserRef=this.iab.create(kcpOpenUrl,"_blank" ,'toolbar=no,location=no');
                     }else{ // ios
                         console.log("ios");
+                     
                         this.browserRef=this.iab.create(kcpOpenUrl,"_blank" ,'location=no,closebuttoncaption=종료');
-                        //this.browserRef.show(); 정말 필요한가?
                     }
+                    // kalen.lee@takit.biz-begin 2020.01.18
+                    this.browserRef.on("loadstop").subscribe((event:InAppBrowserEvent)=>{
+                        console.log("payCreditCard-InAppBrowserEvent(loadstop):"+String(event.url));
+                    });               
+                    this.browserRef.on("message").subscribe((event:InAppBrowserEvent)=>{
+                        console.log("payCreditCard-InAppBrowserEvent(message):"+String(event.url));
+                    });               
+                    // kalen.lee@takit.biz-engin 2020.01.18
+
                     this.browserRef.on("loadstart").subscribe((event:InAppBrowserEvent)=>{
                         console.log("payCreditCard-InAppBrowserEvent(loadstart):"+String(event.url));
                         if(event.url.includes("kcp/index.html?orderId=")){

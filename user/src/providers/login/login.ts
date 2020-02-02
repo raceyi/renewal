@@ -9,7 +9,9 @@ import { NativeStorage } from '@ionic-native/native-storage';
 import { HttpClient ,HttpHeaders} from '@angular/common/http';
 import { Device } from '@ionic-native/device';
 
-declare var KakaoTalk:any;
+import { KakaoCordovaSDK, AuthTypes } from 'kakao-sdk';
+
+//declare var KakaoTalk:any;
 
 /*
   Generated class for the LoginProvider provider.
@@ -28,8 +30,9 @@ export class LoginProvider {
       private nativeStorage: NativeStorage,
       private appAvailability: AppAvailability,
       private alertCtrl:AlertController,
-      private device: Device
-      ,private iab: InAppBrowser,private httpClient: HttpClient) {
+      private device: Device,
+      public kakaoCordovaSDK: KakaoCordovaSDK,
+      private iab: InAppBrowser,private httpClient: HttpClient) {
     console.log('Hello LoginProvider Provider');
       platform.ready().then(() => {
         this.nativeStorage.getItem("notice").then((value:string)=>{
@@ -196,6 +199,7 @@ export class LoginProvider {
       });
   }    
 
+
   kakaologin(handler,kakaoProvider,params){
     return new Promise((resolve,reject)=>{
 
@@ -211,9 +215,16 @@ export class LoginProvider {
       this.appAvailability.check(scheme).then(
           ()=> {  // Success callback
               console.log(scheme + ' is available. call KakaoTalk.login ');
-              KakaoTalk.login(
+
+              let loginOptions = {};
+              loginOptions['authTypes'] = [
+                                            AuthTypes.AuthTypeTalk, 
+                                            AuthTypes.AuthTypeStory,
+                                            AuthTypes.AuthTypeAccount
+                                          ];
+              this.kakaoCordovaSDK.login(loginOptions).then(
                     (userProfile)=>{
-                        console.log("userProfile:"+JSON.stringify(userProfile));
+                        console.log("!!!! response from kakaoCordovaSDK.login - userProfile:"+JSON.stringify(userProfile));
                         var id;
                         if(typeof userProfile === "string"){
                                 id=userProfile;
@@ -367,7 +378,7 @@ export class LoginProvider {
                       }
                       this.appAvailability.check(scheme).then(()=> {  // Success callback
                         console.log("call KakaoTalk.logout");
-                        KakaoTalk.logout(()=>{
+                        this.kakaoCordovaSDK.logout().then(() => {
                             resolve();
                         },(err)=>{ // KakaoTalk.logout failure
                             resolve();
@@ -407,7 +418,7 @@ export class LoginProvider {
                     }
                     this.appAvailability.check(scheme).then(()=> {  // Success callback
                       console.log("call KakaoTalk.logout");
-                      KakaoTalk.logout(()=>{
+                      this.kakaoCordovaSDK.logout().then(() => {
                           resolve();
                       },(err)=>{ // KakaoTalk.logout failure
                           resolve();

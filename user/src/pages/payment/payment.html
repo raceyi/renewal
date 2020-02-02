@@ -8,7 +8,7 @@
   </ion-navbar>
 </ion-header>
 <ion-content>
-<div class="pickup-area">
+<div class="pickup-area" *ngIf="takeoutAvailable">
 <ion-row  class="pickup-method">
   <ion-col text-center> 
     <button class="circle" [style.background-color]="inStoreColor" (click)="selectInStore()" ion-button> &nbsp;</button>
@@ -153,8 +153,8 @@
             <div style="display:flex;flex-direction:column;">
                 <button class="multiline-button valid-card-outline" text-center style="background-color:#FF5F3A;">
                     <span class="voucher-name">카드결제</span><br>
-                    <amount-display *ngIf="deliveryFee!=undefined" class="voucher-amount" [amount]="cardPayAmount+deliveryFee"></amount-display>
-                    <amount-display *ngIf="deliveryFee==undefined" class="voucher-amount" [amount]="cardPayAmount"></amount-display>
+                    <amount-display *ngIf="deliveryFee!=undefined" class="voucher-amount" [amount]="payAmount+deliveryFee"></amount-display>
+                    <amount-display *ngIf="deliveryFee==undefined" class="voucher-amount" [amount]="payAmount"></amount-display>
                 </button>
             </div>
         </ion-slide> 
@@ -190,8 +190,8 @@
             <div style="display:flex;flex-direction:column;">
                 <button class="multiline-button valid-card-outline" text-center style="background-color:#FF5F3A;">
                     <span class="voucher-name">카드결제</span><br>
-                    <amount-display *ngIf="deliveryFee!=undefined" class="voucher-amount" [amount]="cardPayAmount+deliveryFee"></amount-display>
-                    <amount-display *ngIf="deliveryFee==undefined" class="voucher-amount" [amount]="cardPayAmount"></amount-display>
+                    <amount-display *ngIf="deliveryFee!=undefined" class="voucher-amount" [amount]="payAmount+deliveryFee"></amount-display>
+                    <amount-display *ngIf="deliveryFee==undefined" class="voucher-amount" [amount]="payAmount"></amount-display>
                 </button>
             </div>
         </ion-slide>       
