@@ -12,6 +12,7 @@ import { Device } from '@ionic-native/device';
 import { KakaoCordovaSDK, AuthTypes } from 'kakao-sdk';
 
 //declare var KakaoTalk:any;
+declare var window:any;
 
 /*
   Generated class for the LoginProvider provider.
@@ -64,7 +65,45 @@ export class LoginProvider {
                 reject(err);
             });
           });
+    }else if(type=="apple"){
+        return new Promise((resolve,reject)=>{
+            this.applelogin(this.serverLogin,this,{}).then((res:any)=>{
+                    this.alertNotice(res.notice);  
+                    resolve(res);
+                }, (err)=>{
+                    reject(err);
+                });
+              });
+            
     }
+  }
+
+  applelogin(handler,appleProvider,params){
+    return new Promise((resolve,reject)=>{
+        console.log("call SignInWithApple");
+        window.cordova.plugins.SignInWithApple.signin(
+        { requestedScopes: [0, 1] },
+        function(result){
+          console.log(result)
+          var id=result.user;
+          console.log('Successful apple login with'+id);
+          handler("apple",id,appleProvider,params).then(
+          (result:any)=>{
+                      console.log("result comes-appleApp:"+JSON.stringify(result)); 
+                      result.id="apple_"+id;
+                      resolve(result);
+          },serverlogin_err=>{
+                      console.log("error comes:"+serverlogin_err);
+                      let reason={stage:"serverlogin_err",msg:serverlogin_err};
+                      reject(reason);
+          });
+        },
+        function(err){
+          console.log("apple login error:"+JSON.stringify(err))
+          reject({stage:"social_login", msg:JSON.stringify(err)});
+        }
+      )
+    });
   }
 
   alertNotice(notice){
@@ -277,6 +316,9 @@ export class LoginProvider {
             }else if(type=="kakao"){
                 request=loginProvider.storageProvider.serverAddress+"/kakaoLogin";
                 body = {referenceId:"kakao_"+id,version:loginProvider.storageProvider.version};
+            }else if(type=="apple"){
+                request=loginProvider.storageProvider.serverAddress+"/appleLogin";
+                body = {referenceId:"apple_"+id,version:loginProvider.storageProvider.version};                
             }
 
             loginProvider.httpClient.post(request,body).subscribe((res)=>{              

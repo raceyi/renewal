@@ -250,7 +250,7 @@ enterShop(shop){
       if(this.filter=='whole'){
         let body = {body:this.coord};
         this.serverProvider.post(this.storageProvider.serverAddress+"/getWholeStores",body).then((res:any)=>{
-            console.log("getWholeStores-res:"+JSON.stringify(res));
+            //console.log("getWholeStores-res:"+JSON.stringify(res));
             this.stores=res.stores;
             for(let i=0;i<this.stores.length;i++){
                 let element=this.stores[i];
@@ -262,6 +262,7 @@ enterShop(shop){
                     let num:number=element.rate;
                     element.rate=num.toFixed(1);
                 }
+                console.log("takitId:"+element.takitId);
             }
             //console.log("this.stores:"+JSON.stringify(this.stores));            
         });

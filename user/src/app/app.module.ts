@@ -19,9 +19,7 @@ import { NativeStorage } from '@ionic-native/native-storage';
 import { AppAvailability } from '@ionic-native/app-availability';
 import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
 import { HttpClientModule } from '@angular/common/http';
-import { BackgroundMode } from '@ionic-native/background-mode';
-
-import { CustomIconsModule } from 'ionic2-custom-icons';
+//import { BackgroundMode } from '@ionic-native/background-mode';
 
 import {LoginMainPageModule} from '../pages/login-main/login-main.module';
 import {LoginEmailPageModule} from '../pages/login-email/login-email.module';
@@ -80,7 +78,12 @@ import {VoucherSubscribePageModule} from '../pages/voucher-subscribe/voucher-sub
 import {WarningPageModule} from '../pages/warning/warning.module';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 import {MembershipSubscribePageModule} from '../pages/membership-subscribe/membership-subscribe.module';
+import {GiftPageModule} from '../pages/gift/gift.module';
 import { KakaoCordovaSDK } from 'kakao-sdk';
+
+//2020.04.13 QR code생성을 위해 추가함.
+import { QRCodeModule } from 'angular2-qrcode';
+import {QrCodePageModule} from '../pages/qr-code/qr-code.module';
 
 @NgModule({
   declarations: [
@@ -118,7 +121,7 @@ import { KakaoCordovaSDK } from 'kakao-sdk';
     PaymentPageModule,    
     LoginMainPageModule,
     CartPageModule,
-    CustomIconsModule,
+    //CustomIconsModule,
     HttpClientModule,
     BrowserModule,
     ErrorPageModule,
@@ -135,6 +138,9 @@ import { KakaoCordovaSDK } from 'kakao-sdk';
     VoucherSubscribePageModule,
     WarningPageModule,
     MembershipSubscribePageModule,
+    GiftPageModule,
+    QRCodeModule, //2020.04.13 QR code생성을 위해 추가함.
+    QrCodePageModule,
     IonicModule.forRoot(MyApp,{mode:'ios'/*, animate: false*/ })
   ],
   bootstrap: [IonicApp],
@@ -157,7 +163,7 @@ import { KakaoCordovaSDK } from 'kakao-sdk';
     SplashScreen,
     AppAvailability,
     InAppBrowser,
-    BackgroundMode,
+    //BackgroundMode,
     Push,
     {provide: ErrorHandler, useClass: MyErrorHandler},
     ServerProvider,

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>ic / 26px / profile_main copy@3x</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="ic-/-26px-/-profile_main-copy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ic_profile" transform="translate(5.000000, 4.000000)" fill="#C5C3C3">
+            <path d="M8,7 C6.343,7 5,5.657 5,4 C5,2.343 6.343,1 8,1 C9.657,1 11,2.343 11,4 C11,5.657 9.657,7 8,7 M8,0 C5.791,0 4,1.791 4,4 C4,6.209 5.791,8 8,8 C10.209,8 12,6.209 12,4 C12,1.791 10.209,0 8,0" id="Fill-2"></path>
+            <path d="M8,10 C11.866,10 15,13.134 15,17 L16,17 C16,12.582 12.418,9 8,9 C3.582,9 0,12.582 0,17 L1,17 C1,13.134 4.134,10 8,10" id="Fill-4"></path>
+        </g>
+    </g>
+</svg>

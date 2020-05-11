@@ -14,6 +14,11 @@ $app-direction: ltr;
 
 @import "ionic.globals";
 
+@font-face{
+    font-family: TTOmniGothicT;
+    src: url($font-path + '/TTOmniGothicT.otf') format('otf');
+    src: url($font-path + '/TTOmniGothicT.ttf') format('ttf');
+}
 
 // Shared Variables
 // --------------------------------------------------

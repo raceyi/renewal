@@ -25,12 +25,17 @@
   </ion-row>
 <ion-row class="first">
   <ion-col text-center>
-  <button class="login-button" (click)="kakao()" outline ion-button><custom-icon class="icon" set="login" name="kakaotalk"></custom-icon><span class="button-text">카카오톡으로 시작하기</span></button>
+  <button class="login-button" (click)="kakao()" outline ion-button><img src="assets/imgs/kakao.png" style="height: 40px;"/><span class="button-text">카카오톡으로 시작하기</span></button>
   </ion-col>
 </ion-row>
 <ion-row>
   <ion-col text-center>
-    <button class="login-button" (click)="facebook()" outline ion-button><custom-icon class="icon" set="login" name="facebook"></custom-icon><span class="button-text">페이스북으로 시작하기</span></button>
+    <button class="login-button" (click)="facebook()" outline ion-button><img src="assets/imgs/facebook.png" style="height: 40px;"/><span class="button-text">페이스북으로 시작하기</span></button>
+  </ion-col>
+</ion-row>
+<ion-row *ngIf="appleIdEnabled">
+  <ion-col text-center>
+    <button class="login-button" (click)="apple()" outline ion-button><ion-icon name="prefix-apple"></ion-icon><span class="button-text">애플 아이다로 시작하기</span></button>
   </ion-col>
 </ion-row>
 <ion-row>

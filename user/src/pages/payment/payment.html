@@ -135,8 +135,12 @@
     </ion-col>
   </ion-row>
 
+  <!--
 <div class="scroll-div" *ngIf="voucherAvailable && voucherConstraint">
-    <ion-slides #slides class="slides" pager="true" (ionSlideDidChange)="slideChanged()">
+  2020.04.21 장바구니에서 voucherConstraint가 안맞을때 voucher정보는 보이지 않으면서 실제 voucher로 설정되는 문제가 있어 수정함.
+-->
+<div class="scroll-div" *ngIf="voucherAvailable">
+  <ion-slides #slides class="slides" pager="true" (ionSlideDidChange)="slideChanged()">
 
         <ion-slide  *ngFor="let card of storageProvider.vouchers">
                 <div *ngIf="card.valid" style="display:flex;flex-direction:column;">
@@ -180,8 +184,11 @@
 -->
       </ion-slides>
 </div>
-
+<!--
 <div class="scroll-div" *ngIf="!voucherAvailable || !voucherConstraint">
+ 2020.04.21 장바구니에서 voucherConstraint가 안맞을때 voucher정보는 보이지 않으면서 실제 voucher로 설정되는 문제가 있어 수정함.  
+-->
+<div class="scroll-div" *ngIf="!voucherAvailable">
     <ion-slides #slides class="slides" pager="true"  (ionSlideDidChange)="slideChanged()">
       <!--
         <ion-slide *ngIf="cardAvailable && storageProvider.cashAmount < cardPayAmount">

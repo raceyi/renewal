@@ -8,6 +8,7 @@ import {LoginProvider} from '../../providers/login/login';
 import { SignupPage } from '../signup/signup';
 import {TabsPage} from '../tabs/tabs';
 import {SignupPaymentPage} from '../signup-payment/signup-payment';
+import { Device } from '@ionic-native/device';
 
 /**
  * Generated class for the LoginMainPage page.
@@ -26,6 +27,7 @@ export class LoginMainPage {
     isTestServer=false;
     tourModeSignInProgress=false;
     loginInProgress:boolean=false;
+    appleIdEnabled:boolean=false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams
       ,private loginProvider:LoginProvider
@@ -37,13 +39,49 @@ export class LoginMainPage {
       ,private serverProvider:ServerProvider
       ,private nativeStorage: NativeStorage
       ,private menuCtrl: MenuController
-      ,private app:App) {
+      ,private app:App
+      ,private device:Device) {
 
         if(this.storageProvider.serverAddress.endsWith('8000')){
             this.isTestServer=true;
         }            
+        if(this.storageProvider.device && this.platform.is("iphone")){
+            console.log("iOS version: "+device.version);
+            if(this.compareVersionsFunc(device.version,"13.0.0")){
+                //enable iOS login
+                this.appleIdEnabled=true;
+            }else{
+                
+            }
+        }
   }
 
+    compareVersionsFunc(installed:string, required:string) {
+        let a:any=installed.split('.');
+        let b:any=required.split('.');
+
+                for (let i = 0; i < a.length; ++i) {
+                    a[i] = Number(a[i]);
+                }
+                for (let i = 0; i < b.length; ++i) {
+                    b[i] = Number(b[i]);
+                }
+                if (a.length == 2) {
+                    a[2] = 0;
+                }
+        
+                if (a[0] > b[0]) return true;
+                if (a[0] < b[0]) return false;
+        
+                if (a[1] > b[1]) return true;
+                if (a[1] < b[1]) return false;
+        
+                if (a[2] > b[2]) return true;
+                if (a[2] < b[2]) return false;
+        
+                return true;
+    }
+        
  ionViewDidEnter(){
     console.log("ionviewDidEnter-loginPage");
     this.loginInProgress=false;
@@ -72,6 +110,13 @@ export class LoginMainPage {
         this.socialLogin('kakao');
   }
 
+  apple(){
+    if(this.loginInProgress) return;
+    this.loginInProgress=true;
+    console.log("apple comes");
+    this.socialLogin('apple');
+  }
+    
   socialLogin(type){
     this.loginProvider.loginSocialLogin(type).then((res:any)=>{
       console.log("socialLogin res:"+JSON.stringify(res));
@@ -130,7 +175,7 @@ export class LoginMainPage {
     });
     
   }
-  
+    
   tourLogin(){
       console.log("tour");
       if(!this.tourModeSignInProgress){

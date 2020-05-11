@@ -622,10 +622,12 @@ export class ShopPage {
             let no:string=menu.menuNO.substr(menu.menuNO.indexOf(';')+1);
             //console.log("category.category_no:"+category.categoryNO+" no:"+no);
             if(no==category.categoryNO && menu.deactive!=1){ // 비활성화 메뉴는 숨김.
-                menu.filename=encodeURI(this.storageProvider.awsS3+menu.imagePath);
+                if(menu.imagePath)
+                    menu.filename=encodeURI(this.storageProvider.awsS3+menu.imagePath);
                 menu.categoryNO=no;
                 //console.log("menu.filename:"+menu.filename);
-                menu.ngStyle={'background-image': 'url('+ menu.filename + ')'};
+                if(menu.imagePath)
+                    menu.ngStyle={'background-image': 'url('+ menu.filename + ')'};
                 let menu_name=menu.menuName.toString();
                 //console.log("menu:"+JSON.stringify(menu));
                 /*

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>ic / 26px / find_main_color@3x</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="ic-/-26px-/-find_main_color" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ic_find" transform="translate(5.000000, 4.000000)" fill="#000000">
+            <path d="M10,16 C7.243,16 5,13.757 5,11 C5,8.243 7.243,6 10,6 C12.757,6 15,8.243 15,11 C15,13.757 12.757,16 10,16 Z M1.5,5.5 L5.5,5.5 L5.5,1.5 L1.5,1.5 L1.5,5.5 Z M9.5,1.5 L13.5,1.5 L13.5,4.944 C12.47,4.347 11.276,4 10,4 C9.831,4 9.666,4.014 9.5,4.025 L9.5,1.5 Z M1.5,13.5 L1.5,9.5 L3.165,9.5 C3.06,9.984 3,10.484 3,11 C3,11.882 3.17,12.723 3.468,13.5 L1.5,13.5 Z M15.601,15.187 C16.476,14.018 17,12.572 17,11 C17,9.094 16.236,7.368 15,6.105 L15,0 L8,0 L8,4.294 C7.654,4.397 7.321,4.53 7,4.683 L7,0 L0,0 L0,7 L4.26,7 C4.04,7.315 3.849,7.65 3.683,8 L0,8 L0,15 L4.26,15 C5.525,16.812 7.623,18 10,18 C11.572,18 13.018,17.476 14.187,16.601 L16.793,19.207 L18.207,17.793 L15.601,15.187 Z" id="Fill-2"></path>
+        </g>
+    </g>
+</svg>

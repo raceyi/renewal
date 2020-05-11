@@ -7,7 +7,7 @@ import {WalletPage} from '../wallet/wallet';
 import {StorageProvider} from '../../providers/storage/storage';
 import {ServerProvider} from '../../providers/server/server';
 import {CartProvider} from '../../providers/cart/cart';
-import { BackgroundMode } from '@ionic-native/background-mode';
+//import { BackgroundMode } from '@ionic-native/background-mode';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { ErrorPage } from '../error/error';
 import {OrderDetailPage} from '../order-detail/order-detail';
@@ -16,6 +16,7 @@ import {StoreSearchPage} from '../store-search/store-search';
 import { Media, MediaObject } from '@ionic-native/media';
 import { NativeStorage } from '@ionic-native/native-storage';
 import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
+import {GiftPage} from '../gift/gift';
 
 @Component({
   templateUrl: 'tabs.html'
@@ -29,9 +30,12 @@ export class TabsPage {
   tab3Root = OrderListPage;
   tab4Root = WalletPage;
   tab5Root = MyInfoPage;
-
+  tab6Root = GiftPage;
+  
   browserRef;
 
+  giftBadgeCount=1;
+  
   constructor(public serverProvider:ServerProvider,
               private alertCtrl:AlertController,
               private platform: Platform,
@@ -42,7 +46,7 @@ export class TabsPage {
               private push: Push,
               public events: Events,
               public viewCtrl: ViewController,
-              private backgroundMode:BackgroundMode,
+             // private backgroundMode:BackgroundMode,
               public modalCtrl: ModalController,
               private cartProvider:CartProvider,
               private media: Media,
@@ -212,7 +216,7 @@ export class TabsPage {
         //    console.log("background mode has been activated");
         //   // this.storageProvider.backgroundMode=true;
         //});
-
+/*
         this.backgroundMode.on("deactivate").subscribe(()=> {
         console.log("background mode has been deactivated");
         this.storageProvider.backgroundMode=false;
@@ -223,6 +227,7 @@ export class TabsPage {
             ticker: '주문알림 대기',
             text:   '웨이티가 실행중입니다'
         });
+*/        
         //////////////////////////////////////// 
             let ready = true;
             this.platform.registerBackButtonAction(()=>{

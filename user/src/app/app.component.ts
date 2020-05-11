@@ -109,7 +109,7 @@ export class MyApp {
                }else{
                 console.log("decodeURI(value):"+decodeURI(value));
                 var id=this.storageProvider.decryptValue("id",decodeURI(value));
-                if(id=="facebook" || id=="kakao"){
+                if(id=="facebook" || id=="kakao" || id=="apple"){
                     this.loginProvider.loginSocialLogin(id).then((res:any)=>{
                                 console.log("MyApp:"+JSON.stringify(res));
                                 if(res.result=="success"){

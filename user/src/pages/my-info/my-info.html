@@ -7,7 +7,7 @@
 <ion-header style="background-color:white;"> 
     <ion-navbar hideBackButton>         
     <div text-center>
-        <custom-icon style="font-size:8vw;" set="tabbutton" name="profile" class="profile-icon"></custom-icon>&nbsp;<span class="title">나의 정보</span>            
+        <ion-icon style="font-size:8vw;" set="tabbutton" name="prefix-profile" class="profile-icon"></ion-icon>&nbsp;<span class="title">나의 정보</span> 
     </div>
     <div text-center class="personal-info-section">
         <!--
@@ -64,7 +64,8 @@
   <ion-col col-3 style="padding-top:0px;">
       <button ion-button clear (click)="enterCoupon()">입력하기</button>   
   </ion-col>  
-  </ion-row>  
+  </ion-row>
+  <!--  
   <ion-row class="each-menu">
     <ion-col col-4>
       친구추천
@@ -76,7 +77,7 @@
         <button ion-button clear (click)="BranchShare()">공유하기</button>   
     </ion-col>  
     </ion-row>  
-  
+  -->
   <!-- 쿠폰-end -->
 <ion-row class="group-title" style="background-color: #f7f7f7">
   <p>환경설정</p>
@@ -186,10 +187,9 @@
     <ion-col text-left><button style="font-size:3.5vw;" (click)="unregister()" clear ion-button>회원탈퇴</button></ion-col>  
   </ion-row>
 
-<ion-fab bottom left *ngIf="storageProvider.tourMode && storageProvider.name=='타킷주식회사'">
+  <ion-fab bottom left *ngIf="storageProvider.tourMode && storageProvider.name=='타킷주식회사'">
     <button class="fab-btn" (click)="exitTourMode()" ion-fab color="white">
-      <custom-icon set="tabs" name="exit"></custom-icon>
+      <ion-icon name="prefix-exit"></ion-icon>
     </button>
 </ion-fab>
-
 </ion-content>

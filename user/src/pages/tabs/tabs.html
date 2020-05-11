@@ -1,7 +1,10 @@
 <ion-tabs #tabs>
-  <ion-tab [root]="tab1Root" class="tab-bar" tabTitle="즐겨찾기" customIconSet="tabbutton" customIconName="star"></ion-tab>
-  <ion-tab [root]="tab2Root" class="tab-bar" tabTitle="매장찾기" customIconSet="tabbutton" customIconName="find"></ion-tab>
-  <ion-tab [root]="tab3Root" class="tab-bar" tabTitle="주문목록" customIconSet="tabbutton" customIconName="history"></ion-tab>
-  <ion-tab [root]="tab4Root" class="tab-bar" tabTitle="지갑" customIconSet="tabbutton" customIconName="wallet"></ion-tab>  
-  <ion-tab [root]="tab5Root" class="tab-bar" tabTitle="나의정보" customIconSet="tabbutton" customIconName="profile"></ion-tab>    
+  <ion-tab [root]="tab1Root" class="tab-bar" tabTitle="즐겨찾기" tabIcon="prefix-tabhome"></ion-tab>
+  <ion-tab [root]="tab2Root" class="tab-bar" tabTitle="매장찾기" tabIcon="prefix-tabfind"></ion-tab>
+  <ion-tab [root]="tab3Root" class="tab-bar" tabTitle="주문목록" tabIcon="prefix-taborderlist"></ion-tab>
+  <ion-tab [root]="tab4Root" class="tab-bar" tabTitle="지갑" tabIcon="prefix-tabwallet"></ion-tab>
+ <!--
+  <ion-tab [root]="tab6Root" class="tab-bar" tabTitle="선물" tabBadge={{giftBadgeCount}} tabIcon="prefix-gift"></ion-tab>
+ -->
+  <ion-tab [root]="tab5Root" class="tab-bar" tabTitle="나의정보" tabIcon="prefix-tabmyinfo"></ion-tab>    
 </ion-tabs>

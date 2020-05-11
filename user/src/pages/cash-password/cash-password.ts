@@ -264,6 +264,8 @@ export class CashPasswordPage {
                                 });
                                 alert.present();
                         }else if(error=="soldout"){  // 추후 서버의 에러 문장을 그대로 보여주도록 수정하자.
+                            // 주문 수량이 제한될경우도 동일한 에러를 내보낸다. 
+                            // 추후 maxCount가 있는 메뉴에 대해 에러 메시지를 더 정확하게 처리할 필요가 있다!
                             let alert = this.alertController.create({
                                     title: '판매 종료 메뉴가 포함되어 있습니다.',
                                     buttons: ['OK']

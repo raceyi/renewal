@@ -3,7 +3,7 @@
 <div style="display:flex;">
         <img  class="logo-img" src="assets/imgs/home/logo.png">               
         <button ion-button no-margin no-padding class="search-icon" clear (click)="search()"><ion-icon name="ios-search"></ion-icon></button>
-        <button ion-button no-margin no-padding class="cart-icon" clear (click)="openCart()"> <custom-icon style="font-size:40px;" set="tabs" name="cart"></custom-icon></button>
+        <button ion-button no-margin no-padding class="cart-icon" clear (click)="openCart()"> <ion-icon name="cart-outline"></ion-icon></button>
 </div>
 </ion-navbar>
 </ion-header>
@@ -16,10 +16,9 @@
 </ion-slides>
 
 <!--
-<custom-icon *ngIf="storageProvider.shopList==null || storageProvider.shopList==undefined || storageProvider.shopList.length==0" class="welcome-icon" set="tabs" name="welcome"></custom-icon>
-2019/10/25 kalen.lee@takit.biz 주문을 중간에 종료할경우 상점목록이 업데이트 안될수 있음
+<ion-icon *ngIf="menus.length==0" class="welcome-icon" name="prefix-welcome"></ion-icon>
 -->
-<custom-icon *ngIf="menus.length==0" class="welcome-icon" set="tabs" name="welcome"></custom-icon>
+<img class="welcome-icon" *ngIf="menus.length==0"  src="assets/imgs/welcome.png">  
 
 <div style="padding-top:17px;">
 <!-- 2019/10/25 kalen.lee@takit.biz 주문을 중간에 종료할경우 상점목록이 업데이트 안될수 있음
@@ -84,15 +83,11 @@
             </div>
         </button>          
 </div>
-<!--
-<div *ngIf="storageProvider.shopList!=null && storageProvider.shopList!=undefined && storageProvider.shopList.length!=0" class="more" text-right>
-<button clear ion-button (click)="moreShops()">더 보기</button> 
-</div>
--->
+
 <ion-fab bottom left *ngIf="storageProvider.tourMode && storageProvider.name=='타킷주식회사'">
                 <button class="fab-btn" (click)="exitTourMode()" ion-fab color="white">
-                  <custom-icon set="tabs" name="exit"></custom-icon>
+                  <ion-icon set="tabs" name="prefix-exit"></ion-icon>
                 </button>
 </ion-fab>
-            
+
 </ion-content>

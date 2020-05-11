@@ -124,6 +124,12 @@
 <ion-row  style="color: #FF5F3A;justify-content:center;font-size:4vw;">
        <b>취소된 주문입니다. ( 사유 : {{order.cancelReason}} )</b>
 </ion-row>
+<ion-row *ngIf="order.payMethod=='card' && (order.cancelReason=='주문서출력오류' || order.cancelReason=='포스연동오류') && order.refundTime==null">
+ <ion-col no-padding no-margin text-center>
+    <button ion-button (click)="cardRefund()"> 카드 환불 요청 </button>    
+ </ion-col>
+</ion-row>
+
 <ion-row style="color: #bdbdbd;" *ngIf="order.localCancelledTimeString" >
     <ion-col no-padding col-4 text-left>취소완료</ion-col>
     <ion-col no-padding col-8 text-right>{{order.localCancelledTimeString}}</ion-col>    
@@ -192,6 +198,10 @@
   <ion-row *ngIf="order.localCancelledTimeString" >
   <ion-col no-padding col-4 text-left>주문취소</ion-col>
   <ion-col no-padding col-8 text-right>{{order.localCancelledTimeString}}</ion-col>    
+  </ion-row>
+  <ion-row *ngIf="order.localRefundTimeString">
+      <ion-col no-padding col-4 text-left>카드환불</ion-col>
+      <ion-col no-padding col-8 text-right>{{order.localRefundTimeString}}</ion-col>            
   </ion-row>
 </div>
 
@@ -272,9 +282,12 @@
 <ion-row>
 <ion-col text-left>환불 방식</ion-col> 
 <ion-col *ngIf="this.order.payMethod=='cash'" text-right> 캐쉬환불</ion-col>
-<ion-col *ngIf="this.order.payMethod=='card'" text-right> 카드승인취소</ion-col>
+<!--  상점주 앱에서 모두 refundTime을 저장하면 그때 아래 코드를 적용해야 한다. 
+<ion-col *ngIf="this.order.payMethod=='card' && order.refundTime!=null" text-right> 카드승인취소</ion-col>
+-->
+<ion-col *ngIf="this.order.payMethod=='card'"> 카드승인취소</ion-col>
 </ion-row>
-<ion-row class="receipt-amount"> 
+<ion-row class="receipt-amount" *ngIf="this.order.payMethod=='cash'"> 
   <ion-col text-left>
     <b>환불 금액</b>  
   </ion-col>

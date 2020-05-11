@@ -5,6 +5,7 @@ import {PaymentPage} from '../payment/payment';
 import {CartPage} from '../cart/cart';
 import {CartProvider} from '../../providers/cart/cart';
 import {LoginMainPage} from '../login-main/login-main';
+import { Platform } from 'ionic-angular';
 /**
  * Generated class for the MenuPage page.
  *
@@ -42,6 +43,7 @@ export class MenuPage {
   //themeColor="#73a251";
   
   constructor(public navCtrl: NavController, public navParams: NavParams,
+              public platform:Platform,
               public alertController:AlertController,
               public cartProvider:CartProvider,
               private ngZone:NgZone,
@@ -327,6 +329,23 @@ export class MenuPage {
                                 reject(option.name+'의 옵션을 선택해주시기 바랍니다.');  
                             }                          
                         }
+                        else if(option.price>0 && option.flagType && !option.flagOn && option.hasOwnProperty("choice") && option.choice.length>1){
+                                if(option.select!=undefined){   // 가격에 반영한다. kalen.lee@takit.biz - 2020.03.30 
+                                    reject(option.name+'을 선택해주시기 바랍니다.');                        
+                                }                            
+                        }
+                        if(option.constraint){ //check constraint
+                            if(option.constraint.operation && option.constraint.operation=="XOR" && option.flagType && option.flagOn){
+                                for(let j=0;j<this.options.length;j++){
+                                    let otherOption=this.options[j];
+                                    if( otherOption.name!=option.name && otherOption.flagType && otherOption.flagOn && option.constraint.params){
+                                        if(option.constraint.params.includes(otherOption.name)){
+                                            reject(option.name+"과" + otherOption.name+'은 동시선택 불가능합니다.'); 
+                                        }
+                                    }
+                                }
+                            }
+                        }
                 }
             }
             if(this.ignoreUnitPrice && this.menu.quantity!=1){
@@ -456,8 +475,32 @@ export class MenuPage {
 
         let param;
         if(command==='order'){
-            param={carts:carts, trigger:'order' }
-            this.navCtrl.push(PaymentPage,{order: JSON.stringify(param) ,class:"PaymentPage" });
+            // iOS일 경우 alert으로 메뉴를 한번더 확인하자!
+            if(this.platform.is("ios")){
+                let confirm = this.alertController.create({
+                    title: '주문 메뉴가 '+cart.orderName+'이 맞으신가요?',
+                    subTitle: '일부 아이폰에서 다른 메뉴가 주문되는 오류가 발생합니다.오류 현상이 발생할 경우 앱을 완전히 삭제후 다시 설치바랍니다.',
+                    buttons: [
+                        {
+                            text: '아니오',
+                            handler: () => {
+                                console.log('Disagree clicked');
+                            }
+                        },
+                        {
+                            text: '네',
+                            handler: () => {
+                                param={carts:carts, trigger:'order' }
+                                this.navCtrl.push(PaymentPage,{order: JSON.stringify(param) ,class:"PaymentPage" });    
+                            }
+                        }
+                    ]
+                    });
+                    confirm.present();
+            }else{ // android 
+                param={carts:carts, trigger:'order' }
+                this.navCtrl.push(PaymentPage,{order: JSON.stringify(param) ,class:"PaymentPage" });    
+            }
         }else{
             this.cartProvider.addMenuIntoCart(cart).then((res)=>{
                 let confirm;
@@ -519,7 +562,12 @@ export class MenuPage {
     });
   }
 
-  updateFlag(option){
+  updateFlag(option){  
+    //2020.03.30 kalen.lee@takit.biz -begin
+    if(!option.flagOn){
+        option.select=undefined; 
+    }
+    //2020.03.30 kalen.lee@takit.biz -end
     this.computeAmount();   
   }
 
@@ -534,9 +582,9 @@ export class MenuPage {
   selectChoice(option){
       if(option.choiceFlag)
           option.select=option.choice[0];
-      else
+      else{
           option.select=undefined;  
+      }
       console.log("option.select:"+option.select);    
-
   }
 }

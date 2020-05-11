@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>ic / 26px / wallet_main@3x</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="ic-/-26px-/-wallet_main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ic_wallet" transform="translate(5.000000, 5.000000)" fill="#C5C3C3">
+            <path d="M13,7 C11.896,7 11,7.896 11,9 C11,10.104 11.896,11 13,11 L15,11 L15,14 L2,14 C1.449,14 1,13.551 1,13 L1,3.723 C1.295,3.895 1.634,4 2,4 L13.824,4 L14,4 L15,4 L15,7 L13,7 Z M15,10 L13,10 C12.449,10 12,9.551 12,9 C12,8.449 12.449,8 13,8 L15,8 L15,10 Z M2,1 L13,1 L13,3 L11.074,3 L2,3 C1.449,3 1,2.551 1,2 C1,1.449 1.449,1 2,1 Z M14,3 L14,0 L2,0 C0.896,0 0,0.896 0,2 L0,13 C0,14.104 0.896,15 2,15 L16,15 L16,11 L16,7 L16,3 L14,3 Z" id="Fill-2"></path>
+        </g>
+    </g>
+</svg>

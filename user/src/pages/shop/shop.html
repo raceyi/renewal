@@ -17,7 +17,7 @@
                    <ion-icon  class="store-information-button"name="ios-search"></ion-icon>
               </button>
               <button ion-button (click)="openCart()" style="background-color:white;color:#000000;">
-                  <custom-icon set="tabs" name="cart" style="font-size:40px;"></custom-icon>
+                  <ion-icon name="cart-outline" ></ion-icon>
               </button>
         </ion-buttons>
         </ion-navbar>
@@ -157,7 +157,7 @@
       <div *ngIf="section=='menu' && shop.shopInfo.categoryLevel!='1' && !(shop.shopInfo.barCode==1)">
                           <ion-row *ngFor="let menu of menus" no-padding no-margin>
                               <ion-col class="col-menus" no-padding text-center>
-                              <button color="white" (click)="selectMenu(menu[0])"ion-button full no-padding no-margin>
+                              <button color="white" (click)="selectMenu(menu[0])" *ngIf="menu[0].filename" ion-button full no-padding no-margin>
                                   <ion-item  no-padding>
                                        <div text-center class="img-shop" [ngStyle]="menu[0].ngStyle">
                                         <label *ngIf="menu[0].soldout==1" class="sold-out"> <b>판매종료</b></label>
@@ -169,11 +169,23 @@
                                                            <span class="text-border" *ngIf="menu[0].takeout==2 && shop.shopInfo.deliveryArea!=null" >&nbsp;&nbsp;포장/배달&nbsp;&nbsp;</span></p>
                                   </ion-item>
                               </button>
+                              <button color="white" (click)="selectMenu(menu[0])" *ngIf="!menu[0].filename" style="height:100px;"  ion-button full no-padding no-margin>
+                                <ion-item  no-padding>
+                                    <h2 text-center>{{menu[0].menuName}}</h2> 
+                                    <p text-center><amount-display [amount]="menu[0].price"></amount-display>원 
+                                                         <span class="text-border" *ngIf="menu[0].takeout==1" >&nbsp;&nbsp;포장&nbsp;&nbsp;</span> 
+                                                         <span class="text-border" *ngIf="menu[0].takeout==2 && shop.shopInfo.deliveryArea!=null" >&nbsp;&nbsp;포장/배달&nbsp;&nbsp;</span></p>
+                                    <div text-center class="txt-shop" >
+                                        <label *ngIf="menu[0].soldout==1" class="sold-out"> <b>판매종료</b></label>
+                                        <label *ngIf="menu[0].soldout==0"> &nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    </div>                     
+                                </ion-item>
+                            </button>
                               </ion-col>
                               <ion-col class="col-menus" no-padding text-center>
-                              <button class="left" *ngIf="menu[1]" (click)="selectMenu(menu[1])" color="white" ion-button full no-padding no-margin>
+                              <button class="left" *ngIf="menu[1] && menu[1].filename" (click)="selectMenu(menu[1])" color="white" ion-button full no-padding no-margin>
                                   <ion-item no-padding>
-                                       <div text-center class="img-shop" [ngStyle]="menu[1].ngStyle">
+                                       <div  text-center class="img-shop" [ngStyle]="menu[1].ngStyle">
                                         <label *ngIf="menu[1].soldout==1" class="sold-out"> <b>판매종료</b></label>
                                         <label *ngIf="menu[1].soldout==0"> &nbsp;&nbsp;&nbsp;&nbsp;</label>
                                        </div>   
@@ -182,10 +194,25 @@
                                                              <span class="text-border" *ngIf="menu[1].takeout==2 && shop.shopInfo.deliveryArea!=null" >&nbsp;&nbsp;포장/배달&nbsp;&nbsp;</span></p> 
                                   </ion-item>
                               </button>
-                              <button class="left" *ngIf="!menu[1]" color="white" ion-button full no-padding no-margin>
+                              <button class="left" *ngIf="menu[1] && !menu[1].filename" (click)="selectMenu(menu[1])" color="white" style="height:100px;" ion-button full no-padding no-margin>
+                                <ion-item no-padding>
+                                     <h2 text-center>{{menu[1].menuName}}</h2>
+                                    <p text-center><amount-display [amount]="menu[1].price"></amount-display>원 <span class="text-border" *ngIf="menu[1].takeout==1" >&nbsp;&nbsp;포장&nbsp;&nbsp;</span> 
+                                                           <span class="text-border" *ngIf="menu[1].takeout==2 && shop.shopInfo.deliveryArea!=null" >&nbsp;&nbsp;포장/배달&nbsp;&nbsp;</span></p> 
+                                    <div  text-center class="txt-shop">
+                                    <label *ngIf="menu[1].soldout==1" class="sold-out"> <b>판매종료</b></label>
+                                    <label *ngIf="menu[1].soldout==0"> &nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    </div>                                                                                   
+                                </ion-item>
+                            </button>
+                              <button class="left" *ngIf="!menu[1] && menu[0].filename" color="white" ion-button full no-padding no-margin>
                                   <ion-item no-padding>
                                   </ion-item>
                               </button>
+                              <button class="left" *ngIf="!menu[1] && !menu[0].filename" color="white" style="height:100px;" ion-button full no-padding no-margin>
+                                <ion-item no-padding>
+                                </ion-item>
+                            </button>
                               </ion-col>
                           </ion-row>
                           <ion-row class="dummy" style="height:50vh;">  <!-- 보정이 될까? col의 크기를 가져와 맞추는것이 맞다 ㅜㅜ -->

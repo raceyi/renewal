@@ -1,10 +1,12 @@
 import { Component ,NgZone} from '@angular/core';
-import { IonicPage, NavController, NavParams,App ,ViewController,AlertController,Events} from 'ionic-angular';
+import { IonicPage, NavController, Platform, NavParams,App ,ViewController,AlertController,ToastController,Events} from 'ionic-angular';
 import {StorageProvider} from '../../providers/storage/storage';
 import {ServerProvider} from '../../providers/server/server';
 import {TimeUtil} from '../../classes/TimeUtil';
 import {ReviewInputPage} from '../review-input/review-input';
 import {CashPasswordPage} from '../cash-password/cash-password';
+import { AppAvailability } from '@ionic-native/app-availability';
+import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
 
 /**
  * Generated class for the OrderDetailPage page.
@@ -12,6 +14,9 @@ import {CashPasswordPage} from '../cash-password/cash-password';
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
  */
+declare var IGStory:any;
+var gOrderDetailPage;
+declare var cordova:any;
 
 @IonicPage()
 @Component({
@@ -25,23 +30,32 @@ export class OrderDetailPage {
   refundClasses;
   trigger;
   shopPhoneHref;
+  toast;
+  toastTimerId;
+  shareInstagramAvailable=false;
+  browserRef;
 
   constructor(public navCtrl: NavController, 
+              public platform:Platform,
+              private appAvailability: AppAvailability,
               public alertController:AlertController,
               public storageProvider:StorageProvider,
               public serverProvider:ServerProvider,
               private events:Events,    
               private ngZone:NgZone,  
               private app:App,   
-              private viewCtrl:ViewController,     
+              private viewCtrl:ViewController,
+              private toastController: ToastController,
+              private iab: InAppBrowser,     
               public navParams: NavParams) {
+
     console.log("orderDetailPage constructor");
     this.order=this.navParams.get("order");
     this.trigger=this.navParams.get("trigger");
 
+    gOrderDetailPage=this;
     console.log("order:"+JSON.stringify(this.order));    
     console.log("trigger:"+this.trigger);
-
 
     if(this.trigger!=undefined && this.trigger=='order'){
             // it comes from order. remove cash-password,menus,payment. 
@@ -83,6 +97,100 @@ export class OrderDetailPage {
                 this.convertOrderInfo();
             });
         }
+    })
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // Instagram 공유하기 
+    let scheme;
+    if(this.platform.is('android')){
+        scheme='com.instagram.android';         
+    }else if(this.platform.is('ios')){
+        scheme='instagram://';
+    }else{
+        console.log("unknown platform");
+    }
+    
+    this.appAvailability.check(scheme).then(()=> {  
+        let message="인스타그램 스토리로 공유해보세요.";
+        if(this.platform.is("android")){
+            //인스타그램 스토리로 공유하세요.붙여넣기로 메뉴이름을 추가할수 있습니다.
+            message="인스타그램 스토리로 공유하세요.붙여넣기로 메뉴이름을 추가할수 있습니다.";
+        }
+        this.toast = this.toastController.create({
+            message: message,
+            duration: 86400000, //milliseconds
+            position: 'bottom',
+            showCloseButton:true,
+            closeButtonText:'공유하기'
+        });
+        this.shareInstagramAvailable=true;
+        this.toastTimerId = setTimeout(function(){ this.shareInstagramAvailable=false;},86400000 /* milliseconds. 1 day */);
+            
+        this.toast.onDidDismiss(() => {
+            console.log('Dismissed toast');
+            if(this.shareInstagramAvailable){
+                // image의 url을 가져온다.
+                if(this.order.orderListObj.menus.length>0){ // 메뉴정보가 존재한다면 
+                    let menu=this.order.orderListObj.menus[0];
+                    let body = {menuName:menu.menuName,menuNO:menu.menuNO};
+                    this.serverProvider.post(this.storageProvider.serverAddress+"/getMenuImageInfo",body).then((res:any)=>{
+                        if(res.result=="success"){
+                            if(this.platform.is("android")){
+                                cordova.plugins.clipboard.copy(menu.menuName);
+                            }
+                            if(res.imagePath && res.imagePath!=null){
+                                console.log("res.imagePath:"+res.imagePath);
+                                let opts={ backgroundImage:"https://s3.ap-northeast-2.amazonaws.com/seerid.cafe.image/DefaultBackground.jpg",
+                                            stickerImage:encodeURI(gOrderDetailPage.storageProvider.awsS3+res.imagePath),
+                                            attributionURL:"https://usnt.app.link/R5ejANE3LV",
+                                            backgroundTopColor:"",
+                                            backgroundBottomColor:""
+                                };
+                                IGStory.shareToStory(      //iOS의 경우 clipboard 복사로 안드로이드의 경우만 메뉴명 전달이 가능할것같다. 안드로이드를 검증해보자.
+                                    opts,
+                                    success => {
+                                        console.log("shareToStory: returns"+success);
+                                    },
+                                    err => {
+                                        console.error("shareToStory: returns err-"+err);
+                                });
+                            }else{ //store image를 sticker로 전달한다. null인 경우 확인이 필요하다.
+                                console.log("menu imagePath is null");
+                                let opts={ backgroundImage:"https://s3.ap-northeast-2.amazonaws.com/seerid.cafe.image/DefaultBackground.jpg",
+                                            stickerImage:encodeURI(gOrderDetailPage.storageProvider.awsS3+gOrderDetailPage.order.takitId+'_sticker.jpg'),
+                                            attributionURL:"https://usnt.app.link/R5ejANE3LV",
+                                            backgroundTopColor:"",
+                                            backgroundBottomColor:""
+                                };
+                                IGStory.shareToStory(
+                                    opts,
+                                    success => {
+                                        console.log("shareToStory: returns"+success);
+                                    },
+                                    err => {
+                                        console.error("shareToStory: returns err-"+err);
+                                        let alert = this.alertController.create({
+                                            title: menu.menuName+' 사진 정보/상점의 이미지 정보가 존재하지 않습니다.',
+                                            buttons: ['OK']
+                                        });
+                                        alert.present();
+                                });
+
+                            }
+                        }else{
+                                console.log(menu.menuName+' 사진 정보가 더이상 존재하지 않습니다.');
+                                    // 메뉴정보가 존재하지 않습니다.
+                                    let alert = this.alertController.create({
+                                        title: menu.menuName+' 사진 정보가 더이상 존재하지 않습니다.',
+                                        buttons: ['OK']
+                                    });
+                                    alert.present();
+                        }
+                    });
+                }
+            }
+        });
+        this.toast.present();
     });
 /*
     this.storageProvider.messageEmitter.subscribe((param)=>{
@@ -166,7 +274,14 @@ export class OrderDetailPage {
         console.log("reviewTime:"+this.order.reviewTime);
         this.order.localReviewTimeString=this.timeUtil.getlocalTimeString(this.order.reviewTime);        
     }
-    
+    //2020.04.03 -begin
+    // 카드 취소를 사용자가 할 경우 기록함(상점주앱에서도 저장하도록하자!). 주문서출력오류,포스연동오류
+    if(this.order.hasOwnProperty('refundTime') && this.order.refundTime!=null){
+        console.log("refundTime:"+this.order.refundTime);
+        this.order.localRefundTimeString=this.timeUtil.getlocalTimeString(this.order.refundTime);
+    }
+     //2020.04.03 -end 
+
     if(this.order.hasOwnProperty('shopResponseTime') && this.order.shopResponseTime!=null ){
         console.log("shopResponseTime:"+this.order.shopResponseTime);
         this.order.localShopResponseTimeString=this.timeUtil.getlocalTimeString(this.order.shopResponseTime);        
@@ -228,6 +343,13 @@ export class OrderDetailPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad OrderDetailPage');
   }
+
+  
+  ionViewWillLeave(){
+    this.shareInstagramAvailable=false;
+    this.toast.dismiss();
+  }
+  
 
   back(){
     console.log("back");
@@ -294,5 +416,56 @@ export class OrderDetailPage {
   compueteDiscount(order){
       if(order.amount>0) return  Math.abs(order.total - order.amount);
       else return 0;
+  }
+
+
+
+  cardRefund(){
+      //Alter table orders add column refundTime date
+    if(this.order.payMethod=="card" && this.order.orderStatus=="cancelled" && (this.order.cancelReason=="주문서출력오류"|| this.order.cancelReason=="포스연동오류")){
+        //카드 결제를 취소한다.
+        let encodedTakitId=encodeURI(this.order.takitId);
+        let kcpOpenUrl= this.storageProvider.kcpCancelUrl+"takitId="+encodedTakitId+"&imp_uid="+this.order.imp_uid+"&AppUrl=waitee://card_pay?";
+        if(this.platform.is("android")){
+            this.browserRef=this.iab.create(kcpOpenUrl,"_blank" ,'toolbar=no,location=no');
+        }else{ // ios
+            console.log("ios");
+            this.browserRef=this.iab.create(kcpOpenUrl,"_blank" ,'location=no,closebuttoncaption=종료');
+        }
+        
+        this.browserRef.on("loadstart").subscribe((event:InAppBrowserEvent)=>{
+            console.log("InAppBrowserEvent(loadstart):"+String(event.url));
+            if(event.url.includes("kcp/index.html")){
+                this.browserRef.close();
+                let substrs=event.url.split("res_cd=");
+                let alert;
+                if(substrs[1]=="0000"){
+                 //saveRefundTime 호출 
+                 let body = {orderId:this.order.orderId};
+                 this.serverProvider.post(this.storageProvider.serverAddress+"/saveRefundTime",body).then((res:any)=>{
+                        if(res.result!="success"){
+                            console.log("success to save refundTime");
+                        }
+                 })
+                 // refundTime을 현재 시간으로 지정하자.
+                 this.order.refundTime=new Date().toISOString();
+                 console.log("refundTime:"+this.order.refundTime);
+                 this.order.localRefundTimeString=this.timeUtil.getlocalTimeString(this.order.refundTime);
+                           
+                 alert = this.alertController.create({
+                      title: '카드 결제 취소에 성공했습니다.',
+                      buttons: ['OK']
+                  });
+                }else{
+                  alert = this.alertController.create({
+                      title: '카드 결제 취소에 실패했습니다.',
+                      subTitle:"카카오톡 채널 @웨이티 또는 0505-170-3636 에 문의해주세요.",
+                      buttons: ['OK']
+                  });                                  
+                }
+                alert.present();
+            }
+        });
+   }
   }
 }

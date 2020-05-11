@@ -6,7 +6,7 @@ import {CompanyInfoPage} from '../company-info/company-info';
 import {StorageProvider} from '../../providers/storage/storage';
 import { LoginProvider } from '../../providers/login/login';
 import { NativeStorage } from '@ionic-native/native-storage';
-import { BackgroundMode } from '@ionic-native/background-mode';
+//import { BackgroundMode } from '@ionic-native/background-mode';
 import {LoginMainPage} from '../login-main/login-main';
 import {CartProvider} from '../../providers/cart/cart';
 import {ConfigureReceiptPage} from '../configure-receipt/configure-receipt';
@@ -38,7 +38,7 @@ export class MyInfoPage {
                 private alertCtrl:AlertController,
                 private loginProvider:LoginProvider,
                 private nativeStorage:NativeStorage,
-                private backgroundMode:BackgroundMode,
+               // private backgroundMode:BackgroundMode,
                 private cartProvider:CartProvider,
                 private serverProvider:ServerProvider,
                 private iab: InAppBrowser,
@@ -197,7 +197,7 @@ export class MyInfoPage {
             this.loginProvider.logout(this.storageProvider.id).then((result)=>{
                 console.log("fbProvider.logout() result:"+JSON.stringify(result));
                 console.log("cordova.plugins.backgroundMode.disable");
-                this.backgroundMode.disable();
+                //this.backgroundMode.disable();
                 this.removeStoredInfo();
             },(err)=>{
                 console.log("facebook-logout failure");
@@ -252,7 +252,7 @@ export class MyInfoPage {
                 this.loginProvider.unregister(this.storageProvider.id).then(()=>{
                     this.removeStoredInfo();
                     console.log("cordova.plugins.backgroundMode.disable");
-                    this.backgroundMode.disable();
+                    //this.backgroundMode.disable();
                 },(err)=>{
                     console.log("unregister failure");
                     //move into error page

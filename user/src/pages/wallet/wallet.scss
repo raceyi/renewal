@@ -33,7 +33,7 @@ page-wallet {
     margin-bottom:14px;
     font-family: OTDayB;
     font-size: 17px;
-    font-weight: 300;
+    //font-weight: 300;
     font-style: normal;
     font-stretch: normal;
     line-height: normal;
@@ -157,6 +157,7 @@ page-wallet {
     border-radius: 50%;
     border-color:#3e2a2e;
     margin-right:10px;    
+    padding: 10px;
 }
 
 .tutorial{

@@ -4,7 +4,7 @@
             <!--
             <img  class="search-img" src="assets/imgs/wallet/wallet-top.png"> 
             -->
-            <custom-icon style="font-size:8vw;" set="tabbutton" name="wallet" class="search-img"></custom-icon>&nbsp;  
+            <ion-icon style="font-size:8vw;" name="prefix-tabwallet" class="search-img"></ion-icon>&nbsp;  
             <span class="title">지갑</span>            
         </div>
 </ion-navbar>
@@ -76,8 +76,11 @@
                         <button *ngIf="membership.approval=='waiting'" ion-button class="plus-card-outline multiline-button" style="background-color:lightgray;font-size:12px;">
                                         <span class="voucher-name">{{membership.organization}}</span>
                         </button>  
-                        <button *ngIf="membership.approval!='waiting'" ion-button class="plus-card-outline multiline-button" style="background-color:#00bea1;font-size:12px;">
-                                        <span class="voucher-name">{{membership.organization}}</span>
+                        <!--
+                        <button *ngIf="membership.approval!='waiting'" ion-button (click)="showQRCode()" class="plus-card-outline multiline-button" style="background-color:#00bea1;font-size:12px;">
+                        -->        
+                        <button *ngIf="membership.approval!='waiting'" ion-button class="plus-card-outline multiline-button" style="background-color:#00bea1;font-size:12px;">                                        
+                        <span class="voucher-name">{{membership.organization}}</span>
                         </button>  
                 </ion-slide>
                 <ion-slide>
@@ -93,12 +96,12 @@
  </div>
  <div text-center>
         <button class="toss-button" style="margin-bottom:35px;" outline round ion-button  (click)="launchKakaoPlus()"> 
-            <div class="kakao"><custom-icon set="tabs" name="plus" class="plus"></custom-icon></div> 
-            웨이티 카카오톡 플러스친구 문의 
+            <div class="kakao"> <ion-icon name="prefix-plus" class="plus"></ion-icon></div> 
+            웨이티 카카오톡 채널 문의 
         </button>        
 </div>    
 <div text-center>
-        <a  ion-button clear class="tutorial" href="https://youtu.be/4-B9h-D9WOM">캐시 충전 방법 알아보기 &nbsp;></a>
+        <a  ion-button clear class="tutorial" href="https://youtu.be/t4stRpxgqVI">캐시 충전 방법 알아보기 &nbsp;></a>
         <!--
         <button ion-button clear class="tutorial" (click)="cashTutorial()" >캐시 충전 방법 알아보기 &nbsp;> </button>
         -->
@@ -109,7 +112,7 @@
 
 <ion-fab bottom left *ngIf="storageProvider.tourMode && storageProvider.name=='타킷주식회사'">
                 <button class="fab-btn" (click)="exitTourMode()" ion-fab color="white">
-                  <custom-icon set="tabs" name="exit"></custom-icon>
+                  <ion-icon name="prefix-exit"></ion-icon>
                 </button>
 </ion-fab>
             

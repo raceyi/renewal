@@ -217,6 +217,22 @@ page-shop {
                     }
                 }
 
+                .txt-shop{
+                    margin-left:30px;
+                    width:  120px;
+                    //height: 50px;
+                    //background-size: 120px 120px;                 
+                    //padding-top: 10px;
+                    .sold-out{
+                        font-size:3.4vw;
+                        color: #33b9c6;
+                        //padding:10px; 
+                        //border: solid 2px #33b9c6;
+                        //border-radius: 23.5px;
+                        //background-color:white;
+                    }
+                }
+
                 ion-label{
                     margin: 4.6px 4.6px 4.6px 4.6px;
                     h2{

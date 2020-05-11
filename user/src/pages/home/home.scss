@@ -48,9 +48,9 @@ page-home {
     }
 
     .welcome-icon{
-        font-size: 50vw;
-        padding-top: 133px;
-        margin-left:94px;
+       // font-size: 50vw;
+        padding-top: 0px;
+      //  margin-left:94px;
         color: #ff5d45;
     }
     
@@ -60,7 +60,8 @@ page-home {
         border-bottom: solid 2px #ff5d45; 
         font-family: TTOmniGothicT;
         font-size: 14px;
-        font-weight: normal;
+        //font-weight: normal;
+        font-weight: bold;
         font-style: normal;
         font-stretch: normal;
         line-height: normal;

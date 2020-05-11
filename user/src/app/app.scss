@@ -14,9 +14,9 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+//@import '../assets/fonts/variables.scss';
 
 $default-font-size:4vw;
-//$default-font-style: NotoSansCJKkr-Regular;
 $default-color:#FF5F3A;
 
 @mixin calc($property, $expression) { 
@@ -24,51 +24,6 @@ $default-color:#FF5F3A;
         #{$property}: -moz-calc(#{$expression});
         #{$property}: calc(#{$expression}); 
 } 
-
-@font-face{
-    font-family: NotoSansCJKkr-Black;
-    src: url('../assets/fonts/NotoSansCJKkr-Black.otf') format('otf');
-}
-
-@font-face{
-    font-family: NotoSansMonoCJKkr-Bold;
-    src: url('../assets/fonts/NotoSansMonoCJKkr-Bold.otf') format('otf');
-}
-
-@font-face{
-    font-family: NotoSansCJKkr-Bold;
-    src: url('../assets/fonts/NotoSansCJKkr-Bold.otf') format('otf');
-}
-
-@font-face{
-    font-family: NotoSansCJKkr-Medium;
-    src: url('../assets/fonts/NotoSansCJKkr-Medium.otf') format('otf');
-}
-
-@font-face{
-    font-family: NotoSansMonoCJKkr-Regular;
-    src: url('../assets/fonts/NotoSansMonoCJKkr-Regular.otf') format('otf');
-}
-
-@font-face{
-    font-family: NotoSansCJKkr-Regular;
-    src: url('../assets/fonts/NotoSansCJKkr-Regular.otf') format('otf');
-}
-
-@font-face{
-    font-family: NotoSansCJKkr-DemiLight;
-    src: url('../assets/fonts/NotoSansCJKkr-DemiLight.otf') format('otf');
-}
-
-@font-face{
-    font-family: NotoSansCJKkr-Light;
-    src: url('../assets/fonts/NotoSansCJKkr-Light.otf') format('otf');
-}
-
-@font-face{
-    font-family: NotoSansCJKkr-Thin;
-    src: url('../assets/fonts/NotoSansCJKkr-Thin.otf') format('otf');
-}
 
 .tabs-ios .tabbar{
     background:white;
@@ -82,7 +37,7 @@ $default-color:#FF5F3A;
         border-radius: 50%;
 }
 
-.fab ion-icon, .fab custom-icon {
+.fab ion-icon, .fab icon-icon {
     -webkit-box-flex: 1;
     -webkit-flex: 1;
     -ms-flex: 1;
@@ -91,7 +46,7 @@ $default-color:#FF5F3A;
 }
 
 ion-fab {
-    custom-icon{
+    ion-icon{
         padding-top:12px;
     }
 }
@@ -107,5 +62,86 @@ ion-fab {
 .alert-sub-title{  // 중복 주문 오류를 막기 위한 alert에 사용함. 2019.11.06
     b{
         color:red;
+    }
+}
+
+ion-icon {
+    &[class*="prefix-"] {
+        mask-size: contain;
+        mask-position: 50% 50%;
+        mask-repeat: no-repeat;
+        background: currentColor;
+        width: 1em;
+        height: 1em;
+    }
+    // custom icons
+    &[class*="prefix-apple"] {
+        mask-image: url(../assets/icon/apple.svg);
+    }
+    &[class*="prefix-gift"] {
+        mask-image: url(../assets/icon/gift-outline.svg);
+    }
+
+    &[class*="prefix-email"] {
+        mask-image: url(../assets/icon/email.svg);
+    }
+
+    &[class*="prefix-facebook"] {
+        mask-image: url(../assets/icon/facebook.svg);
+    }
+
+    &[class*="prefix-kakaotalk"] {
+        mask-image: url(../assets/icon/kakaotalk.svg);
+    }
+
+    &[class*="prefix-find"] {
+        mask-image: url(../assets/icon/find.svg);
+    }
+    &[class*="prefix-history"] {
+        mask-image: url(../assets/icon/history.svg);
+    }
+    &[class*="prefix-profile"] {
+        mask-image: url(../assets/icon/profile.svg);
+    }
+    &[class*="prefix-star"] {
+        mask-image: url(../assets/icon/star.svg);
+    }
+    &[class*="prefix-wallet"] {
+        mask-image: url(../assets/icon/wallet.svg);
+    }
+
+    &[class*="prefix-cart"] {
+        mask-image: url(../assets/icon/cart.svg);
+    }
+    &[class*="prefix-coin"] {
+        mask-image: url(../assets/icon/coin.svg);
+    }
+    &[class*="prefix-exit"] {
+        mask-image: url(../assets/icon/exit.svg);
+    }
+    &[class*="prefix-favorite"] {
+        mask-image: url(../assets/icon/favorite.svg);
+    }
+    &[class*="prefix-plus"] {
+        mask-image: url(../assets/icon/plus.svg);
+    }
+    &[class*="prefix-welcome"] {
+        mask-image: url(../assets/icon/welcome.svg);
+    }
+    &[class*="prefix-tabhome"] {
+        mask-image: url(../assets/icon/tabbutton/star.svg);
+    }
+    &[class*="prefix-tabmyinfo"] {
+        mask-image: url(../assets/icon/tabbutton/profile.svg);
+    }
+    &[class*="prefix-taborderlist"] {
+        mask-image: url(../assets/icon/tabbutton/history.svg);
+    }
+        &[class*="prefix-tabwallet"] {
+        mask-image: url(../assets/icon/tabbutton/wallet.svg);
+    }
+
+    &[class*="prefix-tabfind"] {
+        mask-image: url(../assets/icon/tabbutton/find.svg);
     }
 }

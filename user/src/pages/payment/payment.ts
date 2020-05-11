@@ -160,7 +160,7 @@ export class PaymentPage {
             this.cardAvailable=false;
         }
     }
-
+    console.log("[constructor] cardAvailable is "+this.cardAvailable);
     if(this.cardAvailable && this.paymentSelection=="cash"){  //2019.10.09
         this.paymentSelection="card";
     }
@@ -196,8 +196,14 @@ export class PaymentPage {
 
                 this.ngZone.run(()=>{
                     this.cardAvailable=cardAvailable;
+                    console.log("cardAvailable is "+cardAvailable);
                     if(!this.cardAvailable && this.paymentSelection=="card"){  //2019.10.09
                         this.paymentSelection="cash";
+                    }else{
+                        if(this.cardAvailable && !this.voucherAvailable){  //2020.02.11 correct paymentSelection as card
+                            this.paymentSelection="card";
+                            console.log("correct paymentSelection as "+this.paymentSelection);
+                        }
                     }
                     // promotionOrgList 필드가 있다면 확인이 필요하다. 이후에 computeAmount가 수행되어야 한다.
                     // 폰번호와 device uuid의 확인이 필요하다.
@@ -524,7 +530,9 @@ export class PaymentPage {
        });
  }
 
- computePayAmount(){ //현재 carts는 1나만 들어온다. 동일주소에 대해서만 주문 가능함으로.     
+ computePayAmount(){ //현재 carts는 1나만 들어온다. 동일주소에 대해서만 주문 가능함으로.   
+    console.log("computePayAmount paymentSelection:"+this.paymentSelection);
+
     this.cardDiscount=0;
     this.cashDiscount=0;
     this.menuDiscountAmount=0;
@@ -853,8 +861,12 @@ export class PaymentPage {
 
   pay(){
     if(this.takeout==undefined){
+        let message="매장/포장/배달을 선택해주세요."
+        if(!this.deliveryAvailable){
+            message="매장/포장을 선택해주세요.";
+        }
         let alert = this.alertController.create({
-            title: '포장(배달)여부를 선택해주세요.',
+            title: message,
             buttons: ['OK']
         });
         alert.present();
@@ -863,8 +875,8 @@ export class PaymentPage {
 
     if((!this.voucherAvailable || !this.voucherConstraint) && this.paymentSelection=="voucher"){
         let alert = this.alertController.create({
-            title: '결제방법 선택이 잘못되었습니다.',
-            subTitle:'상점에 다시 입장하셔서 메뉴를 주문하시기 바랍니다',
+            title: '식비카드 주문 요건에 맞지않습니다',//'결제방법 선택이 잘못되었습니다.',
+            subTitle:'결제방법을 변경해주세요',
             buttons: ['OK']
         });
         alert.present();

@@ -122,6 +122,8 @@ export class SignupPage {
         }
     }else if(navParams.get("login")=="kakao"){
         this.refId=navParams.get("id");
+    }else if(navParams.get("login")=="apple"){
+        this.refId=navParams.get("id");
     }
 
     this.loginMethod=navParams.get('login');
@@ -321,8 +323,8 @@ phoneAuth(){
                     return;
      }
      console.log("loginMethod:"+this.loginMethod);
-     if(this.loginMethod=="facebook" || this.loginMethod=="kakao"){
-                console.log("call serverSignup");
+     if(this.loginMethod=="facebook" || this.loginMethod=="kakao" || this.loginMethod=="apple"){
+                console.log("call serverSignup with "+this.refId);
                 this.signupInProgress=true;
                 this.loginProvider.serverSignup(this.refId,this.name,this.email,this.country,this.phone,this.sex,this.birthYear,this.mobileProvider,false,"","IncomeDeduction").then(
                 (result:any)=>{

@@ -17,6 +17,8 @@
  under the License.
  */
 
+#if !WK_WEB_VIEW_ONLY
+
 #import "CDVUIInAppBrowser.h"
 #import <Cordova/CDVPluginResult.h>
 #import <Cordova/CDVUserAgentUtil.h>
@@ -129,10 +131,10 @@ static CDVUIInAppBrowser* instance = nil;
 {
     CDVInAppBrowserOptions* browserOptions = [CDVInAppBrowserOptions parseOptions:options];
 
-    //kalen.lee@takit.biz -begin default option for kcp-payment
+    //kalen.lee@takit.biz-begin
     NSHTTPCookieStorage *cookieStorage=[NSHTTPCookieStorage sharedHTTPCookieStorage];
     [cookieStorage setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    //kalen.lee@takit.biz -end default option for kcp-payment
+    //kalen.lee@takit.biz-end
 
     if (browserOptions.clearcache) {
         NSHTTPCookie *cookie;
@@ -368,6 +370,7 @@ static CDVUIInAppBrowser* instance = nil;
 
 - (void)injectDeferredObject:(NSString*)source withWrapper:(NSString*)jsWrapper
 {
+    [self createIframeBridge];
     if (jsWrapper != nil) {
         NSData* jsonData = [NSJSONSerialization dataWithJSONObject:@[source] options:0 error:nil];
         NSString* sourceArrayString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
@@ -480,8 +483,7 @@ static CDVUIInAppBrowser* instance = nil;
     )){
         useBeforeLoad = YES;
     }
-    
-    //kalen.lee@takit.biz -begin
+
     // See if the url uses the 'gap-iab' protocol. If so, the host should be the id of a callback to execute,
     // and the path, if present, should be a JSON-encoded value to pass to the callback.
     if ([[url scheme] isEqualToString:@"gap-iab"]) {
@@ -563,8 +565,6 @@ static CDVUIInAppBrowser* instance = nil;
     }
 
     return shouldStart;
-   
-    /* kalen.lee@takit.biz -end */
 }
 
 - (void)webViewDidStartLoad:(UIWebView*)theWebView
@@ -573,7 +573,6 @@ static CDVUIInAppBrowser* instance = nil;
 
 - (void)webViewDidFinishLoad:(UIWebView*)theWebView
 {
-    [self createIframeBridge];
     if (self.callbackId != nil) {
         // TODO: It would be more useful to return the URL the page is actually on (e.g. if it's been redirected).
         NSString* url = [self.inAppBrowserViewController.currentURL absoluteString];
@@ -1134,4 +1133,4 @@ static CDVUIInAppBrowser* instance = nil;
 
 @end
 
-
+#endif

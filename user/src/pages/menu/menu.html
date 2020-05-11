@@ -15,7 +15,7 @@
 </ion-header>
 
 <ion-content>
-<div class="menu-img" text-center>
+<div class="menu-img" text-center *ngIf="menu.imagePath">
   <img [src]="storageProvider.awsS3+menu.imagePath">
 </div>
   <p *ngIf="menu.explanation!=undefined && menu.explanation!=null" text-wrap text-center [style.color]="themeColor" style="font-size:4vw;">

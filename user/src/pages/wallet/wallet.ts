@@ -14,6 +14,7 @@ import {CashListPage} from '../cash-list/cash-list';
 import {FaqPage} from '../faq/faq';
 import {VoucherSubscribePage} from '../voucher-subscribe/voucher-subscribe';
 import {MembershipSubscribePage} from '../membership-subscribe/membership-subscribe';
+import {QrCodePage} from '../qr-code/qr-code';
 
 import * as moment from 'moment';
 
@@ -333,6 +334,13 @@ export class WalletPage {
         });
         alert.present();
     })
+  }
+
+  showQRCode(){
+      // 20분동안 유효한 qr코드를 생성한다.(서버에 저장한 값을 돌려와 가져오면 된다) 
+      // 우선 시연을 위해 qr코드만 보여준다. 현재 시간과 휴대폰 번호를 조합
+      // getSecetCodeInfo+전화번호+시간 정보를 합치면 된다.
+      this.app.getRootNavs()[0].push(QrCodePage);
   }
 
 }
