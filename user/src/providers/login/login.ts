@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Facebook } from '@ionic-native/facebook';
 import {Platform,AlertController} from 'ionic-angular';
 import {StorageProvider} from '../storage/storage';
-import {Http,Headers} from '@angular/http';
 import { AppAvailability } from '@ionic-native/app-availability';
 import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
 import { NativeStorage } from '@ionic-native/native-storage';
@@ -33,7 +32,8 @@ export class LoginProvider {
       private alertCtrl:AlertController,
       private device: Device,
       public kakaoCordovaSDK: KakaoCordovaSDK,
-      private iab: InAppBrowser,private httpClient: HttpClient) {
+      private iab: InAppBrowser,
+      private httpClient: HttpClient) {
     console.log('Hello LoginProvider Provider');
       platform.ready().then(() => {
         this.nativeStorage.getItem("notice").then((value:string)=>{
@@ -177,7 +177,7 @@ export class LoginProvider {
                              });
                },(api_err)=>{
                    console.log("facebook.api error:"+JSON.stringify(api_err));
-                   let reason={stage:"api_err",msg:api_err}; 
+                   let reason={stage:"facebook_api_err",msg:api_err}; 
                    reject(reason);
                }); 
            }else{ // try login
@@ -216,7 +216,7 @@ export class LoginProvider {
                          });
                      },(api_err)=>{
                          console.log(JSON.stringify(api_err));
-                         let reason={stage:"api_err",msg:api_err};
+                         let reason={stage:"facebook_api_err",msg:api_err};
                          reject(reason);
                      }); 
                },(login_err)=>{
@@ -241,20 +241,6 @@ export class LoginProvider {
 
   kakaologin(handler,kakaoProvider,params){
     return new Promise((resolve,reject)=>{
-
-      var scheme;
-      if(this.platform.is('android')){
-          scheme='com.kakao.talk';         
-      }else if(this.platform.is('ios')){
-          scheme='kakaotalk://';
-      }else{
-          console.log("unknown platform");
-      }
-      
-      this.appAvailability.check(scheme).then(
-          ()=> {  // Success callback
-              console.log(scheme + ' is available. call KakaoTalk.login ');
-
               let loginOptions = {};
               loginOptions['authTypes'] = [
                                             AuthTypes.AuthTypeTalk, 
@@ -289,11 +275,6 @@ export class LoginProvider {
                         reject(reason);
                     }
               ); 
-          },
-          ()=>{  // Error callback
-              console.log(scheme + ' is not available');
-              reject({stage:"social_login", msg:"카카오톡이 설치되어있지 않습니다."});
-          });     
       });
   }
 

@@ -85,6 +85,9 @@ import { KakaoCordovaSDK } from 'kakao-sdk';
 import { QRCodeModule } from 'angular2-qrcode';
 import {QrCodePageModule} from '../pages/qr-code/qr-code.module';
 
+//2020.05.11 websocket을 위해 추가함.
+import { ServerSocketProvider } from '../providers/server-socket/server-socket';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -173,7 +176,8 @@ import {QrCodePageModule} from '../pages/qr-code/qr-code.module';
     Sim,
     Device,
     AndroidPermissions,
-    KakaoCordovaSDK
+    KakaoCordovaSDK,
+    ServerSocketProvider,
   ]
 })
 export class AppModule {}

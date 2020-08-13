@@ -156,7 +156,7 @@ export class LoginMainPage {
       }else{
           console.log("invalid result comes from server-"+JSON.stringify(res));
           let alert = this.alertCtrl.create({
-              title: '카카오 로그인 에러가 발생했습니다',
+              title: '로그인 에러가 발생했습니다',
               buttons: ['OK']
           });
           alert.present();
@@ -165,12 +165,15 @@ export class LoginMainPage {
       }
     },login_err =>{
           this.loginInProgress=false;
+          let alert;
           console.log(JSON.stringify(login_err));
-          let alert = this.alertCtrl.create({
-              title: '로그인 에러가 발생했습니다',
-              subTitle: '네트웍 상태를 확인하신후 다시 시도해 주시기 바랍니다.',
-              buttons: ['OK']
-          });
+           if(login_err.stage!="serverlogin_err"){
+            alert = this.alertCtrl.create({
+                title: '로그인 에러가 발생했습니다',
+                //subTitle: '네트웍 상태를 확인하시거나 소셜 로그인을 다시 시도해 주시기 바랍니다.',
+                buttons: ['OK']
+            });
+          }
           alert.present();
     });
     

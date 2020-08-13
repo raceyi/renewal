@@ -142,7 +142,7 @@
       <ion-row [hidden]="quantityInput(true)">
         <ion-col col-11>
         <ion-item  class="orderSelect">
-          <ion-label class="orderQuantity">총 수량</ion-label>
+          <ion-label class="orderQuantity">수량(클릭)</ion-label>
             <ion-select interface='action-sheet' #actionSheet class="orderSelect0" [(ngModel)]="menu.quantity"  (ionChange)="getQuantity(menu.quantity)">
               <ion-option value=1>1</ion-option>
               <ion-option value=2>2</ion-option>
@@ -158,7 +158,7 @@
         </ion-col>
       </ion-row>
        <ion-row [hidden]="quantityInput(false)">
-         <ion-col col-8 class="input-label">총 수량</ion-col>
+         <ion-col col-8 class="input-label">수량(클릭)</ion-col>
          <ion-col col-3><ion-input #quantityNum (ionBlur)="onBlur($event)" type="number"  min="1" [(ngModel)]= "menu.quantity"></ion-input></ion-col>
          <ion-col class="unit" col-1>개</ion-col>
        </ion-row>
