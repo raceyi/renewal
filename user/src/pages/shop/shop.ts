@@ -13,7 +13,7 @@ import JsBarcode from 'jsbarcode';
 import { Sim } from '@ionic-native/sim';
 import { Device } from '@ionic-native/device';
 import {ConfigProvider} from '../../providers/config/config';
-
+import {ServerSocketProvider} from '../../providers/server-socket/server-socket';
 var gShopPage;
 declare var window:any;
 
@@ -69,13 +69,19 @@ export class ShopPage {
   todayBreakTimes:string;
   deliveryTimeConstraintString:string;
 
+  socketSubscription;
+  
+  //socket으로 실시간 전달 받은 정보 저장
+  socketInfo:any;
+
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public serverProvider:ServerProvider,private app:App,
               public loadingCtrl: LoadingController,   private ngZone:NgZone, 
               public platform:Platform,public sim:Sim,private device: Device, 
               public configProvider:ConfigProvider, 
               private events:Events,
-              private alertCtrl:AlertController,public storageProvider:StorageProvider) {
+              private alertCtrl:AlertController,public storageProvider:StorageProvider,
+              private socket: ServerSocketProvider) {
 
       console.log("ShopPage");
       gShopPage=this;
@@ -151,7 +157,33 @@ export class ShopPage {
       }   
 
       this.getDeliveryTimeConstraintString();
+
   }
+
+  /*
+  //2020.05.13-begin
+  ngOnInit() {
+    console.log("connect websocket");
+
+    this.socket.connect()
+
+    this.socketSubscription = this.socket.messages.subscribe((message:any) => {
+      console.log('received message from server: ', message)
+    },((err:any) =>{
+      console.log('web socket error comes:'+JSON.stringify(err));  
+    }))
+
+    // send message to server, if the socket is not connected it will be sent
+    // as soon as the connection becomes available thanks to QueueingSubject
+    this.socket.send(JSON.stringify({ takitId: this.takitId }))
+  }
+
+  ngOnDestroy() {
+    console.log("disconnect websocket");    
+    this.socketSubscription.unsubscribe()
+  }
+//2020.05.13-end
+*/
 
  getDeliveryTimeConstraintString(){  
     // payment에서 들어가야만 한다 ㅜㅜ. payment에서 shop정보를 다시 가져와야만 한다. 그게 맞다. 

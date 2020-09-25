@@ -133,6 +133,7 @@ export class LoginProvider {
             console.log("loginEmail-request:"+request);
             this.httpClient.post(request,body).subscribe((res:any)=>{ 
                 if(res.result=="success"){
+                    this.storageProvider.uid = res.uid;
                     this.alertNotice(res.notice);
                 }              
                 resolve(res);
@@ -302,8 +303,11 @@ export class LoginProvider {
                 body = {referenceId:"apple_"+id,version:loginProvider.storageProvider.version};                
             }
 
-            loginProvider.httpClient.post(request,body).subscribe((res)=>{              
+            loginProvider.httpClient.post(request,body).subscribe((res:any)=>{              
                console.log("social login res:"+JSON.stringify(res));
+               if(res.uid){
+                    loginProvider.storageProvider.uid = res.uid;
+               }
                resolve(res); // 'success'(move into home page) or 'invalidId'(move into signup page)
               },(err)=>{
                   console.log( loginProvider.storageProvider.serverAddress+" server no response");
@@ -339,7 +343,10 @@ export class LoginProvider {
               headers.append('Content-Type', 'application/json');
               console.log("server: "+ this.storageProvider.serverAddress+ " body:"+body);
 
-             this.httpClient.post(this.storageProvider.serverAddress+"/signup",body).subscribe((res)=>{
+             this.httpClient.post(this.storageProvider.serverAddress+"/signup",body).subscribe((res:any)=>{
+                if(res.uid){
+                    this.storageProvider.uid = res.uid;
+                } 
                  resolve(res); // 'success'(move into home page) or 'invalidId'(move into signup page)
              },(err)=>{
                  console.log("signup no response "+JSON.stringify(err));
@@ -367,8 +374,11 @@ export class LoginProvider {
                                             uuid:this.device.uuid 
                                         };
               console.log("server:"+ this.storageProvider.serverAddress+" body:"+JSON.stringify(body));
-             this.httpClient.post(this.storageProvider.serverAddress+"/signup",body).subscribe((res)=>{
+             this.httpClient.post(this.storageProvider.serverAddress+"/signup",body).subscribe((res:any)=>{
                  //var result:string=res.result;
+                    if(res.uid){
+                        this.storageProvider.uid = res.uid;
+                    }
                     resolve(res); // 'success'(move into home page) or 'invalidId'(move into signup page)
              },(err)=>{
                  console.log("signup no response");
@@ -381,8 +391,12 @@ export class LoginProvider {
   logout(type){
     return new Promise((resolve,reject)=>{
                   console.log("server: "+ this.storageProvider.serverAddress);
-
-                  this.httpClient.post(this.storageProvider.serverAddress+"/logout",{version:this.storageProvider.version}).subscribe((res)=>{
+                  let msg : any = {version:this.storageProvider.version}
+                  if(this.storageProvider.uid){
+                      msg.uid = this.storageProvider.uid;
+                  }
+        
+                  this.httpClient.post(this.storageProvider.serverAddress+"/logout",msg).subscribe((res)=>{
                     if(type=='facebook'){
                       this.fb.logout().then((result)=>{
                             resolve(res); 
@@ -420,8 +434,11 @@ export class LoginProvider {
   unregister(type){
     return new Promise((resolve,reject)=>{
             console.log("server: "+ this.storageProvider.serverAddress);
-
-           this.httpClient.post(this.storageProvider.serverAddress+"/unregister",{version:this.storageProvider.version}).subscribe((res)=>{
+            let msg : any = {version:this.storageProvider.version}
+            if(this.storageProvider.uid){
+                msg.uid = this.storageProvider.uid;
+            }
+           this.httpClient.post(this.storageProvider.serverAddress+"/unregister",msg).subscribe((res)=>{
                console.log("unregister "+JSON.stringify(res));
                if(type=='facebook'){
                     this.fb.logout().then((result)=>{

@@ -196,6 +196,7 @@ defaultCardColor ="#33B9C6";
 
   recommender;
   
+  uid; // 2020.09.13 iOS의 WKWebView 로그인 문제를 해결하기위해
   constructor(private configProvider:ConfigProvider,
               private sqlite: SQLite,
               private deviceInfo:Device,

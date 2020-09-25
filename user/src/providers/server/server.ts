@@ -8,6 +8,7 @@ import {TimeUtil} from '../../classes/TimeUtil';
 import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
 import { AppAvailability } from '@ionic-native/app-availability';
 import { WebIntent } from '@ionic-native/web-intent';
+import {HTTP} from '@ionic-native/http'
 
 declare var window:any;
 /*
@@ -23,6 +24,7 @@ export class ServerProvider {
   timeout=30; // 30 seconds
 //  stampCount=[];
   lastOrderedTime;
+  userId;  // 응답으로 받은 userId를 저장한다. 
 
     constructor(public http: HttpClient
                 ,private storageProvider:StorageProvider
@@ -41,16 +43,18 @@ export class ServerProvider {
       
 
     }
-
     postAnonymous(request,bodyIn){
-       console.log("!!!!post:"+bodyIn);
+       console.log("!!!!postAnonymous:"+bodyIn);
        let bodyObj=bodyIn;
        bodyObj.version=this.storageProvider.version;
+       if(this.storageProvider.uid){
+            bodyObj.uid = this.storageProvider.uid;
+       }
        let body=bodyObj;
        console.log("request:"+request);
 
        return new Promise((resolve,reject)=>{
-            this.http.post(request,body).subscribe((res:any)=>{               
+            this.http.post(request,body,{headers: new HttpHeaders({timeout:'${30000}'})}).subscribe((res:any)=>{               
                 console.log("post version:"+res.version+" version:"+this.storageProvider.version);
                 resolve(res);                    
             },(err)=>{
@@ -59,12 +63,36 @@ export class ServerProvider {
             });
        });
     }
+/*
+    postAnonymous(request,bodyIn){
+        console.log("!!!!post:"+bodyIn);
+        let bodyObj=bodyIn;
+        bodyObj.version=this.storageProvider.version;
+        let body=bodyObj;
+        console.log("request:"+request);
+ 
+        return new Promise((resolve,reject)=>{
+           this.httpNative.setDataSerializer("json"); 
+           this.httpNative.setRequestTimeout(this.timeout);
+           this.httpNative.post(request,body, {"Content-Type":"application/json"}).then((response:any)=>{
+                   let res=JSON.parse(response.data);            
+                   resolve(res);
+           },(err)=>{
+                 console.log("post-err:"+JSON.stringify(err));
+                 reject(err);              
+           });
+        });
+     }
+*/
+ 
 
   post(requestIn,bodyIn){
        console.log("!!!!post:"+bodyIn);
        let bodyObj=bodyIn;
        bodyObj.version=this.storageProvider.version;
-
+       if(this.storageProvider.uid){
+           bodyObj.uid = this.storageProvider.uid;
+       }
        let request;
        if(this.storageProvider.device){
            request=requestIn;
@@ -107,7 +135,54 @@ export class ServerProvider {
             });
        });
   }
+/*
+    
+post(request,bodyIn){
+    console.log("!!!!post-http Native:"+bodyIn);
+    let bodyObj=bodyIn;
+    bodyObj.version=this.storageProvider.version;
+    console.log("request:"+request);
 
+    return new Promise((resolve,reject)=>{
+       this.httpNative.setDataSerializer("json"); 
+       this.httpNative.setRequestTimeout(this.timeout);
+
+       this.httpNative.post(request,bodyObj, {"Content-Type":"application/json"}).then((response:any)=>{
+               let res=JSON.parse(response.data);            
+               console.log("post version:"+res.version+" version:"+this.storageProvider.version);
+               resolve(res);
+         },(err)=>{
+             console.log("post-err:"+JSON.stringify(err));
+             if(err.hasOwnProperty("status") && err.status==401){
+                 //login again with id
+                 this.loginAgain().then(()=>{
+                     //call http post again
+                     this.httpNative.post(request,bodyObj, {"Content-Type":"application/json"}).then((response:any)=>{
+                         let res=JSON.parse(response.data);            
+                         console.log("post version:"+res.version+" version:"+this.storageProvider.version);
+                         if(parseFloat(res.version)>parseFloat(this.storageProvider.version)){
+                             console.log("post invalid version");
+                             let alert = this.alertCtrl.create({
+                                         title: '앱버전을 업데이트해주시기 바랍니다.',
+                                         subTitle: '현재버전에서는 일부 기능이 정상동작하지 않을수 있습니다.',
+                                         buttons: ['OK']
+                                     });
+                             alert.present();
+                         }
+                         resolve(res);  
+                      },(err)=>{
+                          reject("NetworkFailure");
+                      });
+                 },(err)=>{
+                     reject(err);
+                 });
+             }else{
+                 reject("NetworkFailure");
+             }
+         });
+    });
+}
+*/
 loginAgain(){
       return new Promise((resolve,reject)=>{
         console.log("[loginAgain] id:"+this.storageProvider.id);
@@ -218,6 +293,12 @@ saveOrderCart(body){
                 duration: this.timeout*1000
             });
             progressBarLoader.present();
+            /* Just for stress test - begin */
+            //for(var i=0;i<50;i++){
+            //        this.post(this.storageProvider.serverAddress+"/saveOrderCart",body);
+            //}
+            /* Just for stress test - end */
+            
             this.post(this.storageProvider.serverAddress+"/saveOrderCart",body).then((res:any)=>{
                 progressBarLoader.dismiss();
                 this.lastOrderedTime=new Date();

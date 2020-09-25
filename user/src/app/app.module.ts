@@ -19,6 +19,7 @@ import { NativeStorage } from '@ionic-native/native-storage';
 import { AppAvailability } from '@ionic-native/app-availability';
 import { InAppBrowser,InAppBrowserEvent } from '@ionic-native/in-app-browser';
 import { HttpClientModule } from '@angular/common/http';
+import {HTTP} from '@ionic-native/http';
 //import { BackgroundMode } from '@ionic-native/background-mode';
 
 import {LoginMainPageModule} from '../pages/login-main/login-main.module';
@@ -78,6 +79,8 @@ import {VoucherSubscribePageModule} from '../pages/voucher-subscribe/voucher-sub
 import {WarningPageModule} from '../pages/warning/warning.module';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 import {MembershipSubscribePageModule} from '../pages/membership-subscribe/membership-subscribe.module';
+import {AddCardPageModule} from '../pages/add-card/add-card.module';
+import {NiceAgreementPageModule} from '../pages/nice-agreement/nice-agreement.module';
 import {GiftPageModule} from '../pages/gift/gift.module';
 import { KakaoCordovaSDK } from 'kakao-sdk';
 
@@ -141,9 +144,12 @@ import { ServerSocketProvider } from '../providers/server-socket/server-socket';
     VoucherSubscribePageModule,
     WarningPageModule,
     MembershipSubscribePageModule,
+    AddCardPageModule,
+    NiceAgreementPageModule,
     GiftPageModule,
     QRCodeModule, //2020.04.13 QR code생성을 위해 추가함.
     QrCodePageModule,
+
     IonicModule.forRoot(MyApp,{mode:'ios'/*, animate: false*/ })
   ],
   bootstrap: [IonicApp],
@@ -166,7 +172,6 @@ import { ServerSocketProvider } from '../providers/server-socket/server-socket';
     SplashScreen,
     AppAvailability,
     InAppBrowser,
-    //BackgroundMode,
     Push,
     {provide: ErrorHandler, useClass: MyErrorHandler},
     ServerProvider,
